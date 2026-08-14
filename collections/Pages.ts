@@ -402,6 +402,30 @@ export const Pages: CollectionConfig = {
 					fields: [
 						{ name: 'nom', type: 'text', required: true },
 						{ name: 'fonction', type: 'text', required: true },
+						{
+							// Décision 38 — discriminant explicite pour regrouper
+							// l'affichage (Maire à part, puis 3 groupes) plutôt que
+							// deviner un groupe à partir du texte libre `fonction`.
+							name: 'role',
+							type: 'select',
+							required: true,
+							options: [
+								{ label: 'Maire', value: 'maire' },
+								{ label: 'Adjoint', value: 'adjoint' },
+								{ label: 'Conseiller délégué', value: 'delegue' },
+								{ label: 'Conseiller municipal', value: 'conseiller' }
+							]
+						},
+						{
+							name: 'commissions',
+							type: 'array',
+							fields: [{ name: 'nom', type: 'text', required: true }]
+						},
+						{
+							name: 'note',
+							type: 'text',
+							admin: { description: 'Ex. "Président de toutes les commissions" (Maire)' }
+						},
 						{ name: 'photo', type: 'upload', relationTo: 'media' },
 						{ name: 'email', type: 'relationship', relationTo: 'emails' }
 					]
@@ -411,7 +435,10 @@ export const Pages: CollectionConfig = {
 		},
 
 		// ---- Gabarit Catalogue de lieux/prestations (décision 7 : démarre
-		// minimal avec juste "salles", à étoffer si le besoin se confirme) ----
+		// minimal avec juste "salles" ; étoffé en décision 38 — le contenu réel
+		// (Location de salles) a des groupes de tarifs distincts (Manifestations,
+		// Vins d'honneur...), une caution par ligne, et des notes/consignes par
+		// salle, absents du schéma minimal initial) ----
 		{
 			name: 'catalogueLieux',
 			type: 'group',
@@ -425,11 +452,41 @@ export const Pages: CollectionConfig = {
 						{ name: 'description', type: 'textarea' },
 						{ name: 'capacite', type: 'text' },
 						{
-							name: 'tarifs',
+							name: 'icone',
+							type: 'text',
+							access: { update: isSuperAdminField },
+							admin: { description: "Nom d'icône lucide-react, verrouillé par salle" }
+						},
+						{
+							name: 'groupesTarifs',
 							type: 'array',
 							fields: [
-								{ name: 'public', type: 'text', required: true },
-								{ name: 'prix', type: 'text', required: true }
+								{ name: 'label', type: 'text', required: true },
+								{
+									name: 'lignes',
+									type: 'array',
+									fields: [
+										{ name: 'public', type: 'text', required: true },
+										{ name: 'prix', type: 'text', required: true },
+										{ name: 'caution', type: 'text' }
+									]
+								}
+							]
+						},
+						{
+							name: 'notes',
+							type: 'array',
+							fields: [
+								{ name: 'texte', type: 'text', required: true },
+								{
+									name: 'type',
+									type: 'select',
+									defaultValue: 'info',
+									options: [
+										{ label: 'Information', value: 'info' },
+										{ label: 'Condition/obligation', value: 'condition' }
+									]
+								}
 							]
 						},
 						{ name: 'images', type: 'upload', relationTo: 'media', hasMany: true }
@@ -445,7 +502,21 @@ export const Pages: CollectionConfig = {
 			admin: { condition: (data) => data.gabarit === 'contact' },
 			fields: [
 				{ name: 'description', type: 'textarea' },
-				{ name: 'coordonnees', type: 'array', fields: contactItemFields },
+				{
+					name: 'coordonnees',
+					type: 'array',
+					fields: [
+						...contactItemFields,
+						{
+							// Décision 38 — chaque coordonnée s'affiche comme une
+							// fiche (ContactCard), pas juste une ligne : il lui
+							// manquait un texte d'accompagnement (ex. horaires
+							// d'ouverture du standard téléphonique).
+							name: 'description',
+							type: 'text'
+						}
+					]
+				},
 				{ name: 'formulaireActif', type: 'checkbox', defaultValue: true }
 			]
 		},

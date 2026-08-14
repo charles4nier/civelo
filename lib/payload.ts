@@ -119,14 +119,23 @@ export async function getNavLinks() {
 	}
 }
 
+// Item 14 — utilisée par la route générique `app/[...slug]/page.tsx`. Pas de
+// donnée statique de repli possible ici (une page purement dynamique n'a par
+// définition pas de fichier de route en dur) — Payload injoignable est donc
+// traité comme "page introuvable", pas comme une erreur qui casse le rendu.
 export async function getPageBySlug(slug: string) {
-	const payload = await getPayloadClient();
-	const { docs } = await payload.find({
-		collection: 'pages',
-		where: { slug: { equals: slug } },
-		limit: 1
-	});
-	return docs[0] ?? null;
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			limit: 1
+		});
+		return docs[0] ?? null;
+	} catch (err) {
+		console.warn(`[payload] getPageBySlug("${slug}") : base injoignable.`, err);
+		return null;
+	}
 }
 
 const ICON_VARIANTS: IconVariant[] = ['primary', 'coral', 'leaf', 'muted', 'sunshine'];
@@ -282,6 +291,7 @@ export async function getActualitesItems(slug: string) {
 				categoryVariant: toIconVariant(cat?.couleur),
 				date: item.date,
 				excerpt: item.extrait,
+				epinglee: item.epinglee ?? false,
 				documentHref: resolvePageHref(item.lienDocument)
 			};
 		});
@@ -426,6 +436,442 @@ export async function getDemarchesItems(slug: string) {
 		console.warn(`[payload] getDemarchesItems("${slug}") : base injoignable, repli sur les données statiques.`, err);
 		return null;
 	}
+}
+
+type PayloadTrombinoscopeMember = {
+	nom: string;
+	fonction: string;
+	role: 'maire' | 'adjoint' | 'delegue' | 'conseiller';
+	commissions?: { nom: string }[];
+	note?: string;
+};
+
+// Item 13 — gabarit Trombinoscope (décision 38 : `role` explicite ajouté au
+// schéma pour regrouper l'affichage sans deviner à partir de `fonction`).
+export async function getTrombinoscopeData(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 1,
+			limit: 1
+		});
+		const page = docs[0] as unknown as
+			| { trombinoscope?: { membres?: PayloadTrombinoscopeMember[]; infosReunion?: string } }
+			| undefined;
+		const membres = page?.trombinoscope?.membres;
+		if (!membres || membres.length === 0) return null;
+
+		return {
+			members: membres.map((m, i) => ({
+				key: String(i),
+				nom: m.nom,
+				fonction: m.fonction,
+				role: m.role,
+				commissions: m.commissions?.map((c) => c.nom),
+				note: m.note
+			})),
+			meetingInfo: page?.trombinoscope?.infosReunion
+		};
+	} catch (err) {
+		console.warn(`[payload] getTrombinoscopeData("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+type PayloadCatalogueLigne = { public: string; prix: string; caution?: string };
+type PayloadCatalogueGroupe = { label: string; lignes?: PayloadCatalogueLigne[] };
+type PayloadCatalogueNote = { texte: string; type?: 'info' | 'condition' };
+type PayloadCatalogueSalle = {
+	nom: string;
+	description?: string;
+	icone?: string;
+	groupesTarifs?: PayloadCatalogueGroupe[];
+	notes?: PayloadCatalogueNote[];
+};
+
+// Item 13 — gabarit Catalogue de lieux (décision 38 : schéma étoffé pour
+// coller au contenu réel de Location de salles).
+export async function getCatalogueLieuxItems(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			limit: 1
+		});
+		const page = docs[0] as unknown as { catalogueLieux?: { salles?: PayloadCatalogueSalle[] } } | undefined;
+		const salles = page?.catalogueLieux?.salles;
+		if (!salles || salles.length === 0) return null;
+
+		return salles.map((s, i) => ({
+			key: String(i),
+			nom: s.nom,
+			description: s.description,
+			icone: s.icone,
+			groupesTarifs: (s.groupesTarifs ?? []).map((g) => ({ label: g.label, lignes: g.lignes ?? [] })),
+			notes: (s.notes ?? []).map((n) => ({ texte: n.texte, type: n.type ?? 'info' }))
+		}));
+	} catch (err) {
+		console.warn(`[payload] getCatalogueLieuxItems("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+type PayloadContactCoordonnee = PayloadContactItem & { description?: string };
+
+const CONTACT_TYPE_META: Record<
+	PayloadContactCoordonnee['type'],
+	{ icon: string; iconVariant: IconVariant; category: string }
+> = {
+	phone: { icon: 'Phone', iconVariant: 'primary', category: 'Par téléphone' },
+	email: { icon: 'Mail', iconVariant: 'leaf', category: 'Par email' },
+	address: { icon: 'MapPin', iconVariant: 'coral', category: 'En personne' },
+	hours: { icon: 'Clock', iconVariant: 'muted', category: 'Horaires' }
+};
+
+// Item 13 — gabarit Contact. `icon`/`iconVariant`/`category` sont dérivés du
+// `type` (décision 38), pas des champs éditeur en plus — évite d'ajouter des
+// champs redondants avec une info déjà présente.
+export async function getContactData(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 1,
+			limit: 1
+		});
+		const page = docs[0] as unknown as
+			| { contact?: { coordonnees?: PayloadContactCoordonnee[]; formulaireActif?: boolean } }
+			| undefined;
+		const coordonnees = page?.contact?.coordonnees;
+		if (!coordonnees || coordonnees.length === 0) return null;
+
+		const cards = coordonnees
+			.map((c, i) => {
+				const meta = CONTACT_TYPE_META[c.type];
+				const value =
+					c.type === 'phone'
+						? typeof c.telephone === 'object'
+							? c.telephone?.numero
+							: undefined
+						: c.type === 'email'
+							? typeof c.email === 'object'
+								? c.email?.adresse
+								: undefined
+							: c.valeur;
+				if (!value) return null;
+				return {
+					key: String(i),
+					icon: meta.icon,
+					iconVariant: meta.iconVariant,
+					category: meta.category,
+					name: value,
+					description: c.description,
+					contacts: mapContacts([{ type: c.type, valeur: c.valeur, telephone: c.telephone, email: c.email }])
+				};
+			})
+			.filter((c): c is NonNullable<typeof c> => c !== null);
+
+		if (cards.length === 0) return null;
+		return { cards, formulaireActif: page?.contact?.formulaireActif ?? true };
+	} catch (err) {
+		console.warn(`[payload] getContactData("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+type PayloadUrgence = { numero: string; label: string; description?: string; couleur?: 'red' | 'blue' | 'muted' };
+type PayloadContactLocal = { label: string; detail?: string; telephone?: { numero: string } | string };
+
+// Item 13 — gabarit Numéros utiles.
+export async function getNumerosUtilesData(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 2,
+			limit: 1
+		});
+		const page = docs[0] as unknown as
+			| { numerosUtiles?: { urgences?: PayloadUrgence[]; contactsLocaux?: PayloadContactLocal[] } }
+			| undefined;
+		const urgences = page?.numerosUtiles?.urgences;
+		const locaux = page?.numerosUtiles?.contactsLocaux;
+		if ((!urgences || urgences.length === 0) && (!locaux || locaux.length === 0)) return null;
+
+		return {
+			urgences: (urgences ?? []).map((u, i) => ({
+				key: String(i),
+				number: u.numero,
+				label: u.label,
+				desc: u.description,
+				color: u.couleur ?? 'muted'
+			})),
+			locaux: (locaux ?? []).map((l, i) => {
+				const numero = typeof l.telephone === 'object' ? l.telephone?.numero : undefined;
+				return {
+					key: String(i),
+					label: l.label,
+					number: numero ?? '',
+					detail: l.detail,
+					href: numero ? `tel:${numero.replace(/\s/g, '')}` : '#'
+				};
+			})
+		};
+	} catch (err) {
+		console.warn(`[payload] getNumerosUtilesData("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+const JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
+const JOUR_LABELS: Record<(typeof JOURS)[number], string> = {
+	lundi: 'Lundi',
+	mardi: 'Mardi',
+	mercredi: 'Mercredi',
+	jeudi: 'Jeudi',
+	vendredi: 'Vendredi',
+	samedi: 'Samedi',
+	dimanche: 'Dimanche'
+};
+
+type PayloadJourHoraire = { matin?: string; apresMidi?: string };
+type PayloadContactPratique = {
+	icone?: string;
+	label: string;
+	nom: string;
+	description?: string;
+	contacts?: PayloadContactItem[];
+};
+type PayloadHoraires = Partial<Record<(typeof JOURS)[number], PayloadJourHoraire>> & {
+	fermetures?: { libelle: string }[];
+	contactsPratiques?: PayloadContactPratique[];
+};
+
+const CONTACT_VARIANTS: IconVariant[] = ['primary', 'leaf', 'muted', 'coral', 'sunshine'];
+
+// Item 13 — gabarit Horaires (singleton, décision 23).
+export async function getHorairesData(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 2,
+			limit: 1
+		});
+		const page = docs[0] as unknown as { horaires?: PayloadHoraires } | undefined;
+		const horaires = page?.horaires;
+		if (!horaires) return null;
+
+		const schedule = JOURS.map((jour) => ({
+			day: JOUR_LABELS[jour],
+			morning: horaires[jour]?.matin || 'Fermé',
+			afternoon: horaires[jour]?.apresMidi || 'Fermé'
+		}));
+
+		return {
+			schedule,
+			fermetures: (horaires.fermetures ?? []).map((f) => f.libelle),
+			contacts: (horaires.contactsPratiques ?? []).map((c, i) => ({
+				key: String(i),
+				icon: c.icone ?? 'HelpCircle',
+				iconVariant: CONTACT_VARIANTS[i % CONTACT_VARIANTS.length],
+				category: c.label,
+				name: c.nom,
+				description: c.description,
+				contacts: mapContacts(c.contacts)
+			}))
+		};
+	} catch (err) {
+		console.warn(`[payload] getHorairesData("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+type PayloadUpload = { url?: string } | string;
+type PayloadPoi = {
+	id: string;
+	nom: string;
+	description: string;
+	categorie: 'hebergement' | 'site-visite';
+	latitude: number;
+	longitude: number;
+	image?: PayloadUpload;
+};
+type PayloadSentier = {
+	id: string;
+	nom: string;
+	description: string;
+	distance?: string;
+	duree?: string;
+	trace?: { lat: number; lng: number }[];
+	image?: PayloadUpload;
+};
+
+// Item 13 — gabarit Carte interactive. `pois`/`sentiers` sont des
+// collections séparées (décision 23), pas des champs de la page elle-même.
+export async function getCarteData() {
+	try {
+		const payload = await getPayloadClient();
+		const [poisRes, sentiersRes] = await Promise.all([
+			payload.find({ collection: 'pois', limit: 0, pagination: false }),
+			payload.find({ collection: 'sentiers', limit: 0, pagination: false })
+		]);
+		const poisDocs = poisRes.docs as unknown as PayloadPoi[];
+		const sentiersDocs = sentiersRes.docs as unknown as PayloadSentier[];
+		if (poisDocs.length === 0 && sentiersDocs.length === 0) return null;
+
+		return {
+			pois: poisDocs.map((p) => ({
+				id: String(p.id),
+				name: p.nom,
+				description: p.description,
+				category: p.categorie,
+				lat: p.latitude,
+				lng: p.longitude,
+				image: (typeof p.image === 'object' ? p.image?.url : undefined) ?? ''
+			})),
+			sentiers: sentiersDocs.map((s) => ({
+				id: String(s.id),
+				name: s.nom,
+				description: s.description,
+				distance: s.distance ?? '',
+				duration: s.duree ?? '',
+				coordinates: (s.trace ?? []).map((c): [number, number] => [c.lat, c.lng]),
+				image: (typeof s.image === 'object' ? s.image?.url : undefined) ?? ''
+			}))
+		};
+	} catch (err) {
+		console.warn('[payload] getCarteData() : base injoignable, repli sur les données statiques.', err);
+		return null;
+	}
+}
+
+type PayloadPageRelation = { slug?: string } | string;
+type PayloadPoiRelation = { id?: string | number } | string;
+type PayloadAccueil = {
+	hero?: {
+		image?: PayloadUpload;
+		titre?: string;
+		description?: string;
+		boutonPrincipalLabel?: string;
+		boutonPrincipalLien?: PayloadPageRelation;
+		boutonSecondaireLabel?: string;
+		boutonSecondaireLien?: PayloadPageRelation;
+	};
+	quickAccessItems?: { icone?: string; titre: string; description?: string; lien?: PayloadPageRelation }[];
+	mayorWord?: {
+		image?: PayloadUpload;
+		citation: string;
+		nomSignataire?: string;
+		statNombre?: string;
+		statLibelle?: string;
+	};
+	discoverCards?: {
+		etiquette?: string;
+		titre: string;
+		description?: string;
+		image?: PayloadUpload;
+		lienPoi?: PayloadPoiRelation;
+		lienSentier?: PayloadPoiRelation;
+	}[];
+	cta?: { titre?: string; description?: string; boutonLabel?: string; coordonnees?: PayloadContactItem[] };
+};
+
+function uploadUrl(u: PayloadUpload | undefined): string {
+	return (typeof u === 'object' ? u?.url : undefined) ?? '';
+}
+
+// Item 13 — gabarit Accueil (singleton, décision 9) : recherché par `gabarit`
+// plutôt que par `slug` — un singleton est garanti unique par gabarit
+// (décision 9), pas besoin de connaître son slug exact pour le trouver.
+export async function getAccueilData() {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { gabarit: { equals: 'accueil' } },
+			depth: 2,
+			limit: 1
+		});
+		const page = docs[0] as unknown as { accueil?: PayloadAccueil } | undefined;
+		const accueil = page?.accueil;
+		if (!accueil) return null;
+
+		return {
+			hero: accueil.hero
+				? {
+						image: uploadUrl(accueil.hero.image),
+						titre: accueil.hero.titre ?? '',
+						description: accueil.hero.description,
+						boutonPrincipal: accueil.hero.boutonPrincipalLabel
+							? { label: accueil.hero.boutonPrincipalLabel, href: resolvePageHref(accueil.hero.boutonPrincipalLien) }
+							: undefined,
+						boutonSecondaire: accueil.hero.boutonSecondaireLabel
+							? {
+									label: accueil.hero.boutonSecondaireLabel,
+									href: resolvePageHref(accueil.hero.boutonSecondaireLien)
+								}
+							: undefined
+					}
+				: null,
+			quickAccessItems: (accueil.quickAccessItems ?? []).map((it, i) => ({
+				key: String(i),
+				icon: it.icone ?? 'HelpCircle',
+				title: it.titre,
+				desc: it.description,
+				href: resolvePageHref(it.lien) ?? '#'
+			})),
+			mayorWord: accueil.mayorWord
+				? {
+						image: uploadUrl(accueil.mayorWord.image),
+						citation: accueil.mayorWord.citation,
+						nomSignataire: accueil.mayorWord.nomSignataire,
+						statNombre: accueil.mayorWord.statNombre,
+						statLibelle: accueil.mayorWord.statLibelle
+					}
+				: null,
+			discoverCards: (accueil.discoverCards ?? []).map((c, i) => {
+				const poiId = typeof c.lienPoi === 'object' ? c.lienPoi?.id : undefined;
+				const sentierId = typeof c.lienSentier === 'object' ? c.lienSentier?.id : undefined;
+				const id = poiId ?? sentierId;
+				return {
+					key: String(i),
+					etiquette: c.etiquette,
+					titre: c.titre,
+					description: c.description,
+					image: uploadUrl(c.image),
+					href: id ? `/tourisme/carte-interactive?id=${id}` : '/tourisme/carte-interactive'
+				};
+			}),
+			cta: accueil.cta
+				? {
+						titre: accueil.cta.titre,
+						description: accueil.cta.description,
+						boutonLabel: accueil.cta.boutonLabel,
+						contacts: mapContacts(accueil.cta.coordonnees)
+					}
+				: null
+		};
+	} catch (err) {
+		console.warn('[payload] getAccueilData() : base injoignable, repli sur les données statiques.', err);
+		return null;
+	}
+}
+
+// Décision 16/36 — bloc Actus de l'Accueil : 3 dernières par défaut, la plus
+// récente actu épinglée passe en premier si il y en a une (ou plusieurs).
+export function pickHomeActus<T extends { date: string; epinglee?: boolean }>(items: T[], count = 3): T[] {
+	const sorted = [...items].sort((a, b) => b.date.localeCompare(a.date));
+	const pinned = sorted.filter((i) => i.epinglee).sort((a, b) => b.date.localeCompare(a.date))[0];
+	if (!pinned) return sorted.slice(0, count);
+	const rest = sorted.filter((i) => i !== pinned).slice(0, count - 1);
+	return [pinned, ...rest];
 }
 
 // Décision 14 — un champ `relationship` vers `pages` doit être résolu en

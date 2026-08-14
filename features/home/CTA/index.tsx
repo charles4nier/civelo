@@ -1,76 +1,51 @@
 import { Mail, MapPin, Phone } from 'lucide-react';
+import type { ContactItem } from '@shared/components/ContactCard';
 import './style.scss';
 
 const CLASS_NAME = 'cta';
 
-const contacts = [
-	{
-		icon: MapPin,
-		label: 'Adresse',
-		value: 'Le Bourg, 87260 Saint-Hilaire-Bonneval'
-	},
-	{ icon: Phone, label: 'Téléphone', value: '05 55 00 61 65' },
-	{ icon: Mail, label: 'Email', value: 'contact@saint-hilaire-bonneval.fr' }
-];
+const ICONS = { address: MapPin, phone: Phone, email: Mail, hours: Phone } as const;
+const LABELS = { address: 'Adresse', phone: 'Téléphone', email: 'Email', hours: 'Horaires' } as const;
 
-export default function CTA() {
+export type CTAData = {
+	titre?: string;
+	description?: string;
+	boutonLabel?: string;
+	contacts: ContactItem[];
+};
+
+type Props = { data: CTAData };
+
+export default function CTA({ data }: Props) {
 	return (
 		<section id="contact" className={CLASS_NAME}>
 			<div className="container">
 				<div className={`${CLASS_NAME}__card`}>
-					<div
-						className={`${CLASS_NAME}__blob ${CLASS_NAME}__blob--top`}
-					/>
-					<div
-						className={`${CLASS_NAME}__blob ${CLASS_NAME}__blob--bottom`}
-					/>
+					<div className={`${CLASS_NAME}__blob ${CLASS_NAME}__blob--top`} />
+					<div className={`${CLASS_NAME}__blob ${CLASS_NAME}__blob--bottom`} />
 
 					<div className={`${CLASS_NAME}__grid`}>
 						<div className={`${CLASS_NAME}__intro`}>
-							<p className={`${CLASS_NAME}__eyebrow`}>
-								Mairie de Saint-Hilaire-Bonneval
-							</p>
-							<h2 className={`${CLASS_NAME}__title`}>
-								Nous contacter
-							</h2>
+							<p className={`${CLASS_NAME}__eyebrow`}>Mairie de Saint-Hilaire-Bonneval</p>
+							<h2 className={`${CLASS_NAME}__title`}>{data.titre ?? 'Nous contacter'}</h2>
 							<div className={`${CLASS_NAME}__divider`} />
-							<p className={`${CLASS_NAME}__desc`}>
-								La mairie vous accueille du lundi au vendredi,
-								de 9h à 12h et de 14h à 17h. Le secrétariat
-								reste à votre disposition pour toute démarche.
-							</p>
+							{data.description && <p className={`${CLASS_NAME}__desc`}>{data.description}</p>}
 							<a href="/contact" className={`${CLASS_NAME}__btn`}>
-								Prendre rendez-vous
+								{data.boutonLabel ?? 'Prendre rendez-vous'}
 							</a>
 						</div>
 
 						<div className={`${CLASS_NAME}__contacts`}>
-							{contacts.map((c) => {
-								const Icon = c.icon;
+							{data.contacts.map((c, i) => {
+								const Icon = ICONS[c.type];
 								return (
-									<div
-										key={c.label}
-										className={`${CLASS_NAME}__contact-item`}
-									>
-										<div
-											className={`${CLASS_NAME}__contact-icon`}
-										>
-											<Icon
-												size={20}
-												aria-hidden="true"
-											/>
+									<div key={i} className={`${CLASS_NAME}__contact-item`}>
+										<div className={`${CLASS_NAME}__contact-icon`}>
+											<Icon size={20} aria-hidden="true" />
 										</div>
 										<div>
-											<div
-												className={`${CLASS_NAME}__contact-label`}
-											>
-												{c.label}
-											</div>
-											<div
-												className={`${CLASS_NAME}__contact-value`}
-											>
-												{c.value}
-											</div>
+											<div className={`${CLASS_NAME}__contact-label`}>{LABELS[c.type]}</div>
+											<div className={`${CLASS_NAME}__contact-value`}>{c.value}</div>
 										</div>
 									</div>
 								);

@@ -16,7 +16,7 @@ import 'leaflet/dist/leaflet.css';
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css';
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.Default.css';
 import { Plus, Minus, SlidersHorizontal, ChevronDown } from 'lucide-react';
-import { pois, sentiers } from './data';
+import type { POI, Sentier } from './data';
 import './style.scss';
 
 const TILES = {
@@ -116,10 +116,14 @@ function MapControls() {
 
 function FlyTo({
 	id,
-	markersRef
+	markersRef,
+	pois,
+	sentiers
 }: {
 	id?: string;
 	markersRef: React.RefObject<Map<string, L.Marker>>;
+	pois: POI[];
+	sentiers: Sentier[];
 }) {
 	const map = useMap();
 	useEffect(() => {
@@ -139,7 +143,7 @@ function FlyTo({
 			);
 			map.fitBounds(bounds, { padding: [60, 60], animate: true });
 		}
-	}, [id, map, markersRef]);
+	}, [id, map, markersRef, pois, sentiers]);
 	return null;
 }
 
@@ -164,12 +168,12 @@ type FilterState = {
 	'site-visite': boolean;
 	sentier: boolean;
 };
-type Props = { initialId?: string };
+type Props = { initialId?: string; pois: POI[]; sentiers: Sentier[] };
 
 const SHEET_MIN = 80; // handle + filtre header collapsed
 const SHEET_MAX = 0.48; // 48vh = hauteur CSS initiale du sheet
 
-export default function MapClient({ initialId }: Props) {
+export default function MapClient({ initialId, pois, sentiers }: Props) {
 	const [filters, setFilters] = useState<FilterState>({
 		hebergement: true,
 		'site-visite': true,
@@ -380,7 +384,7 @@ export default function MapClient({ initialId }: Props) {
 				attribution={TILES.plan.attribution}
 				maxZoom={TILES.plan.maxZoom}
 			/>
-			<FlyTo id={selectedId} markersRef={markerRefs} />
+			<FlyTo id={selectedId} markersRef={markerRefs} pois={pois} sentiers={sentiers} />
 			<FitCommune geoJSON={communeGeoJSON} skip={!!initialId} />
 			<MapResizer trigger={sheetHeight} />
 			<MapControls />

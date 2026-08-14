@@ -408,6 +408,62 @@ Points notables :
 
 Typecheck, build et vérification par `curl` sur les 5 pages (contenu réel présent dans le HTML rendu) validés.
 
+### 38. Item 13 (phase 5) — Trombinoscope, Catalogue de lieux, Contact, Numéros utiles branchés, 3 schémas étoffés en le faisant
+
+Même pattern que décision 37, mais trois gabarits avaient un schéma plus pauvre que leur contenu réel — écart repéré en implémentant, pas anticipé :
+
+- **Trombinoscope** : `membres` n'avait aucun moyen de distinguer Maire / Adjoint / Conseiller délégué / Conseiller municipal (juste `fonction` en texte libre), et pas de champ `commissions` alors que le contenu réel en a systématiquement. Ajouté : `role` (select, discriminant explicite plutôt que deviner depuis le texte de `fonction`), `commissions` (liste répétable), `note` (texte libre, ex. "Président de toutes les commissions").
+- **Catalogue de lieux** (`salles`) : le schéma minimal de décision 7 (`tarifs: [{public, prix}]`) ne portait ni groupes de tarifs (Manifestations / Vins d'honneur / Location / Cautions), ni caution par ligne, ni notes/consignes par salle — tout ça existe dans le contenu réel de Location de salles. Ajouté : `icone` (verrouillé par salle), `groupesTarifs` (groupe → lignes avec `public`/`prix`/`caution`), `notes` (texte + `type`: info/condition, pour distinguer "Assurance obligatoire" d'un encart neutre et "Traiteur obligatoire" d'une consigne mise en avant). `scripts/seed.ts` réécrit avec la structure correcte (la caution n'est plus repliée dans le texte du prix).
+- **Contact** (`coordonnees`) : chaque coordonnée s'affiche comme une fiche (`ContactCard`) avec icône + catégorie + description, pas juste une ligne type/valeur. Icône/catégorie sont **dérivées de `type`** (phone→Phone/"Par téléphone", etc. — pas de nouveau champ, évite la redondance) ; seul `description` (texte libre, ex. horaires du standard) a été ajouté, c'est la seule info qui n'existait nulle part ailleurs.
+- **Numéros utiles** : aucun écart, schéma déjà complet (décision 22/23) — juste branché.
+
+Composants créés : `TrombinoscopeLayout`, `CatalogueLieuxLayout`, `ContactLayout`, `NumerosUtilesLayout`. Fonctions `lib/payload.ts` : `getTrombinoscopeData`, `getCatalogueLieuxItems`, `getContactData`, `getNumerosUtilesData`. Repli statique partout, même garde-fou que le reste.
+
+Typecheck, build et vérification par `curl` (contenu réel dans le HTML rendu) validés sur les 4 pages.
+
+### 39. Item 13 (phase 5) — Horaires et Carte interactive branchés
+
+**Horaires** : aucun écart de schéma (décision 23 déjà complet). `HorairesLayout` créé, `getHorairesData()` reconstruit les 7 jours depuis les champs fixes (`horaires.lundi.matin`, etc.), `contactsPratiques` mappé vers des `ContactCard` — variante de couleur non stockée en base, attribuée par rotation sur une petite palette faute de champ dédié (mineur, cosmétique).
+
+**Carte interactive** : cas particulier — `features/carte/MapClient.tsx` est un Client Component chargé via `dynamic(..., { ssr: false })`, qui ne peut PAS faire d'appel Payload lui-même (pas de fetch serveur dans un Client Component, et `ssr:false` interdit dans un Server Component sous Next 15 — décision 26). `pois`/`sentiers` importaient directement `./data` en dur.
+
+**Résolu** : `pois`/`sentiers` sont remontés en props, de haut en bas — `app/tourisme/carte-interactive/page.tsx` (Server Component, déjà `async`) appelle `getCarteData()` (nouvelle fonction, interroge les collections `pois`/`sentiers`, décision 23) et passe le résultat (ou le repli statique) à `CarteInteractive`, qui les repasse tel quel à `MapClient`. Aucun changement dans la logique Leaflet elle-même.
+
+Vérification limitée pour cette page : `MapClient` étant rendu uniquement côté client (`ssr:false`), son contenu n'apparaît pas dans le HTML servi par `curl` — le typecheck, le build, et le code de threading des props (purement mécanique) donnent une confiance raisonnable, mais un test visuel réel en navigateur reste à faire avant mise en prod.
+
+### 40. Item 13 (phase 5) — Accueil branché, dernier des 12 gabarits/cartes
+
+Contrairement aux autres gabarits, Accueil reste organisé en 6 sous-composants existants (`features/home/{Hero,QuickAccess,News,MayorWord,Discover,CTA}`) plutôt que d'être déplacé vers un `shared/components/AccueilLayout` unique : étant un singleton (décision 9), il n'y a aucun bénéfice de réutilisation à en tirer (contrairement à Annuaire/Agenda/etc. potentiellement réutilisés sur plusieurs pages) — un wrapper supplémentaire aurait été de l'indirection sans raison. `features/home/index.tsx` devient le point d'orchestration `async`, chaque sous-composant devient pur (props uniquement, plus d'import de données statiques en dur).
+
+Points notables :
+- **Recherche par `gabarit`, pas par `slug`** (`getAccueilData()`) : un singleton est garanti unique par gabarit (décision 9), pas besoin de connaître son slug exact pour le trouver — anticipe le même choix pour le routage générique (item 14).
+- **Bloc Actus** : `pickHomeActus()` (nouvelle fonction pure dans `lib/payload.ts`) implémente la règle décidée (décision 16/36) — 3 dernières actus par défaut, la plus récente **parmi celles épinglées** passe en premier si il y en a une ou plusieurs.
+- **Bloc agenda de QuickAccess** : calcule le prochain événement à partir des vraies données Agenda (`getAgendaItems`), avec repli sur `@features/agenda/data` si Payload est injoignable — **bug trouvé et corrigé en testant** : la première version oubliait ce repli, la bande agenda disparaissait silencieusement sans base connectée (repéré par le test `curl`, pas deviné).
+- **Bloc Découvrir** : `lienPoi`/`lienSentier` (relations vers les collections `pois`/`sentiers`, décision 23) résolues en `/tourisme/carte-interactive?id=<id>`.
+- Simplifications mineures assumées, cohérentes avec celles déjà faites ailleurs : le titre du Hero perd son `<span>` de mise en avant inline (texte simple en base) ; les couleurs des 3 tuiles QuickAccess et l'icône par carte Catalogue de lieux ne sont pas des champs dédiés, attribuées par rotation d'index.
+
+Typecheck, build et vérification par `curl` (contenu réel + agenda dynamique + repli agenda testés) validés. **Phase 5, item 13 : terminé — les 12 gabarits/cartes sont tous branchés sur Payload.**
+
+### 41. Item 14 (phase 5) — route générique `app/[...slug]/page.tsx`
+
+Recadrage important en l'implémentant, par rapport à la formulation initiale de l'item 14 ("remplace les fichiers de route statiques un par un") : Next.js privilégie toujours une route plus spécifique sur un catch-all, donc **les 17 fichiers de route statiques existants n'ont pas besoin d'être supprimés pour que ça marche** — ils continuent de gérer leurs URL exactement comme avant, inchangés. Le vrai rôle de cette route générique, concrètement démontré par le fil de discussion qui a mené à l'item 14 ("j'admets que je crée une page, comment ça se répercute ?") : **rendre visible une page créée depuis l'admin qui n'a pas de fichier de route dédié** — c'est le cas qui n'avait aucune réponse jusqu'ici.
+
+Mécanique : lit `slug`, va chercher la page via `getPageBySlug` (item 12, jusqu'ici écrite mais jamais appelée — corrigée au passage : elle plantait si Payload était injoignable, pas de `try/catch` comme le reste de `lib/payload.ts`), puis dispatch sur `gabarit` (et `liste.layoutType` pour le gabarit Liste) vers le composant `XxxLayout` correspondant, en rappelant la fonction `getXxxItems`/`getXxxData` déjà existante avec le `slug` réel — même fonctions que celles utilisées par les wrappers `features/*/index.tsx`, pas de nouvelle couche de données.
+
+**Gabarits singleton (Accueil, Horaires, Carte interactive) volontairement absents du dispatch** : une seule instance possible par gabarit (décision 9), URL fixe déjà servie par une route dédiée — aucune situation où le catch-all aurait à en gérer une nouvelle occurrence.
+
+**Pas de repli statique** dans cette route, à la différence de tout le reste du projet : une page purement dynamique n'a par construction aucun fichier en dur vers lequel se replier. Base injoignable ou page absente → `notFound()` (404), pas un plantage.
+
+**Coût accepté** : double appel Payload pour la même page (`getPageBySlug` d'abord pour connaître le gabarit, puis `getXxxItems`/`getXxxData` qui refait sa propre recherche par slug) — accepté sciemment plutôt que de refactorer les fonctions existantes pour accepter un document déjà chargé ; coût négligeable pour un site de cette taille, la simplicité de garder chaque fonction autonome l'emporte.
+
+**Nouveau, pas encore démontré ailleurs** : rendu du gabarit Éditorial depuis de vraies données Payload (`editorial.sections`, blocks `texte`/`image`) — jusqu'ici Histoire/La commune restent 100% statiques avec du contenu Lorem ipsum. Le rendu générique perd la mise en page sur-mesure de ces deux pages (cartes, sections stylées) au profit d'un rendu neutre (RichText + image pleine largeur) — attendu, cohérent avec la logique déjà actée (décision 20 : le template de base reste générique, le sur-mesure vit dans le code par commune).
+
+Pas de `generateStaticParams()` : les pages purement dynamiques n'existent qu'après création dans l'admin, impossible de les connaître au moment du build sans base connectée (contrainte déjà posée, item 5). Cette route reste donc rendue à la demande (`ƒ` dans la sortie de build), pas prégénérée — écart de perf mineur assumé, cohérent avec `/tourisme/carte-interactive` déjà dans ce cas pour la même raison (`searchParams`).
+
+Vérifié : `curl /demarches` sert toujours la route statique (200, inchangé) ; `curl` sur un slug inexistant traverse le catch-all et répond 404 proprement (base injoignable en local) plutôt que de planter. Typecheck et build validés.
+
+**Phase 5 terminée.** Les 12 gabarits/cartes sont branchés sur Payload (item 13) et une page créée depuis l'admin sans fichier de route dédié est désormais servable (item 14).
+
 ## Catalogue des gabarits (état actuel)
 
 | Gabarit | Type | Pages actuelles | Notes |
@@ -457,9 +513,9 @@ Phase 3 terminée.
 12. Menu dynamique ~~fait~~ (décision 33). Relations résolues au rendu (`resolvePageHref`, décision 14) : écrites, pas encore consommées — aucune page branchée n'a de champ `relationship` en jeu pour l'instant
 
 **Phase 5 — Routage dynamique** (identifiée en discutant)
-13. Extraire les 12 gabarits/cartes restants en composants réutilisables (même travail que celui déjà fait pour `AnnuaireLayout`/`EditorialLayout`) : ~~Démarches, Actualités, Document, Budget/Projet, Agenda (les 5 cartes de Liste restantes)~~ — fait, décision 37. Restent : Trombinoscope, Catalogue de lieux, Contact, Numéros utiles, Horaires, Carte interactive, Accueil
-14. Route générique `app/[...slug]/page.tsx` — lit `slug`/`gabarit`/`liste.layoutType` depuis Payload, dispatch vers le bon composant `XxxLayout` (tableau de correspondance), remplace les fichiers de route statiques un par un une fois chaque équivalent dynamique vérifié. Utilise `generateStaticParams()` pour garder le rendu statique (pas de perte de perf). Même pattern repli-si-Payload-indisponible que le reste.
-15. Corriger le `slug: '/'` de l'Accueil dans `scripts/seed.ts` (bug repéré en discutant du routage — `/${page.slug}` donnerait `//`)
+13. ~~Extraire les 12 gabarits/cartes restants en composants réutilisables~~ — fait (décisions 37, 38, 39, 40)
+14. ~~Route générique `app/[...slug]/page.tsx`~~ — fait, décision 41 (sert les pages sans route statique dédiée ; les 17 routes existantes restent inchangées, Next.js les priorise automatiquement)
+15. ~~Corriger le `slug: '/'` de l'Accueil dans `scripts/seed.ts`~~ — fait en début de cette session (slug devenu `'accueil'`, `menu` manquant ajouté au passage)
 
 Phase 1 conditionne tout le reste — c'est par elle qu'on continue.
 

@@ -1,40 +1,27 @@
 import Link from 'next/link';
-import {
-	FileText,
-	Gavel,
-	Phone,
-	ArrowUpRight,
-	CalendarDays,
-	ArrowRight
-} from 'lucide-react';
-import { events } from '@features/agenda/data';
+import { ArrowUpRight, CalendarDays, ArrowRight } from 'lucide-react';
+import { LucideIconByName } from '@shared/lib/icons';
 import './style.scss';
 
 const CLASS_NAME = 'quick-access';
 
-const items = [
-	{
-		icon: FileText,
-		title: 'Démarches administratives',
-		desc: 'État civil, urbanisme, demandes en quelques clics.',
-		mod: 'primary',
-		href: '/demarches'
-	},
-	{
-		icon: Gavel,
-		title: 'Délibérations & Actes',
-		desc: 'Comptes-rendus du conseil municipal et arrêtés.',
-		mod: 'coral',
-		href: '/mairie/publications'
-	},
-	{
-		icon: Phone,
-		title: 'Services & Urgences',
-		desc: 'Numéros utiles et services publics à proximité.',
-		mod: 'leaf',
-		href: '/numeros-utiles'
-	}
-] as const;
+export type QuickAccessItemData = {
+	key: string;
+	icon: string;
+	title: string;
+	desc?: string;
+	href: string;
+};
+
+export type NextEventData = {
+	title: string;
+	date: string; // ISO
+};
+
+type Props = {
+	items: QuickAccessItemData[];
+	nextEvent?: NextEventData | null;
+};
 
 const monthShort = [
 	'JANV.',
@@ -51,11 +38,7 @@ const monthShort = [
 	'DÉC.'
 ];
 
-export default function QuickAccess() {
-	const today = new Date(new Date().toDateString());
-	const nextEvent = events
-		.filter((e) => new Date(e.date) >= today)
-		.sort((a, b) => a.date.localeCompare(b.date))[0];
+export default function QuickAccess({ items, nextEvent }: Props) {
 	const nextEventDate = nextEvent ? new Date(nextEvent.date) : null;
 
 	return (
@@ -65,41 +48,21 @@ export default function QuickAccess() {
 					<div className={`${CLASS_NAME}__header`}>
 						<div>
 							<p className="eyebrow">Services en ligne</p>
-							<h2 className={`${CLASS_NAME}__title`}>
-								L'essentiel en un clic
-							</h2>
+							<h2 className={`${CLASS_NAME}__title`}>L'essentiel en un clic</h2>
 						</div>
 					</div>
 
 					<div className={`${CLASS_NAME}__grid`}>
-						{items.map((item) => {
-							const Icon = item.icon;
+						{items.map((item, i) => {
+							const mod = ['primary', 'coral', 'leaf'][i % 3];
 							return (
-								<a
-									key={item.title}
-									href={item.href}
-									className={`${CLASS_NAME}__item`}
-								>
-									<div
-										className={`${CLASS_NAME}__item-icon ${CLASS_NAME}__item-icon--${item.mod}`}
-									>
-										<Icon
-											size={20}
-											strokeWidth={2}
-											aria-hidden="true"
-										/>
+								<a key={item.key} href={item.href} className={`${CLASS_NAME}__item`}>
+									<div className={`${CLASS_NAME}__item-icon ${CLASS_NAME}__item-icon--${mod}`}>
+										<LucideIconByName name={item.icon} size={20} strokeWidth={2} aria-hidden="true" />
 									</div>
-									<h3 className={`${CLASS_NAME}__item-title`}>
-										{item.title}
-									</h3>
-									<p className={`${CLASS_NAME}__item-desc`}>
-										{item.desc}
-									</p>
-									<ArrowUpRight
-										size={16}
-										className={`${CLASS_NAME}__item-arrow`}
-										aria-hidden="true"
-									/>
+									<h3 className={`${CLASS_NAME}__item-title`}>{item.title}</h3>
+									{item.desc && <p className={`${CLASS_NAME}__item-desc`}>{item.desc}</p>}
+									<ArrowUpRight size={16} className={`${CLASS_NAME}__item-arrow`} aria-hidden="true" />
 								</a>
 							);
 						})}
@@ -108,33 +71,19 @@ export default function QuickAccess() {
 					{nextEvent && nextEventDate && (
 						<div className={`${CLASS_NAME}__agenda`}>
 							<div className={`${CLASS_NAME}__agenda-date`}>
-								<span
-									className={`${CLASS_NAME}__agenda-date-day`}
-								>
-									{nextEventDate.getDate()}
-								</span>
-								<span
-									className={`${CLASS_NAME}__agenda-date-month`}
-								>
+								<span className={`${CLASS_NAME}__agenda-date-day`}>{nextEventDate.getDate()}</span>
+								<span className={`${CLASS_NAME}__agenda-date-month`}>
 									{monthShort[nextEventDate.getMonth()]}
 								</span>
 							</div>
 							<div className={`${CLASS_NAME}__agenda-body`}>
 								<p className={`${CLASS_NAME}__agenda-eyebrow`}>
-									<CalendarDays
-										size={14}
-										aria-hidden="true"
-									/>
+									<CalendarDays size={14} aria-hidden="true" />
 									Prochain rendez-vous
 								</p>
-								<p className={`${CLASS_NAME}__agenda-title`}>
-									{nextEvent.title}
-								</p>
+								<p className={`${CLASS_NAME}__agenda-title`}>{nextEvent.title}</p>
 							</div>
-							<Link
-								href="/agenda"
-								className={`${CLASS_NAME}__agenda-link`}
-							>
+							<Link href="/agenda" className={`${CLASS_NAME}__agenda-link`}>
 								Voir l&rsquo;agenda
 								<ArrowRight size={16} aria-hidden="true" />
 							</Link>

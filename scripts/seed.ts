@@ -474,8 +474,8 @@ function formatFonction(e: { role: string; commissions?: string[] }) {
 async function seedCatalogueLieux(payload: Awaited<ReturnType<typeof getPayload>>) {
 	// Retranscrit à la main (pas de data.ts source, contenu JSX à structure
 	// tabulaire simple — faible risque contrairement aux pages tout-prose).
-	// Simplification assumée : la caution est foldée dans `prix` en texte,
-	// le schéma actuel n'a pas de champ caution dédié.
+	// Schéma étoffé en décision 38 (groupesTarifs + notes + caution dédiée) :
+	// plus besoin de replier la caution dans le texte du prix.
 	await payload.create({
 		collection: 'pages',
 		data: {
@@ -488,19 +488,59 @@ async function seedCatalogueLieux(payload: Awaited<ReturnType<typeof getPayload>
 					{
 						nom: 'Salle polyvalente',
 						description: 'Location à caractère associatif ou familial.',
-						tarifs: [
-							{ public: 'Associations de la commune (manifestations)', prix: 'Gratuit — caution 160 €' },
-							{ public: 'Habitants de la commune (manifestations)', prix: '260 € — caution 260 €' },
-							{ public: 'Personnes extérieures (manifestations)', prix: '350 € — caution 350 €' },
-							{ public: 'Habitants de la commune (vin d’honneur)', prix: '110 € — caution 250 €' },
-							{ public: 'Personnes extérieures (vin d’honneur)', prix: '160 € — caution 350 €' }
+						icone: 'Building2',
+						groupesTarifs: [
+							{
+								label: 'Manifestations',
+								lignes: [
+									{ public: 'Associations de la commune', prix: 'Gratuit', caution: 'Caution 160 €' },
+									{ public: 'Habitants de la commune', prix: '260 €', caution: 'Caution 260 €' },
+									{ public: 'Personnes extérieures', prix: '350 €', caution: 'Caution 350 €' }
+								]
+							},
+							{
+								label: "Vins d'honneur",
+								lignes: [
+									{ public: 'Habitants de la commune', prix: '110 €', caution: 'Caution 250 €' },
+									{ public: 'Personnes extérieures', prix: '160 €', caution: 'Caution 350 €' }
+								]
+							}
+						],
+						notes: [
+							{
+								texte: 'Assurance obligatoire · État des lieux avant et après utilisation',
+								type: 'info'
+							}
 						]
 					},
 					{
 						nom: 'Salle du restaurant scolaire',
 						description:
-							'Disponible uniquement le week-end pour les associations et particuliers, pour des manifestations à caractère familial ou associatif. Traiteur obligatoire.',
-						tarifs: [{ public: 'Habitants de la commune', prix: '650 €' }]
+							'Disponible uniquement le week-end pour les associations et particuliers, pour des manifestations à caractère familial ou associatif.',
+						icone: 'UtensilsCrossed',
+						groupesTarifs: [
+							{
+								label: 'Location',
+								lignes: [
+									{ public: 'Habitants de la commune', prix: '650 €', caution: '+ cautions' },
+									{ public: 'Personnes extérieures', prix: '750 €', caution: '+ cautions' }
+								]
+							},
+							{
+								label: 'Cautions',
+								lignes: [
+									{ public: 'Dégradation des locaux ou du matériel', prix: '1 000 €' },
+									{ public: 'Nettoyage insuffisant ou mobilier non remis en place', prix: '120 €' }
+								]
+							}
+						],
+						notes: [
+							{
+								texte:
+									'Traiteur obligatoire — lui seul et son personnel sont autorisés à utiliser le réfrigérateur, le four, la cuisinière à gaz et le lave-vaisselle.',
+								type: 'condition'
+							}
+						]
 					}
 				]
 			}
