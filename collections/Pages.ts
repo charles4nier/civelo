@@ -247,26 +247,9 @@ export const Pages: CollectionConfig = {
 					]
 				},
 
-				// layoutType "actualites"
-				{
-					name: 'itemsActualites',
-					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'actualites' },
-					fields: [
-						{ name: 'titre', type: 'text', required: true },
-						categoryField(),
-						{ name: 'date', type: 'date', required: true },
-						{ name: 'extrait', type: 'textarea', required: true },
-						{
-							name: 'lienDocument',
-							type: 'relationship',
-							relationTo: 'pages',
-							admin: {
-								description: 'Optionnel — remplace "Lire la suite" par "Voir le document"'
-							}
-						}
-					]
-				},
+				// layoutType "actualites" — les items vivent dans leur propre
+				// collection `actualites` (décision 35), pas ici, pour rester
+				// relatables (épinglage sur l'Accueil, décision 16).
 
 				// layoutType "document"
 				{
@@ -520,19 +503,11 @@ export const Pages: CollectionConfig = {
 				},
 				{
 					// Décision 16 — épinglage optionnel d'une actu précise.
-					// LIMITE CONNUE : les actus vivent en `array` dans une page
-					// Liste (pas leur propre collection), donc pas relatables par un
-					// vrai champ `relationship` Payload. Solution de repli en texte
-					// libre pour l'instant — à retrancher si les actus deviennent un
-					// jour leur propre collection (même tension que pois/sentiers,
-					// décision 23, non résolue ici faute de trancher entre
-					// réordonnancement natif par array et relation propre).
+					// Vraie relation Payload depuis que les actus vivent dans leur
+					// propre collection `actualites` (décision 35).
 					name: 'actuEpinglee',
-					type: 'text',
-					admin: {
-						description:
-							"Titre exact de l'actu à épingler (limitation technique, voir commentaire du code)"
-					}
+					type: 'relationship',
+					relationTo: 'actualites'
 				},
 				{
 					name: 'mayorWord',
