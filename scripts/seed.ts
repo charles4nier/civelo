@@ -305,25 +305,21 @@ async function seedActualites(payload: Awaited<ReturnType<typeof getPayload>>) {
 		categories[nom] = String(cat.id);
 	}
 
-	// Décision 35 — les actus vivent dans leur propre collection, pas dans un
-	// `array` de la page (permet l'épinglage sur l'Accueil, décision 16).
-	for (const a of articles) {
-		await payload.create({
-			collection: 'actualites',
-			data: {
-				page: page.id,
-				titre: a.title,
-				categorie: categories[a.cat],
-				date: toISODate(a.date),
-				extrait: a.excerpt
-				// `lienDocument` (décision 14) : les entrées `type: 'document'`
-				// pointaient vers `/mairie/publications` en dur — non repris ici, la
-				// relation doit cibler un document précis une fois `documents`
-				// seedée, pas juste la page. À faire manuellement pour les 1-2
-				// entrées concernées.
-			}
-		});
-	}
+	// Décision 36 (annule décision 35) — les actus vivent dans un `array` de
+	// la page, comme les autres layoutType.
+	const itemsActualites = articles.map((a) => ({
+		titre: a.title,
+		categorie: categories[a.cat],
+		date: toISODate(a.date),
+		extrait: a.excerpt
+		// `lienDocument` (décision 14) : les entrées `type: 'document'`
+		// pointaient vers `/mairie/publications` en dur — non repris ici, la
+		// relation doit cibler un document précis une fois `documents`
+		// seedée, pas juste la page. À faire manuellement pour les 1-2
+		// entrées concernées.
+	}));
+
+	await payload.update({ collection: 'pages', id: page.id, data: { liste: { itemsActualites } } });
 }
 
 // ---------------------------------------------------------------------------
@@ -573,7 +569,11 @@ async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
 	});
 	await payload.create({
 		collection: 'pages',
-		data: { title: 'Accueil', slug: '/', gabarit: 'accueil' }
+		// slug 'accueil' (pas '/') — `menu` obligatoire même pour l'Accueil (décision
+		// 2/3, pas de cas particulier), assigné à 'essentiel' faute de section
+		// pertinente ; la résolution slug→href ('/') se fera au niveau du routage
+		// (item 14), pas ici.
+		data: { title: 'Accueil', slug: 'accueil', menu: 'essentiel', gabarit: 'accueil' }
 	});
 	await payload.create({
 		collection: 'pages',

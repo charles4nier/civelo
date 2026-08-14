@@ -247,9 +247,40 @@ export const Pages: CollectionConfig = {
 					]
 				},
 
-				// layoutType "actualites" — les items vivent dans leur propre
-				// collection `actualites` (décision 35), pas ici, pour rester
-				// relatables (épinglage sur l'Accueil, décision 16).
+				// layoutType "actualites" — retour à un `array` (décision 36,
+				// annule décision 35) : les items restent ici, comme tous les
+				// autres layoutType, pour garder un modèle éditeur unique
+				// ("j'ouvre la page, je gère son contenu dedans"). L'épinglage
+				// (décision 16) se fait item par item via `epinglee`, pas via
+				// une relation Payload séparée.
+				{
+					name: 'itemsActualites',
+					type: 'array',
+					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'actualites' },
+					fields: [
+						{ name: 'titre', type: 'text', required: true },
+						categoryField(),
+						{ name: 'date', type: 'date', required: true },
+						{ name: 'extrait', type: 'textarea', required: true },
+						{
+							name: 'epinglee',
+							type: 'checkbox',
+							defaultValue: false,
+							admin: {
+								description:
+									'Épingle cette actu sur l\'Accueil (décision 16). Si plusieurs actus sont épinglées, la plus récente ("date") est prioritaire.'
+							}
+						},
+						{
+							name: 'lienDocument',
+							type: 'relationship',
+							relationTo: 'pages',
+							admin: {
+								description: 'Optionnel — remplace "Lire la suite" par "Voir le document"'
+							}
+						}
+					]
+				},
 
 				// layoutType "document"
 				{
@@ -501,14 +532,11 @@ export const Pages: CollectionConfig = {
 						{ name: 'lien', type: 'relationship', relationTo: 'pages', required: true }
 					]
 				},
-				{
-					// Décision 16 — épinglage optionnel d'une actu précise.
-					// Vraie relation Payload depuis que les actus vivent dans leur
-					// propre collection `actualites` (décision 35).
-					name: 'actuEpinglee',
-					type: 'relationship',
-					relationTo: 'actualites'
-				},
+				// Décision 16/36 — pas de champ ici : l'épinglage vit sur chaque
+				// actu (`liste.itemsActualites[].epinglee`, page "Actualités").
+				// Au rendu, l'Accueil va chercher cette page et prend l'item
+				// épinglé le plus récent (ou les 3 dernières par défaut, sans
+				// épinglage).
 				{
 					name: 'mayorWord',
 					type: 'group',

@@ -1,6 +1,6 @@
 @import '@shared/styles/variables';
 
-$b: 'agenda';
+$b: 'actualites';
 
 /* ========================
    Hero
@@ -59,7 +59,13 @@ $b: 'agenda';
 	color: rgba(255, 255, 255, 0.8);
 	margin-bottom: $spacing-lg;
 
-	a:hover { color: #ffffff; }
+	a:hover {
+		color: #ffffff;
+	}
+
+	svg {
+		flex-shrink: 0;
+	}
 }
 
 .#{$b}__eyebrow {
@@ -98,7 +104,7 @@ $b: 'agenda';
 }
 
 /* ========================
-   Section
+   Section articles
    ======================== */
 
 .#{$b}__section {
@@ -134,141 +140,118 @@ $b: 'agenda';
 	margin-top: $spacing-md;
 }
 
-.#{$b}__body {
-	padding-bottom: $section-padding-y-desktop;
-}
-
 /* ========================
-   Liste d'événements
+   Grille d'articles
    ======================== */
 
-.#{$b}__list {
-	display: flex;
-	flex-direction: column;
-	gap: $spacing-md;
+.#{$b}__grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: $spacing-xl;
+
+	@media (min-width: $breakpoint-sm) {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media (min-width: $breakpoint-md) {
+		grid-template-columns: repeat(3, 1fr);
+	}
 }
 
-.#{$b}__event {
-	display: flex;
-	gap: $spacing-xl;
-	padding: $spacing-xl;
+.#{$b}__card {
 	background: #ffffff;
-	border: 1px solid $border;
+	padding: $spacing-xl;
+	display: flex;
+	flex-direction: column;
 	transition: $transition-smooth;
 
 	&:hover {
-		border-color: $primary;
 		box-shadow: $shadow-soft;
 	}
-
-	&--past {
-		opacity: 0.6;
-	}
 }
 
-.#{$b}__event-date {
-	flex-shrink: 0;
-	width: 68px;
-	height: 68px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	background: $primary-10;
-	color: $primary;
-}
-
-.#{$b}__event-day {
-	font-family: $font-display;
-	font-size: 24px;
-	font-weight: $font-weight-semibold;
-	line-height: 1;
-	font-variant-numeric: tabular-nums;
-}
-
-.#{$b}__event-month {
-	font-size: 10px;
-	font-weight: $font-weight-bold;
-	letter-spacing: 0.1em;
-	margin-top: 2px;
-}
-
-.#{$b}__event-body {
-	flex: 1;
-	min-width: 0;
-}
-
-.#{$b}__event-top {
+.#{$b}__card-top {
 	display: flex;
 	align-items: center;
-	gap: $spacing-sm;
-	margin-bottom: $spacing-sm;
-}
-
-.#{$b}__event-category {
-	font-size: 10px;
-	font-weight: $font-weight-bold;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	padding: 3px 9px;
-	border-radius: 999px;
-
-	&--primary { color: $primary; background: $primary-10; }
-	&--coral   { color: $coral;   background: $coral-15; }
-	&--leaf    { color: $leaf;    background: $leaf-15; }
-	&--muted   { color: $foreground; background: $secondary; }
-}
-
-.#{$b}__event-past-tag {
-	font-size: 10px;
-	font-weight: $font-weight-bold;
-	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	color: $muted-foreground;
-}
-
-.#{$b}__event-title {
-	font-family: $font-display;
-	font-size: 19px;
-	font-weight: $font-weight-semibold;
-	color: $foreground;
-	line-height: $line-height-snug;
-}
-
-.#{$b}__event-desc {
-	margin-top: $spacing-xs;
-	font-size: $small-size-desktop;
-	color: $muted-foreground;
-	line-height: $line-height-normal;
-}
-
-.#{$b}__event-meta {
-	display: flex;
+	justify-content: space-between;
+	gap: $spacing-md;
+	margin-bottom: $spacing-lg;
 	flex-wrap: wrap;
-	gap: $spacing-lg;
-	margin-top: $spacing-md;
-	font-size: 12.5px;
-	color: $muted-foreground;
+}
 
-	span {
-		display: inline-flex;
-		align-items: center;
-		gap: 5px;
-	}
+.#{$b}__card-cat {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 10px;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	padding: 4px 10px;
 
-	svg {
-		flex-shrink: 0;
+	&--primary {
+		background: $primary-10;
 		color: $primary;
 	}
+
+	&--leaf {
+		background: $leaf-15;
+		color: $leaf;
+	}
+
+	&--coral {
+		background: $coral-15;
+		color: $coral;
+	}
+
+	&--sunshine {
+		background: $sunshine-25;
+		color: $foreground-80;
+	}
+
+	&--muted {
+		background: $secondary;
+		color: $foreground;
+	}
 }
 
-/* ========================
-   État vide
-   ======================== */
-
-.#{$b}__empty {
-	padding: $spacing-5xl 0;
-	text-align: center;
+.#{$b}__card-date {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 11px;
 	color: $muted-foreground;
+	white-space: nowrap;
+}
+
+.#{$b}__card-title {
+	font-family: $font-display;
+	font-size: $h3-size-desktop;
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-snug;
+	color: $foreground;
+	margin-bottom: $spacing-md;
+}
+
+.#{$b}__card-excerpt {
+	flex: 1;
 	font-size: $small-size-desktop;
+	line-height: $line-height-relaxed;
+	color: $foreground-80;
+	margin-bottom: $spacing-xl;
+}
+
+.#{$b}__card-link {
+	display: inline-flex;
+	align-items: center;
+	gap: $spacing-sm;
+	font-size: $small-size-desktop;
+	font-weight: $font-weight-medium;
+	color: $primary;
+	margin-top: auto;
+	transition: gap 0.15s;
+
+	&:hover {
+		gap: $spacing-md;
+	}
 }

@@ -115,7 +115,9 @@ Aucune section ne peut être renommée, supprimée, ni une 5e ajoutée par l'éd
 
 ### 16. Bloc "Actus" de l'Accueil : les 3 dernières par défaut, épinglage manuel possible
 
-Par défaut, le bloc affiche les 3 actualités les plus récentes (calcul automatique). L'éditeur peut épingler une actu précise sur un emplacement à la place du calcul automatique — champ croisé optionnel (relation, voir décision 14) en plus du comportement par défaut.
+Par défaut, le bloc affiche les 3 actualités les plus récentes (calcul automatique). L'éditeur peut épingler une actu précise sur un emplacement à la place du calcul automatique.
+
+**Mécanisme concret (décision 36)** : pas un champ croisé sur l'Accueil — une case à cocher `epinglee` directement sur chaque actu (`liste.itemsActualites[].epinglee`, sur la page "Actualités"). Au rendu, l'Accueil va chercher cette page et prend l'item épinglé ; si plusieurs actus sont épinglées en même temps, la plus récente (champ `date` de l'actu) est prioritaire.
 
 ### 17. Le "prochain événement" est intégré à la carte "L'essentiel en un clic" (QuickAccess), pas un bloc séparé
 
@@ -177,6 +179,7 @@ Entre Postgres et MongoDB, **MongoDB retenu**, pour une raison directement liée
 
 **Actualités**
 - `titre`, `categorie` (select verrouillé), `date` (vrai champ date), `extrait` (texte)
+- `epinglee` (case à cocher, décision 16/36) — épingle cette actu sur l'Accueil
 - `lienDocument` (relation optionnelle vers une page — remplace le `href` en dur actuel, décision 14)
 - **Pas de page de détail** : une actu reste un extrait, jamais de contenu long ni de "lire la suite" (cohérent avec le retrait de ce lien sur la home et sur `/mairie/actualites`, tous deux corrigés faute de vraie destination)
 
@@ -368,17 +371,42 @@ Repéré en réfléchissant à la route générique (item futur) : le mot "carte
 
 Typecheck et build revalidés après renommage.
 
-### 35. Actualités sorties dans leur propre collection — épinglage (décision 16) enfin une vraie relation
+### 35. ~~Actualités sorties dans leur propre collection~~ — annulée, voir décision 36
 
 Tension identifiée en décision 27 (point 2) et laissée ouverte : `itemsActualites` vivait en `array` dans `pages.liste`, donc pas relatable, donc `actuEpinglee` (Accueil) devait se rabattre sur un champ texte (titre à faire correspondre à la main — fragile, pas une vraie relation).
 
-**Résolu** : nouvelle collection `collections/Actualites.ts`, même logique que `pois`/`sentiers` (décision 23) — chaque actu est un document, avec un champ `page` (relation vers `pages`) qui la rattache à sa page Liste. `actuEpinglee` devient un vrai `relationship: 'actualites'`.
+Solution tentée à l'époque : nouvelle collection `collections/Actualites.ts`, même logique que `pois`/`sentiers` (décision 23) — chaque actu comme document séparé, avec un champ `page` (relation vers `pages`) la rattachant à sa page Liste, `orderable: true` pour garder le glisser-déposer, `actuEpinglee` devenu un vrai `relationship: 'actualites'`.
 
-**Le réordonnancement par glisser-déposer n'est pas perdu** — c'est le point qui bloquait depuis le début (choisir entre array-donc-relatable-non ou collection-donc-array-non). Solution : `orderable: true` sur la collection `Actualites`, exactement le même mécanisme que celui déjà utilisé pour trier les pages du menu (décision 5/34, champ interne `_order`). Une collection Payload `orderable` peut être glissée-déposée dans l'admin au même titre qu'un `array` — les deux qualités (relatable + réordonnable) sont obtenues en même temps, pas l'une au prix de l'autre.
+**Revenue en arrière (décision 36)** : cassait le modèle éditeur unique ("j'ouvre une page, je gère son contenu dedans") sur lequel tout le reste du chantier est construit — Actualités devenait le seul layoutType à vivre hors de sa page, dans un onglet séparé du même nom que la page elle-même. Source réelle de confusion en pratique, pas juste théorique — voir décision 36.
 
-`scripts/seed.ts` mis à jour (`seedActualites` crée des documents `actualites` avec un `page` au lieu de mettre à jour `pages.liste.itemsActualites`). `payload.config.ts` enregistre la nouvelle collection. Typecheck et build revalidés.
+**Ce paragraphe est gardé pour la trace**, mais la collection `Actualites` n'existe plus dans le code.
 
-**Pas fait dans cette passe, par choix de périmètre** (la question portait spécifiquement sur les actus) : les 5 autres cartes (Démarches, Document, Budget/Projet, Agenda, et Annuaire) restent en `array` — rien ne les empêche de suivre le même chemin plus tard si un besoin de relation similaire apparaît, mais pas de raison de le faire préventivement pour l'instant (aucune n'a aujourd'hui de besoin d'épinglage/relation croisée comme les actus).
+### 36. Actualités réintégrées dans `pages.liste` — le modèle éditeur unique passait avant la relation Payload "propre"
+
+Malentendu identifié en discutant du parcours éditeur concret : depuis le début, le modèle attendu côté client est **un seul et même geste pour tout contenu de type Liste** — ouvrir la page dans l'onglet "Pages", et gérer son contenu directement dans son formulaire (un `array`), quel que soit le layoutType. C'est toujours vrai pour Démarches, Document, Budget/Projet, Agenda, Annuaire.
+
+La décision 35 avait cassé cette règle pour Actualités seulement, en la faisant vivre dans un onglet séparé du sidebar Payload, portant le même nom que la page "Actualités" elle-même (deux objets différents, même libellé, à deux endroits de l'écran) — repéré comme un vrai facteur de confusion en se projetant dans l'usage réel, pas un simple détail cosmétique.
+
+**Retour arrière complet** :
+- Collection `collections/Actualites.ts` supprimée, retirée de `payload.config.ts`.
+- `pages.liste.itemsActualites` redevient un `array`, structurellement identique aux autres layoutType (`titre`, `categorie`, `date`, `extrait`, `lienDocument`).
+- Champ `epinglee` (case à cocher) ajouté à chaque item — remplace la relation Payload `actuEpinglee` qui vivait sur l'Accueil. L'Accueil n'a plus de champ dédié : au rendu, il va chercher la page "Actualités" et lit son tableau.
+- **Règle de départage si plusieurs actus épinglées en même temps** (cas demandé explicitement) : la plus récente par `date` (le champ de publication de l'actu) l'emporte. Pas de champ de date de création dédié — un `array` Payload n'a pas d'horodatage par ligne, et le champ `date` déjà présent sur chaque actu porte la même information en pratique.
+- `scripts/seed.ts` : `seedActualites` revient au pattern `seedAgenda` (construit `itemsActualites`, un seul `payload.update` sur la page, plus de boucle `payload.create` par actu).
+- Glisser-déposer toujours natif au champ `array`, rien à perdre par rapport à décision 35 sur ce point.
+
+Typecheck revalidé après le retour arrière.
+
+### 37. Item 13 (phase 5) — 5 cartes Liste restantes extraites en composants réutilisables
+
+Agenda, Actualités, Document, Budget/Projet, Démarches suivent maintenant le même pattern qu'Annuaire (décision 33) : un composant `shared/components/XxxLayout` (Client Component, reçoit les données en props), et `features/xxx/index.tsx` devenu un Server Component `async` qui appelle une fonction dédiée de `lib/payload.ts` (`getAgendaItems`, `getActualitesItems`, `getDocumentItems`, `getBudgetProjetItems`, `getDemarchesItems`) avec repli sur les données statiques existantes si Payload est injoignable — même garde-fou que le reste (item 11/12).
+
+Points notables :
+- Les filtres par catégorie ne sont plus des unions TypeScript figées : les catégories viennent de la collection `categories` (dynamique, décision 10), `categorie.couleur` fournit directement la variante visuelle (plus de mapping en dur par nom de catégorie).
+- **Démarches** : `contenu` est un champ richText (Lexical), rendu via `<RichText data={...} />` de `@payloadcms/richtext-lexical/react`. `lib/payload.ts` reste une couche de données pures (ne retourne jamais de JSX) — c'est `features/demarches/index.tsx` (Server Component) qui enveloppe `contenu` dans `<RichText>` avant de le passer en prop au composant partagé, sous forme de `ReactNode` déjà résolu. Tant que le contenu n'a pas été rédigé dans l'admin (décision 32), il s'affiche vide — comportement déjà documenté, pas un bug.
+- Repli statique : les dates du fallback Actualités (texte français "12 Mai 2026") sont converties en ISO au chargement, pour rester compatibles avec le format que `date` retourne côté Payload.
+
+Typecheck, build et vérification par `curl` sur les 5 pages (contenu réel présent dans le HTML rendu) validés.
 
 ## Catalogue des gabarits (état actuel)
 
@@ -428,8 +456,8 @@ Phase 3 terminée.
 11. ~~Brancher les composants React existants sur Payload~~ — fait pour le Header (menu dynamique) et les 4 pages Annuaire, décision 33. Pattern établi, pas encore appliqué aux 14 autres pages (Démarches, Actualités, Documents, Budget & projets, Agenda, Trombinoscope, Éditorial, Catalogue de lieux, Numéros utiles, Carte interactive, Accueil)
 12. Menu dynamique ~~fait~~ (décision 33). Relations résolues au rendu (`resolvePageHref`, décision 14) : écrites, pas encore consommées — aucune page branchée n'a de champ `relationship` en jeu pour l'instant
 
-**Phase 5 — Routage dynamique** (identifiée en discutant, pas encore commencée)
-13. Extraire les 12 gabarits/cartes restants en composants réutilisables (même travail que celui déjà fait pour `AnnuaireLayout`/`EditorialLayout`) : Démarches, Actualités, Document, Budget/Projet, Agenda (les 5 cartes de Liste restantes), Trombinoscope, Catalogue de lieux, Contact, Numéros utiles, Horaires, Carte interactive, Accueil
+**Phase 5 — Routage dynamique** (identifiée en discutant)
+13. Extraire les 12 gabarits/cartes restants en composants réutilisables (même travail que celui déjà fait pour `AnnuaireLayout`/`EditorialLayout`) : ~~Démarches, Actualités, Document, Budget/Projet, Agenda (les 5 cartes de Liste restantes)~~ — fait, décision 37. Restent : Trombinoscope, Catalogue de lieux, Contact, Numéros utiles, Horaires, Carte interactive, Accueil
 14. Route générique `app/[...slug]/page.tsx` — lit `slug`/`gabarit`/`liste.layoutType` depuis Payload, dispatch vers le bon composant `XxxLayout` (tableau de correspondance), remplace les fichiers de route statiques un par un une fois chaque équivalent dynamique vérifié. Utilise `generateStaticParams()` pour garder le rendu statique (pas de perte de perf). Même pattern repli-si-Payload-indisponible que le reste.
 15. Corriger le `slug: '/'` de l'Accueil dans `scripts/seed.ts` (bug repéré en discutant du routage — `/${page.slug}` donnerait `//`)
 

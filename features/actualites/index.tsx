@@ -1,12 +1,6 @@
-'use client';
-
-import { useState, useMemo, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { Calendar, ChevronRight, Newspaper, Download, Tag } from 'lucide-react';
-import FilterBar from '@shared/components/FilterBar';
-import './style.scss';
-
-const CLASS_NAME = 'actualites';
+import ActualitesLayout, { type ActualiteItemData } from '@shared/components/ActualitesLayout';
+import type { IconVariant } from '@shared/components/ContactCard';
+import { getActualitesItems } from '../../lib/payload';
 
 export type Category = 'Mairie' | 'Vie locale' | 'Travaux' | 'Événements';
 
@@ -82,193 +76,51 @@ export const articles: Article[] = [
 	}
 ];
 
-const filters: ('Tous' | Category)[] = [
-	'Tous',
-	'Mairie',
-	'Vie locale',
-	'Travaux',
-	'Événements'
-];
-
-const catModifier: Record<Category, string> = {
+const catVariant: Record<Category, IconVariant> = {
 	Mairie: 'primary',
 	'Vie locale': 'leaf',
 	Travaux: 'coral',
 	Événements: 'sunshine'
 };
 
-export default function ActualitesPage() {
-	const [active, setActive] = useState<'Tous' | Category>('Tous');
-	const [stuck, setStuck] = useState(false);
-	const [filtersOpen, setFiltersOpen] = useState(false);
-	const sentinelRef = useRef<HTMLDivElement>(null);
+// `articles[].date` est un texte libre ("12 Mai 2026") — ActualitesLayout
+// attend un ISO (comme le champ `date` réel de Payload), même logique que
+// `toISODate` dans scripts/seed.ts.
+const FRENCH_MONTHS: Record<string, string> = {
+	janvier: '01',
+	février: '02',
+	mars: '03',
+	avril: '04',
+	mai: '05',
+	juin: '06',
+	juillet: '07',
+	août: '08',
+	septembre: '09',
+	octobre: '10',
+	novembre: '11',
+	décembre: '12'
+};
 
-	useEffect(() => {
-		const sentinel = sentinelRef.current;
-		if (!sentinel) return;
-		const observer = new IntersectionObserver(
-			([entry]) => setStuck(!entry.isIntersecting),
-			{ rootMargin: '-80px 0px 0px 0px', threshold: 0 }
-		);
-		observer.observe(sentinel);
-		return () => observer.disconnect();
-	}, []);
+function toISODate(frenchDate: string): string {
+	const [day, monthName, year] = frenchDate.toLowerCase().split(' ');
+	const month = FRENCH_MONTHS[monthName] ?? '01';
+	return `${year}-${month}-${day.padStart(2, '0')}`;
+}
 
-	const filtered = useMemo(
-		() =>
-			active === 'Tous'
-				? articles
-				: articles.filter((a) => a.cat === active),
-		[active]
-	);
+const fallbackItems: ActualiteItemData[] = articles.map((a, i) => ({
+	key: String(i),
+	title: a.title,
+	category: a.cat,
+	categoryVariant: catVariant[a.cat],
+	date: toISODate(a.date),
+	excerpt: a.excerpt,
+	documentHref: a.href
+}));
 
-	const counts = useMemo(() => {
-		const map: Partial<Record<'Tous' | Category, number>> = {
-			Tous: articles.length
-		};
-		for (const a of articles) map[a.cat] = (map[a.cat] ?? 0) + 1;
-		return map;
-	}, []);
+const filters = ['Tous', 'Mairie', 'Vie locale', 'Travaux', 'Événements'];
 
-	return (
-		<>
-			{/* Hero */}
-			<section className={`${CLASS_NAME}__hero`}>
-				<div
-					className={`${CLASS_NAME}__hero-blur ${CLASS_NAME}__hero-blur--top`}
-				/>
-				<div
-					className={`${CLASS_NAME}__hero-blur ${CLASS_NAME}__hero-blur--bottom`}
-				/>
-				<div className={`${CLASS_NAME}__hero-content`}>
-					<nav className={`${CLASS_NAME}__breadcrumb`} aria-label="Fil d'Ariane">
-						<Link href="/">Accueil</Link>
-						<ChevronRight size={14} aria-hidden="true" />
-						<span>Actualités</span>
-					</nav>
-					<p className={`${CLASS_NAME}__eyebrow`}>
-						<Newspaper size={14} aria-hidden="true" />
-						Mairie de Saint-Hilaire-Bonneval
-					</p>
-					<h1 className={`${CLASS_NAME}__title`}>Actualités</h1>
-					<div className={`${CLASS_NAME}__divider`} />
-					<p className={`${CLASS_NAME}__subtitle`}>
-						Conseil municipal, vie locale, travaux et événements :
-						<br />
-						toutes les nouvelles de la commune.
-					</p>
-				</div>
-			</section>
+export default async function ActualitesPage() {
+	const items = (await getActualitesItems('mairie/actualites')) ?? fallbackItems;
 
-			{/* Articles */}
-			<section className={`${CLASS_NAME}__section`}>
-				<div className={`${CLASS_NAME}__inner container`}>
-					<div className={`${CLASS_NAME}__header`}>
-						<p className={`${CLASS_NAME}__header-eyebrow`}>
-							Fil d'actualité
-						</p>
-						<h2 className={`${CLASS_NAME}__header-title`} aria-live="polite">
-							{filtered.length}{' '}
-							{filtered.length > 1 ? 'articles' : 'article'}
-						</h2>
-						<div className={`${CLASS_NAME}__header-divider`} />
-					</div>
-
-					<div
-						ref={sentinelRef}
-						style={{ height: 1, marginBottom: -1 }}
-					/>
-					<FilterBar
-						filters={filters}
-						active={active}
-						counts={counts as Record<string, number>}
-						onSelect={(f) => {
-							setActive(f as typeof active);
-							setFiltersOpen(false);
-						}}
-						stuck={stuck}
-						filtersOpen={filtersOpen}
-						onToggle={() => setFiltersOpen((o) => !o)}
-						variant="warm"
-					/>
-
-					<div className={`${CLASS_NAME}__grid`}>
-						{filtered.map((article) =>
-							article.type === 'document' && article.href ? (
-								<Link
-									key={article.title}
-									href={article.href}
-									className={`${CLASS_NAME}__card ${CLASS_NAME}__card--document`}
-								>
-									<div className={`${CLASS_NAME}__card-top`}>
-										<span
-											className={`${CLASS_NAME}__card-cat ${CLASS_NAME}__card-cat--${catModifier[article.cat]}`}
-										>
-											<Tag size={11} aria-hidden="true" />
-											{article.cat}
-										</span>
-										<span
-											className={`${CLASS_NAME}__card-date`}
-										>
-											<Calendar
-												size={12}
-												aria-hidden="true"
-											/>
-											{article.date}
-										</span>
-									</div>
-									<h2 className={`${CLASS_NAME}__card-title`}>
-										{article.title}
-									</h2>
-									<p
-										className={`${CLASS_NAME}__card-excerpt`}
-									>
-										{article.excerpt}
-									</p>
-									<div className={`${CLASS_NAME}__card-link`}>
-										Voir le document
-										<Download
-											size={14}
-											aria-hidden="true"
-										/>
-									</div>
-								</Link>
-							) : (
-								<article
-									key={article.title}
-									className={`${CLASS_NAME}__card`}
-								>
-									<div className={`${CLASS_NAME}__card-top`}>
-										<span
-											className={`${CLASS_NAME}__card-cat ${CLASS_NAME}__card-cat--${catModifier[article.cat]}`}
-										>
-											<Tag size={11} aria-hidden="true" />
-											{article.cat}
-										</span>
-										<span
-											className={`${CLASS_NAME}__card-date`}
-										>
-											<Calendar
-												size={12}
-												aria-hidden="true"
-											/>
-											{article.date}
-										</span>
-									</div>
-									<h2 className={`${CLASS_NAME}__card-title`}>
-										{article.title}
-									</h2>
-									<p
-										className={`${CLASS_NAME}__card-excerpt`}
-									>
-										{article.excerpt}
-									</p>
-								</article>
-							)
-						)}
-					</div>
-				</div>
-			</section>
-		</>
-	);
+	return <ActualitesLayout filters={filters} items={items} />;
 }

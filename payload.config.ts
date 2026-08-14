@@ -13,7 +13,6 @@ import { Media } from './collections/Media';
 import { DocumentsCollection } from './collections/Documents';
 import { Pois } from './collections/Pois';
 import { Sentiers } from './collections/Sentiers';
-import { Actualites } from './collections/Actualites';
 
 export default buildConfig({
 	admin: {
@@ -33,8 +32,7 @@ export default buildConfig({
 		Media,
 		DocumentsCollection,
 		Pois,
-		Sentiers,
-		Actualites
+		Sentiers
 	],
 	secret: process.env.PAYLOAD_SECRET || '',
 	db: mongooseAdapter({

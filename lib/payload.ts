@@ -204,6 +204,230 @@ export async function getAnnuaireItems(slug: string): Promise<AnnuaireCardData[]
 	}
 }
 
+type PayloadAgendaItem = {
+	titre: string;
+	categorie: PayloadCategory | string;
+	date: string;
+	horaire?: string;
+	lieu: string;
+	description?: string;
+};
+
+// Item 13 — même pattern que getAnnuaireItems, pour la carte "agenda" du
+// gabarit Liste. `categorie.couleur` (décision 24) fournit directement la
+// variante visuelle, plus besoin d'un mapping en dur par catégorie.
+export async function getAgendaItems(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 2,
+			limit: 1
+		});
+		const page = docs[0] as unknown as { liste?: { itemsAgenda?: PayloadAgendaItem[] } } | undefined;
+		const items = page?.liste?.itemsAgenda;
+		if (!items || items.length === 0) return null;
+
+		return items.map((item, i) => {
+			const cat = typeof item.categorie === 'object' ? item.categorie : undefined;
+			return {
+				key: String(i),
+				title: item.titre,
+				category: cat?.nom ?? '',
+				categoryVariant: toIconVariant(cat?.couleur),
+				date: item.date,
+				time: item.horaire,
+				location: item.lieu,
+				desc: item.description
+			};
+		});
+	} catch (err) {
+		console.warn(`[payload] getAgendaItems("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+type PayloadActualiteItem = {
+	titre: string;
+	categorie: PayloadCategory | string;
+	date: string;
+	extrait: string;
+	epinglee?: boolean;
+	lienDocument?: { slug?: string } | string;
+};
+
+// Item 13 — carte "actualites" du gabarit Liste. `epinglee` est lue ici
+// (utile pour la page elle-même comme pour le futur bloc Accueil, décision
+// 16/36) même si cette fonction ne l'exploite pas encore côté tri.
+export async function getActualitesItems(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 2,
+			limit: 1
+		});
+		const page = docs[0] as unknown as { liste?: { itemsActualites?: PayloadActualiteItem[] } } | undefined;
+		const items = page?.liste?.itemsActualites;
+		if (!items || items.length === 0) return null;
+
+		return items.map((item, i) => {
+			const cat = typeof item.categorie === 'object' ? item.categorie : undefined;
+			return {
+				key: String(i),
+				title: item.titre,
+				category: cat?.nom ?? '',
+				categoryVariant: toIconVariant(cat?.couleur),
+				date: item.date,
+				excerpt: item.extrait,
+				documentHref: resolvePageHref(item.lienDocument)
+			};
+		});
+	} catch (err) {
+		console.warn(`[payload] getActualitesItems("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+type PayloadDocumentUpload = { url?: string } | string;
+type PayloadDocumentItem = {
+	titre: string;
+	type: PayloadCategory | string;
+	date: string;
+	fichier?: PayloadDocumentUpload;
+};
+
+// Item 13 — carte "document" du gabarit Liste. `fichier` est un champ
+// `upload` (décision 25) : peuplé, c'est un objet avec `url`.
+export async function getDocumentItems(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 2,
+			limit: 1
+		});
+		const page = docs[0] as unknown as { liste?: { itemsDocument?: PayloadDocumentItem[] } } | undefined;
+		const items = page?.liste?.itemsDocument;
+		if (!items || items.length === 0) return null;
+
+		return items.map((item, i) => {
+			const type = typeof item.type === 'object' ? item.type : undefined;
+			const fichier = typeof item.fichier === 'object' ? item.fichier : undefined;
+			return {
+				key: String(i),
+				title: item.titre,
+				type: type?.nom ?? '',
+				typeVariant: toIconVariant(type?.couleur),
+				date: item.date,
+				href: fichier?.url
+			};
+		});
+	} catch (err) {
+		console.warn(`[payload] getDocumentItems("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+type PayloadBudgetProjetItem = {
+	nature: 'budget' | 'projet';
+	titre: string;
+	date: string;
+	fichier?: PayloadDocumentUpload;
+	statut?: 'a-venir' | 'en-cours' | 'termine';
+	description?: string;
+};
+
+const STATUT_LABELS: Record<NonNullable<PayloadBudgetProjetItem['statut']>, 'À venir' | 'En cours' | 'Terminé'> = {
+	'a-venir': 'À venir',
+	'en-cours': 'En cours',
+	termine: 'Terminé'
+};
+
+// Item 13 — carte "budget-projet" du gabarit Liste. Pas de catégorie
+// (décision 24) — `nature` est le seul discriminant.
+export async function getBudgetProjetItems(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 2,
+			limit: 1
+		});
+		const page = docs[0] as unknown as { liste?: { itemsBudgetProjet?: PayloadBudgetProjetItem[] } } | undefined;
+		const items = page?.liste?.itemsBudgetProjet;
+		if (!items || items.length === 0) return null;
+
+		return items.map((item, i) => {
+			if (item.nature === 'budget') {
+				const fichier = typeof item.fichier === 'object' ? item.fichier : undefined;
+				return { key: String(i), kind: 'budget' as const, title: item.titre, date: item.date, href: fichier?.url };
+			}
+			return {
+				key: String(i),
+				kind: 'projet' as const,
+				title: item.titre,
+				date: item.date,
+				status: STATUT_LABELS[item.statut ?? 'a-venir'],
+				desc: item.description
+			};
+		});
+	} catch (err) {
+		console.warn(`[payload] getBudgetProjetItems("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+type PayloadDemarcheItem = {
+	titre: string;
+	categorie: PayloadCategory | string;
+	icone?: string;
+	resume: string;
+	// JSON Lexical brut (SerializedEditorState) — pas typé finement ici,
+	// laissé à l'appelant de le passer à <RichText> (voir
+	// features/demarches/index.tsx). Reste `undefined` tant que le contenu
+	// n'a pas été rédigé dans l'admin (décision 32, JSX→Lexical hors scope).
+	contenu?: unknown;
+};
+
+// Item 13 — carte "demarches" du gabarit Liste. Contrairement aux autres
+// cartes, `contenu` est un champ richText (Lexical), pas du texte simple —
+// cette fonction reste une couche de données pures (comme les autres),
+// le rendu <RichText> se fait côté appelant.
+export async function getDemarchesItems(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 2,
+			limit: 1
+		});
+		const page = docs[0] as unknown as { liste?: { itemsDemarches?: PayloadDemarcheItem[] } } | undefined;
+		const items = page?.liste?.itemsDemarches;
+		if (!items || items.length === 0) return null;
+
+		return items.map((item, i) => {
+			const cat = typeof item.categorie === 'object' ? item.categorie : undefined;
+			return {
+				key: String(i),
+				category: cat?.nom ?? '',
+				icon: item.icone ?? 'HelpCircle',
+				title: item.titre,
+				summary: item.resume,
+				contenu: item.contenu
+			};
+		});
+	} catch (err) {
+		console.warn(`[payload] getDemarchesItems("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
 // Décision 14 — un champ `relationship` vers `pages` doit être résolu en
 // href réel au rendu, jamais présumé à partir d'une URL recopiée. Accepte
 // soit un id (relation non peuplée), soit un document déjà peuplé (depth > 0).
