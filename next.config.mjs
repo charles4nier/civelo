@@ -7,6 +7,16 @@ const __dirname = path.dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	// Désactivé — l'admin Payload déclenche une erreur DOM ("insertBefore")
+	// en dev à cause du double-rendu de StrictMode, absente en prod. Effet
+	// de bord d'un composant tiers, pas du code du projet — voir PAYLOAD-CMS.md.
+	reactStrictMode: false,
+	// Next.js détectait la racine du projet comme le dossier home
+	// (`/Users/c.fournier/package-lock.json`, un lockfile parasite hors de ce
+	// projet — warning "Found multiple lockfiles" présent depuis le début de
+	// la session) plutôt que `style-edito`. Fixé explicitement pour écarter
+	// tout mélange de cache/fichiers entre projets.
+	outputFileTracingRoot: __dirname,
 	images: {
 		formats: ['image/avif', 'image/webp'],
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],

@@ -7,7 +7,7 @@ import '@shared/styles/index.scss';
 import Header from '@shared/components/Header';
 import Footer from '@shared/components/Footer';
 import FloatingButtons from '@shared/components/FloatingButtons';
-import { getNavLinks } from '../lib/payload';
+import { getNavLinks } from '../../lib/payload';
 
 const cormorant = Cormorant({
 	subsets: ['latin'],

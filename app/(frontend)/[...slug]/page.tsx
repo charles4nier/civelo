@@ -25,7 +25,7 @@ import {
 	getCatalogueLieuxItems,
 	getContactData,
 	getNumerosUtilesData
-} from '../../lib/payload';
+} from '../../../lib/payload';
 
 // Item 14 (phase 5) — route générique : sert les pages créées depuis l'admin
 // qui n'ont pas (encore) de fichier de route statique dédié. Next.js
