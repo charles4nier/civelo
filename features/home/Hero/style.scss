@@ -1,0 +1,112 @@
+.hero {
+	position: relative;
+	min-height: 100svh;
+	width: 100%;
+	overflow: hidden;
+
+	&__image {
+		object-fit: cover;
+		object-position: center;
+	}
+
+	&__overlay {
+		position: absolute;
+		inset: 0;
+		background: $gradient-hero;
+		z-index: 1;
+	}
+
+	&__content {
+		position: relative;
+		z-index: 10;
+		min-height: 100svh;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding-top: 160px;
+		padding-bottom: $section-padding-y-desktop;
+	}
+
+	&__body {
+		max-width: 760px;
+	}
+
+	&__title {
+		color: #ffffff;
+		font-size: clamp(36px, 5.5vw, 68px);
+		font-weight: $font-weight-semibold;
+		line-height: $line-height-tight;
+		letter-spacing: -0.025em;
+	}
+
+	&__title-highlight {
+		color: #ffffff;
+	}
+
+	&__divider {
+		width: 80px;
+		height: 4px;
+		background-color: $coral;
+		margin-top: $spacing-xl;
+	}
+
+	&__desc {
+		margin-top: $spacing-xl;
+		color: rgba(255, 255, 255, 0.9);
+		font-size: 18px;
+		max-width: 520px;
+		line-height: $line-height-relaxed;
+	}
+
+	&__actions {
+		margin-top: $spacing-2xl + $spacing-sm;
+		display: flex;
+		flex-wrap: wrap;
+		gap: $spacing-sm;
+	}
+
+	&__scroll-hint {
+		display: none;
+		position: absolute;
+		bottom: 40px;
+		right: 0;
+		align-items: center;
+		gap: $spacing-sm;
+		color: rgba(255, 255, 255, 0.8);
+		font-size: 11px;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+
+		@media (min-width: $breakpoint-sm + 1) {
+			display: flex;
+		}
+	}
+
+	&__scroll-line {
+		width: 48px;
+		height: 1px;
+		background: rgba(255, 255, 255, 0.4);
+	}
+
+	/* ---- Responsive ---- */
+
+	@media (max-width: $breakpoint-sm) {
+		&__desc {
+			font-size: 16px;
+		}
+
+		&__actions {
+			flex-direction: column;
+			align-items: stretch;
+
+			.btn-primary,
+			.btn-secondary {
+				justify-content: center;
+			}
+		}
+
+		&__arrow {
+			display: none;
+		}
+	}
+}

@@ -1,0 +1,204 @@
+.footer {
+	background-color: $foreground;
+	color: $background;
+
+	&__inner {
+		width: 100%;
+		max-width: $container-max-width;
+		margin: 0 auto;
+		padding: $section-padding-y-desktop $container-padding-x-desktop;
+
+		@media (max-width: $breakpoint-md) {
+			padding-left: $container-padding-x-tablet;
+			padding-right: $container-padding-x-tablet;
+		}
+
+		@media (max-width: $breakpoint-sm) {
+			padding-left: $container-padding-x-mobile;
+			padding-right: $container-padding-x-mobile;
+		}
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: $spacing-4xl;
+
+		@media (min-width: $breakpoint-sm + 1) {
+			grid-template-columns: 2fr 1fr 1fr;
+		}
+	}
+
+	/* ---- Brand ---- */
+
+	&__brand-logo {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm + 4px;
+		margin-bottom: $spacing-xl;
+	}
+
+	&__brand-badge {
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: #ffffff;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		overflow: hidden;
+	}
+
+	&__brand-name {
+		font-family: $font-display;
+		font-size: 18px;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: -0.01em;
+		color: #ffffff;
+	}
+
+	&__brand-sub {
+		font-family: $font-body;
+		font-size: $xs-size-desktop;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+		color: $background-60;
+		margin-top: 3px;
+	}
+
+	&__brand-desc {
+		color: $background-70;
+		font-size: $small-size-desktop;
+		line-height: $line-height-relaxed;
+		max-width: 420px;
+	}
+
+	&__brand-motto {
+		font-size: $xs-size-desktop;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: $background-50;
+		margin-top: $spacing-md;
+	}
+
+	&__social {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-sm;
+		padding: 8px 16px;
+		margin-top: $spacing-xl;
+		background: $background-10;
+		color: $background-85;
+		font-size: $small-size-desktop;
+		transition: $transition-smooth;
+
+		&:hover {
+			background: $background-20;
+			color: #ffffff;
+		}
+	}
+
+	/* ---- Columns ---- */
+
+	&__col-title {
+		font-family: $font-body;
+		font-size: $xs-size-desktop;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: $background-90;
+		padding-bottom: $spacing-md;
+		border-bottom: 1px solid $background-15;
+		margin-bottom: $spacing-md;
+	}
+
+	&__col-links {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+
+		li a {
+			font-family: $font-body;
+			font-size: $small-size-desktop;
+			color: $background-70;
+			transition: $transition-smooth;
+
+			&:hover {
+				color: #ffffff;
+			}
+		}
+	}
+
+	/* ---- Address ---- */
+
+	&__address {
+		margin-top: $spacing-xl;
+		padding-top: $spacing-md;
+		border-top: 1px solid $background-10;
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-sm;
+	}
+
+	&__address-item {
+		display: flex;
+		align-items: flex-start;
+		gap: $spacing-sm;
+		font-family: $font-body;
+		font-size: 12px;
+		color: $background-60;
+
+		svg {
+			flex-shrink: 0;
+			margin-top: 2px;
+		}
+	}
+
+	/* ---- Bottom bar ---- */
+
+	&__bottom {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: $spacing-md;
+		margin-top: $spacing-4xl;
+		padding-top: $spacing-xl;
+		border-top: 1px solid $background-10;
+		font-family: $font-body;
+		font-size: 12px;
+		color: $background-50;
+	}
+
+	&__bottom-links {
+		display: flex;
+		gap: $spacing-xl;
+
+		a {
+			font-family: $font-body;
+			font-size: 12px;
+			color: $background-50;
+			transition: $transition-smooth;
+
+			&:hover {
+				color: $background-90;
+			}
+		}
+	}
+
+	/* ---- Responsive ---- */
+
+	@media (max-width: $breakpoint-sm) {
+		&__inner {
+			padding-top: $section-padding-y-tablet;
+			padding-bottom: $section-padding-y-tablet;
+		}
+
+		&__bottom-links {
+			gap: $spacing-md;
+		}
+	}
+
+}

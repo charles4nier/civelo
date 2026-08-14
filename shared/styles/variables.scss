@@ -1,0 +1,145 @@
+/* =========================
+   🎨 Palette Saint-Hilaire-Bonneval
+   ========================= */
+
+$background:          oklch(0.99 0.006 90);
+$foreground:          oklch(0.20 0.05 250);
+$card:                oklch(1 0 0);
+$card-foreground:     oklch(0.20 0.05 250);
+$secondary:           oklch(0.96 0.018 90);
+$secondary-foreground: oklch(0.25 0.05 250);
+$muted:               oklch(0.965 0.012 90);
+$muted-foreground:    oklch(0.50 0.03 250);
+$border:              oklch(0.91 0.012 240);
+$input:               oklch(0.91 0.012 240);
+
+$primary:             oklch(0.52 0.17 240);
+$primary-foreground:  oklch(0.99 0.005 110);
+$primary-glow:        oklch(0.70 0.16 220);
+$coral:               oklch(0.72 0.18 18);
+$sunshine:            oklch(0.84 0.17 88);
+$leaf:                oklch(0.62 0.16 150);
+$terracotta:          oklch(0.68 0.19 28);
+$sky:                 oklch(0.78 0.12 220);
+$berry:               oklch(0.55 0.20 340);
+
+$error:               oklch(0.62 0.24 25);
+
+/* --- Variantes alpha --- */
+$primary-10:          oklch(0.52 0.17 240 / 0.1);
+$primary-30:          oklch(0.52 0.17 240 / 0.3);
+$coral-15:            oklch(0.72 0.18 18 / 0.15);
+$leaf-15:             oklch(0.62 0.16 150 / 0.15);
+$leaf-40:             oklch(0.62 0.16 150 / 0.4);
+$sunshine-25:         oklch(0.84 0.17 88 / 0.25);
+$sunshine-30:         oklch(0.84 0.17 88 / 0.3);
+$foreground-20:       oklch(0.20 0.05 250 / 0.2);
+$foreground-50:       oklch(0.20 0.05 250 / 0.5);
+$foreground-80:       oklch(0.20 0.05 250 / 0.8);
+$foreground-85:       oklch(0.20 0.05 250 / 0.85);
+$background-10:       oklch(0.99 0.006 90 / 0.1);
+$background-15:       oklch(0.99 0.006 90 / 0.15);
+$background-20:       oklch(0.99 0.006 90 / 0.2);
+$background-50:       oklch(0.99 0.006 90 / 0.5);
+$background-60:       oklch(0.99 0.006 90 / 0.6);
+$background-70:       oklch(0.99 0.006 90 / 0.7);
+$background-85:       oklch(0.99 0.006 90 / 0.85);
+$background-90:       oklch(0.99 0.006 90 / 0.9);
+$background-95:       oklch(0.99 0.006 90 / 0.95);
+$secondary-40:        oklch(0.96 0.018 90 / 0.4);
+$muted-foreground-50: oklch(0.50 0.03 250 / 0.5);
+
+/* --- Dégradés --- */
+$gradient-hero:    linear-gradient(180deg, transparent 0%, oklch(0.20 0.05 250 / 0.2) 50%, oklch(0.18 0.06 250 / 0.85) 100%);
+$gradient-forest:  linear-gradient(135deg, oklch(0.62 0.16 150), oklch(0.45 0.11 158));
+$gradient-primary: linear-gradient(135deg, oklch(0.52 0.17 240), oklch(0.70 0.16 220));
+$gradient-warm:    linear-gradient(135deg, oklch(0.84 0.17 88), oklch(0.72 0.18 18));
+$gradient-sunset:  linear-gradient(135deg, oklch(0.72 0.18 18), oklch(0.55 0.20 340));
+$gradient-meadow:  linear-gradient(135deg, oklch(0.62 0.16 150), oklch(0.78 0.12 220));
+
+/* --- Ombres --- */
+$shadow-soft:    0 10px 40px -12px oklch(0.20 0.05 250 / 0.18);
+$shadow-elegant: 0 20px 60px -20px oklch(0.52 0.17 240 / 0.35);
+$shadow-warm:    0 14px 40px -12px oklch(0.72 0.18 18 / 0.35);
+
+/* --- Transition --- */
+$ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+$transition-smooth: all 0.4s $ease-smooth;
+
+/* =========================
+   📱 Breakpoints
+   ========================= */
+
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1600px;
+
+/* =========================
+   📏 Spacing (scale 8px)
+   ========================= */
+
+$spacing-xs:  4px;
+$spacing-sm:  8px;
+$spacing-md:  16px;
+$spacing-lg:  24px;
+$spacing-xl:  32px;
+$spacing-2xl: 40px;
+$spacing-3xl: 48px;
+$spacing-4xl: 64px;
+$spacing-5xl: 80px;
+$spacing-6xl: 96px;
+$spacing-7xl: 112px;
+
+$section-padding-y-desktop: $spacing-7xl;
+$section-padding-y-tablet:  $spacing-5xl;
+$section-padding-y-mobile:  $spacing-4xl;
+
+/* =========================
+   📐 Container
+   ========================= */
+
+$container-max-width:          1400px;
+$container-padding-x-desktop:  $spacing-5xl;
+$container-padding-x-tablet:   $spacing-2xl;
+$container-padding-x-mobile:   $spacing-lg;
+
+/* =========================
+   📝 Typographie
+   ========================= */
+
+$font-display: Georgia, serif;
+$font-body:    system-ui, sans-serif;
+$font-script:  var(--font-script), cursive;
+
+$font-weight-regular:  400;
+$font-weight-medium:   500;
+$font-weight-semibold: 600;
+$font-weight-bold:     700;
+
+$line-height-tight:   1.05;
+$line-height-snug:    1.25;
+$line-height-normal:  1.5;
+$line-height-relaxed: 1.65;
+$line-height-loose:   1.75;
+
+$h1-size-desktop: clamp(44px, 5vw, 64px);
+$h2-size-desktop: clamp(30px, 3.5vw, 44px);
+$h3-size-desktop: clamp(20px, 2vw, 26px);
+$body-size-desktop: 16px;
+$small-size-desktop: 14px;
+$xs-size-desktop: 11px;
+
+$h1-size-md: clamp(36px, 5vw, 48px);
+$h2-size-md: clamp(26px, 3.5vw, 36px);
+$h3-size-md: clamp(18px, 2.5vw, 22px);
+$body-size-md: 15px;
+
+$h1-size-sm: clamp(32px, 8vw, 40px);
+$h2-size-sm: clamp(24px, 6vw, 30px);
+$h3-size-sm: clamp(17px, 3.5vw, 20px);
+$body-size-sm: 15px;
+
+$title-margin-bottom-desktop: $spacing-md;
+$title-margin-bottom-mobile:  $spacing-sm;

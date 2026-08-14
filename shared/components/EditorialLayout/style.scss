@@ -1,0 +1,106 @@
+@import '@shared/styles/variables';
+
+/* ========================
+   Hero
+   ======================== */
+
+.editorial__hero {
+	position: relative;
+	padding-top: 160px;
+	padding-bottom: $spacing-6xl;
+	padding-left: $spacing-lg;
+	padding-right: $spacing-lg;
+	overflow: hidden;
+	color: #ffffff;
+	text-align: center;
+
+	@media (min-width: $breakpoint-md) {
+		padding-left: $spacing-5xl;
+		padding-right: $spacing-5xl;
+	}
+
+	@media (max-width: $breakpoint-sm) {
+		padding-bottom: calc(#{$spacing-6xl} + 64px);
+	}
+}
+
+.editorial__hero-blur {
+	position: absolute;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	filter: blur(80px);
+	pointer-events: none;
+
+	&--top    { top: -96px;    right: -96px; background: $coral-15; }
+	&--bottom { bottom: -128px; left: -96px; background: $primary-30; }
+}
+
+.editorial__hero-content {
+	position: relative;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.editorial__eyebrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.28em;
+	color: $sunshine;
+}
+
+.editorial__title {
+	font-family: $font-display;
+	font-size: clamp(36px, 6vw, 64px);
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-tight;
+	color: #ffffff;
+	margin-top: $spacing-md;
+}
+
+.editorial__divider {
+	width: 80px;
+	height: 4px;
+	background: $sunshine;
+	margin: $spacing-lg auto 0;
+}
+
+.editorial__subtitle {
+	margin-top: $spacing-3xl;
+	font-size: $body-size-desktop;
+	color: rgba(255, 255, 255, 0.85);
+	line-height: $line-height-relaxed;
+}
+
+/* ========================
+   Body — premier enfant remonte sur le hero en mobile
+   ======================== */
+
+.editorial__body {
+	> section:first-child {
+		@media (max-width: $breakpoint-sm) {
+			margin-top: -64px;
+			position: relative;
+			z-index: 10;
+			padding-top: 0;
+		}
+	}
+}
+
+/* ========================
+   Carte overlap mobile (premier bloc éditorial)
+   ======================== */
+
+.editorial__overlap-card {
+	@media (max-width: $breakpoint-sm) {
+		background: #ffffff !important;
+		border-left: none !important;
+		border-top: 4px solid $sunshine;
+		box-shadow: $shadow-elegant;
+	}
+}
