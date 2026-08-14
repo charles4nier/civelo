@@ -303,7 +303,7 @@ Chaque instance Payload étant un déploiement par commune (décision 20), il n'
 - **editeur** — contenu quotidien uniquement, comme prévu depuis le début.
 
 **Implémenté dans `collections/access.ts`** (`isSuperAdmin`, `isAdminOrAbove`, `isLoggedIn`, `isSuperAdminField`) et câblé collection par collection :
-- `pages` : création/suppression réservées à `isSuperAdmin` ; mise à jour ouverte à tous les connectés, mais verrouillage **champ par champ** sur `title`, `slug`, `menu`, `gabarit`, `liste.carte`, et tous les champs `icone` verrouillés par item (décision 10 amendée) — accès `update` restreint à `isSuperAdminField` sur chacun.
+- `pages` : création/suppression réservées à `isSuperAdmin` ; mise à jour ouverte à tous les connectés, mais verrouillage **champ par champ** sur `title`, `slug`, `menu`, `gabarit`, `liste.layoutType`, et tous les champs `icone` verrouillés par item (décision 10 amendée) — accès `update` restreint à `isSuperAdminField` sur chacun.
 - `categories`, `telephones`, `emails` : CRUD réservé à `isSuperAdmin` (fixées au setup, décision 10/22), lecture ouverte aux connectés (nécessaire pour que les menus déroulants de relation fonctionnent pour l'éditeur).
 - `media`, `documents` : upload/édition ouverts à tous les connectés (usage quotidien), suppression réservée à `isAdminOrAbove` (fichier potentiellement référencé ailleurs).
 - `pois`, `sentiers` : CRUD ouvert à tous les connectés — décision 8 les qualifie explicitement de collections "éditables" par la mairie, contrairement aux catégories/coordonnées.
@@ -313,7 +313,7 @@ Chaque instance Payload étant un déploiement par commune (décision 20), il n'
 
 ### 30. Composant d'aperçu visuel (décision 11), item 8 de la feuille de route
 
-`fields/PreviewPicker/index.tsx` — composant de champ Payload générique (`SelectFieldClientComponent`), affiche les options d'un `select` en grille d'aperçus image + libellé plutôt qu'un menu déroulant texte, sélection au clic. Un seul composant réutilisé pour les deux usages identifiés en décision 11 (`gabarit` et `liste.carte`), via une fonction `previewPickerComponent(previewImages)` qui injecte la carte image→option en `clientProps`.
+`fields/PreviewPicker/index.tsx` — composant de champ Payload générique (`SelectFieldClientComponent`), affiche les options d'un `select` en grille d'aperçus image + libellé plutôt qu'un menu déroulant texte, sélection au clic. Un seul composant réutilisé pour les deux usages identifiés en décision 11 (`gabarit` et `liste.layoutType`), via une fonction `previewPickerComponent(previewImages)` qui injecte la carte image→option en `clientProps`.
 
 `previewImages` est laissé **vide** pour l'instant : produire les captures elles-mêmes est l'item 9 (pas encore fait), pas ce composant. Tant qu'aucune image n'est fournie pour une option, le composant affiche un placeholder "Aperçu à venir" plutôt qu'une image cassée.
 
@@ -323,7 +323,7 @@ Chaque instance Payload étant un déploiement par commune (décision 20), il n'
 
 **Limite d'outillage à connaître** : aucun outil de capture d'écran/navigateur disponible dans cette session pour produire de vraies captures du site rendu. Décision 11 autorisait explicitement "capture **ou illustration**" — parti pris pour des illustrations schématiques (wireframes SVG), l'option que je peux réellement produire honnêtement.
 
-15 SVG générés (`public/admin-previews/`) — 9 gabarits + 6 cartes, un accent couleur distinct par type, structure en blocs représentant la mise en page réelle (ex. gabarit Liste : bandeau hero + pastilles de filtres + grille de cartes ; carte Agenda : pavé date + titre + lieu). Vérifiés visuellement via une galerie QA avant câblage. Câblés dans `collections/Pages.ts` (`GABARIT_PREVIEWS`, `CARTE_PREVIEWS`) sur les champs `gabarit` et `liste.carte`. Typecheck et build validés.
+15 SVG générés (`public/admin-previews/`) — 9 gabarits + 6 cartes, un accent couleur distinct par type, structure en blocs représentant la mise en page réelle (ex. gabarit Liste : bandeau hero + pastilles de filtres + grille de cartes ; carte Agenda : pavé date + titre + lieu). Vérifiés visuellement via une galerie QA avant câblage. Câblés dans `collections/Pages.ts` (`GABARIT_PREVIEWS`, `LAYOUT_TYPE_PREVIEWS`) sur les champs `gabarit` et `liste.layoutType`. Typecheck et build validés.
 
 Si de vraies captures du site en prod sont voulues plus tard (rendu réel plutôt que schématique), il suffira de remplacer les chemins dans ces deux constantes — le composant `PreviewPicker` ne change pas.
 
@@ -359,6 +359,14 @@ Si de vraies captures du site en prod sont voulues plus tard (rendu réel plutô
 **Décision 14 (relations résolues au rendu)** : `resolvePageHref()` écrite et disponible, mais pas encore consommée nulle part — aucune des pages branchées cette session n'a de champ `relationship` en jeu dans son rendu actuel (les boutons Hero/Découvrir de l'Accueil, qui en auraient besoin, n'ont pas été rebranchés).
 
 Typecheck et build complets validés à chaque étape, comme pour tout le reste de la phase 2/3.
+
+### 34. Le champ `carte` renommé `layoutType` — ambiguïté de vocabulaire, pas un changement de structure
+
+Repéré en réfléchissant à la route générique (item futur) : le mot "carte" servait à deux choses différentes dans le modèle. (1) le champ qui choisit, à l'intérieur du gabarit Liste, quelle mise en page utiliser (Annuaire/Démarches/Actualités/Document/Budget-Projet/Agenda) — décision 6 ; (2) le petit composant visuel par item (`ContactCard`) qu'un layout comme `AnnuaireLayout` importe et affiche pour chaque élément de la collection. Les deux existaient déjà clairement séparés dans le code (`AnnuaireLayout` importe `ContactCard`), mais le champ Payload n°1 s'appelait `carte`, ce qui laissait croire qu'il s'agissait du composant visuel n°2.
+
+**Renommé partout : `carte` → `layoutType`.** Aucun changement de structure — toujours un seul gabarit Liste, toujours 6 variantes, toujours le même principe (décision 6 reste valide sur le fond, seul le nom du champ change). Fichiers touchés : `collections/Pages.ts` (champ `liste.carte` → `liste.layoutType`, constante `CARTE_PREVIEWS` → `LAYOUT_TYPE_PREVIEWS`, commentaires de section), `scripts/seed.ts` (tous les `liste: { carte: ... }` → `liste: { layoutType: ... }`). Le mot "carte" reste réservé, dans le code et la doc à partir de maintenant, au petit composant visuel par item (`ContactCard` et ses futurs équivalents).
+
+Typecheck et build revalidés après renommage.
 
 ## Catalogue des gabarits (état actuel)
 

@@ -206,7 +206,7 @@ async function seedAnnuairePage<T extends AnnuaireSourceItem>(
 			slug: opts.slug,
 			menu: opts.menu,
 			gabarit: 'liste',
-			liste: { carte: 'annuaire' }
+			liste: { layoutType: 'annuaire' }
 		}
 	});
 
@@ -259,7 +259,7 @@ async function seedAgenda(payload: Awaited<ReturnType<typeof getPayload>>) {
 			slug: 'agenda',
 			menu: 'essentiel',
 			gabarit: 'liste',
-			liste: { carte: 'agenda' }
+			liste: { layoutType: 'agenda' }
 		}
 	});
 
@@ -294,7 +294,7 @@ async function seedActualites(payload: Awaited<ReturnType<typeof getPayload>>) {
 			slug: 'mairie/actualites',
 			menu: 'mairie',
 			gabarit: 'liste',
-			liste: { carte: 'actualites' }
+			liste: { layoutType: 'actualites' }
 		}
 	});
 
@@ -332,7 +332,7 @@ async function seedDocuments(payload: Awaited<ReturnType<typeof getPayload>>) {
 			slug: 'mairie/publications',
 			menu: 'mairie',
 			gabarit: 'liste',
-			liste: { carte: 'document' }
+			liste: { layoutType: 'document' }
 		}
 	});
 
@@ -366,7 +366,7 @@ async function seedBudgetProjets(payload: Awaited<ReturnType<typeof getPayload>>
 			slug: 'mairie/budget-projets',
 			menu: 'mairie',
 			gabarit: 'liste',
-			liste: { carte: 'budget-projet' }
+			liste: { layoutType: 'budget-projet' }
 		}
 	});
 
@@ -547,7 +547,7 @@ async function seedPoisSentiers(payload: Awaited<ReturnType<typeof getPayload>>)
 async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
 	await payload.create({
 		collection: 'pages',
-		data: { title: 'Mes démarches', slug: 'demarches', menu: 'essentiel', gabarit: 'liste', liste: { carte: 'demarches' } }
+		data: { title: 'Mes démarches', slug: 'demarches', menu: 'essentiel', gabarit: 'liste', liste: { layoutType: 'demarches' } }
 	});
 	await payload.create({
 		collection: 'pages',

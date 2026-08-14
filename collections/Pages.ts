@@ -77,7 +77,7 @@ const GABARIT_PREVIEWS: Record<string, string> = {
 	'carte-interactive': '/admin-previews/gabarit-carte-interactive.svg'
 };
 
-const CARTE_PREVIEWS: Record<string, string> = {
+const LAYOUT_TYPE_PREVIEWS: Record<string, string> = {
 	annuaire: '/admin-previews/carte-annuaire.svg',
 	demarches: '/admin-previews/carte-demarches.svg',
 	actualites: '/admin-previews/carte-actualites.svg',
@@ -167,11 +167,17 @@ export const Pages: CollectionConfig = {
 			admin: { condition: (data) => data.gabarit === 'liste' },
 			fields: [
 				{
-					name: 'carte',
+					// Décision 6 — "carte" au sens décision initiale était
+					// ambigu avec le petit composant visuel par item (ex.
+					// ContactCard) que ce layout importe ensuite. Renommé
+					// `layoutType` : ce champ choisit la mise en page de la
+					// liste (quel composant `XxxLayout` afficher), pas une
+					// carte au sens UI.
+					name: 'layoutType',
 					type: 'select',
 					required: true,
 					access: { update: isSuperAdminField },
-					admin: { components: previewPickerComponent(CARTE_PREVIEWS) },
+					admin: { components: previewPickerComponent(LAYOUT_TYPE_PREVIEWS) },
 					options: [
 						{ label: 'Annuaire', value: 'annuaire' },
 						{ label: 'Démarches', value: 'demarches' },
@@ -203,11 +209,11 @@ export const Pages: CollectionConfig = {
 					]
 				},
 
-				// Carte Annuaire
+				// layoutType "annuaire"
 				{
 					name: 'itemsAnnuaire',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.carte === 'annuaire' },
+					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'annuaire' },
 					fields: [
 						{ name: 'nom', type: 'text', required: true },
 						categoryField(),
@@ -217,13 +223,13 @@ export const Pages: CollectionConfig = {
 					]
 				},
 
-				// Carte Démarches — icône verrouillée PAR ITEM, pas par catégorie
+				// layoutType "demarches" — icône verrouillée PAR ITEM, pas par catégorie
 				// (décision 10 amendée : perte de distinction sinon, cf. Naissance
 				// vs Décès dans "État civil").
 				{
 					name: 'itemsDemarches',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.carte === 'demarches' },
+					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'demarches' },
 					fields: [
 						{ name: 'titre', type: 'text', required: true },
 						categoryField(),
@@ -241,11 +247,11 @@ export const Pages: CollectionConfig = {
 					]
 				},
 
-				// Carte Actualités
+				// layoutType "actualites"
 				{
 					name: 'itemsActualites',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.carte === 'actualites' },
+					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'actualites' },
 					fields: [
 						{ name: 'titre', type: 'text', required: true },
 						categoryField(),
@@ -262,11 +268,11 @@ export const Pages: CollectionConfig = {
 					]
 				},
 
-				// Carte Document
+				// layoutType "document"
 				{
 					name: 'itemsDocument',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.carte === 'document' },
+					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'document' },
 					fields: [
 						{ name: 'titre', type: 'text', required: true },
 						categoryField('type'),
@@ -275,13 +281,13 @@ export const Pages: CollectionConfig = {
 					]
 				},
 
-				// Carte Budget/Projet — pas de catégorie (décision 24), `nature` est
+				// layoutType "budget-projet" — pas de catégorie (décision 24), `nature` est
 				// un discriminant structurel comme celui du gabarit lui-même.
 				{
 					name: 'itemsBudgetProjet',
 					type: 'array',
 					admin: {
-						condition: (_, siblingData) => siblingData?.carte === 'budget-projet'
+						condition: (_, siblingData) => siblingData?.layoutType === 'budget-projet'
 					},
 					fields: [
 						{
@@ -319,11 +325,11 @@ export const Pages: CollectionConfig = {
 					]
 				},
 
-				// Carte Agenda
+				// layoutType "agenda"
 				{
 					name: 'itemsAgenda',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.carte === 'agenda' },
+					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'agenda' },
 					fields: [
 						{ name: 'titre', type: 'text', required: true },
 						categoryField(),
