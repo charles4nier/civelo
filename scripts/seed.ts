@@ -34,12 +34,12 @@ import { associations } from '../features/vie-associative/data';
 import { services } from '../features/enfance-jeunesse/data';
 import { activities } from '../features/sports-loisirs/data';
 import { events } from '../features/agenda/data';
-import { articles } from '../features/actualites';
-import { docs } from '../features/documents';
+import { articles } from '../features/actualites/data';
+import { docs } from '../features/documents/data';
 import { entries as budgetProjetEntries } from '../features/budget-projets/data';
 import { pois, sentiers } from '../features/carte/data';
-import { maire, adjoints, delegues, conseillers } from '../features/elus';
-import { urgences, locaux } from '../features/numeros-utiles';
+import { maire, adjoints, delegues, conseillers } from '../features/elus/data';
+import { urgences, locaux } from '../features/numeros-utiles/data';
 
 type CategoryMap = Record<string, string>;
 
@@ -66,6 +66,66 @@ function toISODate(frenchDate: string): string {
 	return `${year}-${month}-${day.padStart(2, '0')}`;
 }
 
+// Icône/couleur par catégorie, reprises telles quelles des `categoryMeta` en
+// dur dans chaque page statique d'origine (commerces/index.tsx,
+// vie-associative/index.tsx, etc.) — pour que le seed produise les mêmes
+// icônes/couleurs que le rendu statique, pas des valeurs par défaut.
+const COMMERCES_CATEGORY_META: Record<string, { icone: string; couleur: string }> = {
+	Alimentation: { icone: 'ShoppingBasket', couleur: 'leaf' },
+	Restauration: { icone: 'UtensilsCrossed', couleur: 'coral' },
+	'Cafés - Bars': { icone: 'Coffee', couleur: 'sunshine' },
+	Beauté: { icone: 'Sparkles', couleur: 'coral' },
+	Santé: { icone: 'Stethoscope', couleur: 'primary' },
+	'Garages - mécanique': { icone: 'Wrench', couleur: 'muted' },
+	'Artisans & entreprises': { icone: 'Hammer', couleur: 'leaf' },
+	Autres: { icone: 'Store', couleur: 'primary' }
+};
+
+const VIE_ASSOCIATIVE_CATEGORY_META: Record<string, { icone: string; couleur: string }> = {
+	'Éducation & famille': { icone: 'GraduationCap', couleur: 'primary' },
+	Sports: { icone: 'Trophy', couleur: 'coral' },
+	'Culture & patrimoine': { icone: 'Leaf', couleur: 'leaf' },
+	'Mémoire & solidarités': { icone: 'Flame', couleur: 'muted' },
+	'Engagement civique': { icone: 'Scale', couleur: 'sunshine' },
+	Nature: { icone: 'TreePine', couleur: 'leaf' }
+};
+
+const ENFANCE_JEUNESSE_CATEGORY_META: Record<string, { icone: string; couleur: string }> = {
+	École: { icone: 'School', couleur: 'coral' },
+	'Petite enfance': { icone: 'Star', couleur: 'sunshine' },
+	'Centre de loisirs': { icone: 'Users', couleur: 'primary' },
+	'Assistantes maternelles': { icone: 'Baby', couleur: 'leaf' }
+};
+
+const SPORTS_LOISIRS_CATEGORY_META: Record<string, { icone: string; couleur: string }> = {
+	'Équipements sportifs': { icone: 'Dumbbell', couleur: 'primary' },
+	'Sports collectifs': { icone: 'Trophy', couleur: 'coral' },
+	'Sports individuels': { icone: 'Medal', couleur: 'leaf' },
+	'Loisirs & plein air': { icone: 'TreePine', couleur: 'sunshine' }
+};
+
+const AGENDA_CATEGORY_META: Record<string, { couleur: string }> = {
+	'Conseil municipal': { couleur: 'primary' },
+	Manifestation: { couleur: 'coral' },
+	'Vie associative': { couleur: 'leaf' },
+	Cérémonie: { couleur: 'muted' }
+};
+
+const ACTUALITES_CATEGORY_META: Record<string, { couleur: string }> = {
+	Mairie: { couleur: 'primary' },
+	'Vie locale': { couleur: 'leaf' },
+	Travaux: { couleur: 'coral' },
+	Événements: { couleur: 'sunshine' }
+};
+
+const DOCUMENTS_CATEGORY_META: Record<string, { couleur: string }> = {
+	'Comptes-rendus': { couleur: 'primary' },
+	'Bulletins municipaux': { couleur: 'coral' },
+	Budget: { couleur: 'leaf' },
+	Arrêtés: { couleur: 'muted' },
+	Urbanisme: { couleur: 'muted' }
+};
+
 async function seed() {
 	const payload = await getPayload({ config });
 
@@ -79,7 +139,8 @@ async function seed() {
 		menu: 'commune',
 		items: commerces,
 		nameKey: 'name',
-		categoryKey: 'category'
+		categoryKey: 'category',
+		categoryMeta: COMMERCES_CATEGORY_META
 	});
 	await seedAnnuairePage(payload, {
 		title: 'Vie associative',
@@ -88,7 +149,8 @@ async function seed() {
 		items: associations,
 		nameKey: 'name',
 		categoryKey: 'category',
-		badgeKey: 'shortName'
+		badgeKey: 'shortName',
+		categoryMeta: VIE_ASSOCIATIVE_CATEGORY_META
 	});
 	await seedAnnuairePage(payload, {
 		title: 'Enfance & jeunesse',
@@ -96,7 +158,8 @@ async function seed() {
 		menu: 'commune',
 		items: services,
 		nameKey: 'name',
-		categoryKey: 'category'
+		categoryKey: 'category',
+		categoryMeta: ENFANCE_JEUNESSE_CATEGORY_META
 	});
 	await seedAnnuairePage(payload, {
 		title: 'Sports & loisirs',
@@ -104,7 +167,8 @@ async function seed() {
 		menu: 'commune',
 		items: activities,
 		nameKey: 'name',
-		categoryKey: 'category'
+		categoryKey: 'category',
+		categoryMeta: SPORTS_LOISIRS_CATEGORY_META
 	});
 
 	console.log('--- Agenda ---');
@@ -197,6 +261,11 @@ async function seedAnnuairePage<T extends AnnuaireSourceItem>(
 		nameKey: keyof T;
 		categoryKey: keyof T;
 		badgeKey?: keyof T;
+		// Icône/couleur par catégorie (décision 10) — reprises du `categoryMeta`
+		// de chaque page statique d'origine. Sans ça, `categorie.icone`/`couleur`
+		// restent vides et tout s'affiche avec l'icône/couleur par défaut
+		// ("muted") — trouvé en testant contre la vraie base, pas en relisant.
+		categoryMeta?: Record<string, { icone?: string; couleur?: string }>;
 	}
 ) {
 	const page = await payload.create({
@@ -213,7 +282,11 @@ async function seedAnnuairePage<T extends AnnuaireSourceItem>(
 	const categoryNames = Array.from(new Set(opts.items.map((i) => String(i[opts.categoryKey]))));
 	const categories: CategoryMap = {};
 	for (const nom of categoryNames) {
-		const cat = await payload.create({ collection: 'categories', data: { nom, page: page.id } });
+		const meta = opts.categoryMeta?.[nom];
+		const cat = await payload.create({
+			collection: 'categories',
+			data: { nom, page: page.id, icone: meta?.icone, couleur: meta?.couleur }
+		});
 		categories[nom] = String(cat.id);
 	}
 
@@ -266,7 +339,10 @@ async function seedAgenda(payload: Awaited<ReturnType<typeof getPayload>>) {
 	const categoryNames = Array.from(new Set(events.map((e) => e.category)));
 	const categories: CategoryMap = {};
 	for (const nom of categoryNames) {
-		const cat = await payload.create({ collection: 'categories', data: { nom, page: page.id } });
+		const cat = await payload.create({
+			collection: 'categories',
+			data: { nom, page: page.id, couleur: AGENDA_CATEGORY_META[nom]?.couleur }
+		});
 		categories[nom] = String(cat.id);
 	}
 
@@ -301,7 +377,10 @@ async function seedActualites(payload: Awaited<ReturnType<typeof getPayload>>) {
 	const categoryNames = Array.from(new Set(articles.map((a) => a.cat)));
 	const categories: CategoryMap = {};
 	for (const nom of categoryNames) {
-		const cat = await payload.create({ collection: 'categories', data: { nom, page: page.id } });
+		const cat = await payload.create({
+			collection: 'categories',
+			data: { nom, page: page.id, couleur: ACTUALITES_CATEGORY_META[nom]?.couleur }
+		});
 		categories[nom] = String(cat.id);
 	}
 
@@ -341,7 +420,10 @@ async function seedDocuments(payload: Awaited<ReturnType<typeof getPayload>>) {
 	const categoryNames = Array.from(new Set(docs.map((d) => d.type)));
 	const categories: CategoryMap = {};
 	for (const nom of categoryNames) {
-		const cat = await payload.create({ collection: 'categories', data: { nom, page: page.id } });
+		const cat = await payload.create({
+			collection: 'categories',
+			data: { nom, page: page.id, couleur: DOCUMENTS_CATEGORY_META[nom]?.couleur }
+		});
 		categories[nom] = String(cat.id);
 	}
 
@@ -437,14 +519,21 @@ async function seedNumerosUtiles(
 // ---------------------------------------------------------------------------
 
 async function seedTrombinoscope(payload: Awaited<ReturnType<typeof getPayload>>) {
-	// Simplification assumée : le schéma `membres` (décision 23) n'a pas de
-	// sous-liste "commissions" dédiée — jointes dans `fonction` en texte.
-	// À revoir si on veut un vrai champ structuré pour les commissions.
+	// Schéma étoffé en décision 38 : `role` (discriminant de regroupement),
+	// `commissions` (liste structurée), `note` — plus besoin de tout replier
+	// dans `fonction` en texte libre.
+	const toCommissions = (e: { commissions?: string[] }) => (e.commissions ?? []).map((nom) => ({ nom }));
+
 	const membres = [
-		{ nom: `M. ${maire.name}`, fonction: `${maire.role}${maire.note ? ` — ${maire.note}` : ''}` },
-		...adjoints.map((e) => ({ nom: e.name, fonction: formatFonction(e) })),
-		...delegues.map((e) => ({ nom: e.name, fonction: formatFonction(e) })),
-		...conseillers.map((e) => ({ nom: e.name, fonction: formatFonction(e) }))
+		{ nom: maire.name, fonction: maire.role, role: 'maire', note: maire.note },
+		...adjoints.map((e) => ({ nom: e.name, fonction: e.role, role: 'adjoint', commissions: toCommissions(e) })),
+		...delegues.map((e) => ({ nom: e.name, fonction: e.role, role: 'delegue', commissions: toCommissions(e) })),
+		...conseillers.map((e) => ({
+			nom: e.name,
+			fonction: e.role,
+			role: 'conseiller',
+			commissions: toCommissions(e)
+		}))
 	];
 
 	await payload.create({
@@ -460,11 +549,6 @@ async function seedTrombinoscope(payload: Awaited<ReturnType<typeof getPayload>>
 			}
 		}
 	});
-}
-
-function formatFonction(e: { role: string; commissions?: string[] }) {
-	if (!e.commissions?.length) return e.role;
-	return `${e.role} — ${e.commissions.join(', ')}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -587,7 +671,7 @@ async function seedPoisSentiers(payload: Awaited<ReturnType<typeof getPayload>>)
 // ---------------------------------------------------------------------------
 
 async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
-	await payload.create({
+	const demarchesPage = await payload.create({
 		collection: 'pages',
 		data: { title: 'Mes démarches', slug: 'demarches', menu: 'essentiel', gabarit: 'liste', liste: { layoutType: 'demarches' } }
 	});
@@ -595,7 +679,7 @@ async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
 		collection: 'pages',
 		data: { title: 'Histoire', slug: 'histoire', menu: 'tourisme', gabarit: 'editorial' }
 	});
-	await payload.create({
+	const communePage = await payload.create({
 		collection: 'pages',
 		data: { title: 'La commune', slug: 'vivre/la-commune', menu: 'commune', gabarit: 'editorial' }
 	});
@@ -607,13 +691,88 @@ async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
 		collection: 'pages',
 		data: { title: 'Horaires & informations', slug: 'mairie/horaires', menu: 'mairie', gabarit: 'horaires' }
 	});
+	const numerosUtilesPage = await payload.find({
+		collection: 'pages',
+		where: { slug: { equals: 'numeros-utiles' } },
+		limit: 1
+	});
+
+	// Accueil (décision 9, singleton) — contenu réel plutôt qu'une coquille
+	// vide : `hero.titre`/`mayorWord.citation` etc. sont `required` (pas de
+	// cas particulier pour l'Accueil, cohérent avec décision 2/3), une
+	// coquille vide échoue à la validation. Seuls les champs `image` restent
+	// vides (aucun vrai fichier disponible, décision 32).
 	await payload.create({
 		collection: 'pages',
-		// slug 'accueil' (pas '/') — `menu` obligatoire même pour l'Accueil (décision
-		// 2/3, pas de cas particulier), assigné à 'essentiel' faute de section
-		// pertinente ; la résolution slug→href ('/') se fera au niveau du routage
-		// (item 14), pas ici.
-		data: { title: 'Accueil', slug: 'accueil', menu: 'essentiel', gabarit: 'accueil' }
+		// slug 'accueil' (pas '/') — la résolution slug→href ('/') se fait au
+		// niveau du routage (item 14), pas ici.
+		data: {
+			title: 'Accueil',
+			slug: 'accueil',
+			menu: 'essentiel',
+			gabarit: 'accueil',
+			accueil: {
+				hero: {
+					titre: 'Bienvenue sur le site de la Mairie de Saint-Hilaire-Bonneval, au cœur de la Haute-Vienne.',
+					description:
+						"Entre rivières, forêts et patrimoine vivant, la commune vous accueille. Retrouvez ici vos démarches, l'actualité municipale et toutes les informations utiles à la vie locale.",
+					boutonPrincipalLabel: 'Effectuer une démarche',
+					boutonPrincipalLien: demarchesPage.id,
+					boutonSecondaireLabel: 'Découvrir la commune',
+					boutonSecondaireLien: communePage.id
+				},
+				quickAccessItems: [
+					{
+						icone: 'FileText',
+						titre: 'Démarches administratives',
+						description: 'État civil, urbanisme, demandes en quelques clics.',
+						lien: demarchesPage.id
+					},
+					{
+						icone: 'Gavel',
+						titre: 'Délibérations & Actes',
+						description: 'Comptes-rendus du conseil municipal et arrêtés.',
+						lien: demarchesPage.id
+					},
+					{
+						icone: 'Phone',
+						titre: 'Services & Urgences',
+						description: 'Numéros utiles et services publics à proximité.',
+						lien: numerosUtilesPage.docs[0]?.id ?? demarchesPage.id
+					}
+				],
+				mayorWord: {
+					citation:
+						"Saint-Hilaire-Bonneval, c'est l'histoire d'un village qui avance sans renier ses racines. Un lieu où la nature dicte le tempo, où les liens se tissent autour de projets partagés.",
+					nomSignataire: 'Monsieur le Maire',
+					statNombre: '1 022',
+					statLibelle: 'Habitants au cœur du Limousin'
+				},
+				discoverCards: [
+					{
+						etiquette: 'Nature',
+						titre: "Nos étangs et plans d'eau",
+						description: "Pêche, baignade et balades au fil de l'eau dans un cadre préservé."
+					},
+					{
+						etiquette: 'Randonnée',
+						titre: 'Sentiers du Limousin',
+						description: 'Plus de 40 km de chemins balisés à travers forêts et bocages.'
+					},
+					{
+						etiquette: 'Patrimoine',
+						titre: "L'âme du village",
+						description: 'Église, lavoirs, croix de chemin : un héritage qui se raconte.'
+					}
+				],
+				cta: {
+					titre: 'Nous contacter',
+					description:
+						'La mairie vous accueille du lundi au vendredi, de 9h à 12h et de 14h à 17h. Le secrétariat reste à votre disposition pour toute démarche.',
+					boutonLabel: 'Prendre rendez-vous'
+				}
+			}
+		}
 	});
 	await payload.create({
 		collection: 'pages',
@@ -621,7 +780,7 @@ async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
 	});
 
 	console.log(
-		'Démarches, Histoire, La commune, Contact, Horaires, Accueil, Carte interactive : structure créée, contenu riche à compléter manuellement dans l’admin.'
+		'Démarches, Histoire, La commune, Contact, Horaires, Carte interactive : structure créée, contenu riche à compléter manuellement dans l’admin. Accueil : contenu réel (sauf images, aucun fichier disponible).'
 	);
 }
 

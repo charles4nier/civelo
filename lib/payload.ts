@@ -734,7 +734,7 @@ export async function getCarteData() {
 				category: p.categorie,
 				lat: p.latitude,
 				lng: p.longitude,
-				image: (typeof p.image === 'object' ? p.image?.url : undefined) ?? ''
+				image: (typeof p.image === 'object' ? p.image?.url : undefined) || '/saint-hilaire-bonneval-village.jpg'
 			})),
 			sentiers: sentiersDocs.map((s) => ({
 				id: String(s.id),
@@ -743,7 +743,7 @@ export async function getCarteData() {
 				distance: s.distance ?? '',
 				duration: s.duree ?? '',
 				coordinates: (s.trace ?? []).map((c): [number, number] => [c.lat, c.lng]),
-				image: (typeof s.image === 'object' ? s.image?.url : undefined) ?? ''
+				image: (typeof s.image === 'object' ? s.image?.url : undefined) || '/saint-hilaire-bonneval-forest.jpg'
 			}))
 		};
 	} catch (err) {
@@ -783,8 +783,13 @@ type PayloadAccueil = {
 	cta?: { titre?: string; description?: string; boutonLabel?: string; coordonnees?: PayloadContactItem[] };
 };
 
-function uploadUrl(u: PayloadUpload | undefined): string {
-	return (typeof u === 'object' ? u?.url : undefined) ?? '';
+// Repli sur `fallback` (jamais une chaîne vide) — `<Image src="">` déclenche
+// une vraie erreur React/Next, pas juste un visuel dégradé. Découvert en
+// testant contre la vraie base (item 10) : les champs `image` laissés vides
+// au seed (décision 32, pas de vrai fichier disponible) produisaient
+// exactement ce cas.
+function uploadUrl(u: PayloadUpload | undefined, fallback: string): string {
+	return (typeof u === 'object' ? u?.url : undefined) || fallback;
 }
 
 // Item 13 — gabarit Accueil (singleton, décision 9) : recherché par `gabarit`
@@ -806,7 +811,7 @@ export async function getAccueilData() {
 		return {
 			hero: accueil.hero
 				? {
-						image: uploadUrl(accueil.hero.image),
+						image: uploadUrl(accueil.hero.image, '/saint-hilaire-bonneval-hero.jpg'),
 						titre: accueil.hero.titre ?? '',
 						description: accueil.hero.description,
 						boutonPrincipal: accueil.hero.boutonPrincipalLabel
@@ -829,7 +834,7 @@ export async function getAccueilData() {
 			})),
 			mayorWord: accueil.mayorWord
 				? {
-						image: uploadUrl(accueil.mayorWord.image),
+						image: uploadUrl(accueil.mayorWord.image, '/saint-hilaire-bonneval-village.jpg'),
 						citation: accueil.mayorWord.citation,
 						nomSignataire: accueil.mayorWord.nomSignataire,
 						statNombre: accueil.mayorWord.statNombre,
@@ -840,12 +845,17 @@ export async function getAccueilData() {
 				const poiId = typeof c.lienPoi === 'object' ? c.lienPoi?.id : undefined;
 				const sentierId = typeof c.lienSentier === 'object' ? c.lienSentier?.id : undefined;
 				const id = poiId ?? sentierId;
+				const DISCOVER_FALLBACK_IMAGES = [
+					'/saint-hilaire-bonneval-lake.jpg',
+					'/saint-hilaire-bonneval-forest.jpg',
+					'/saint-hilaire-bonneval-village.jpg'
+				];
 				return {
 					key: String(i),
 					etiquette: c.etiquette,
 					titre: c.titre,
 					description: c.description,
-					image: uploadUrl(c.image),
+					image: uploadUrl(c.image, DISCOVER_FALLBACK_IMAGES[i % DISCOVER_FALLBACK_IMAGES.length]),
 					href: id ? `/tourisme/carte-interactive?id=${id}` : '/tourisme/carte-interactive'
 				};
 			}),

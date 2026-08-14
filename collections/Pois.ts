@@ -48,10 +48,13 @@ export const Pois: CollectionConfig = {
 			required: true
 		},
 		{
+			// Pas `required` — le seed (item 10) ne dispose d'aucun vrai fichier
+			// à uploader (images Unsplash en URL dans les données statiques),
+			// laissé vide, à compléter dans l'admin (même logique que
+			// `itemsDocument.fichier`, décision 38).
 			name: 'image',
 			type: 'upload',
-			relationTo: 'media',
-			required: true
+			relationTo: 'media'
 		}
 	]
 };

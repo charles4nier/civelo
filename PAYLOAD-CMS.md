@@ -464,6 +464,21 @@ Vérifié : `curl /demarches` sert toujours la route statique (200, inchangé) ;
 
 **Phase 5 terminée.** Les 12 gabarits/cartes sont branchés sur Payload (item 13) et une page créée depuis l'admin sans fichier de route dédié est désormais servable (item 14).
 
+### 42. Première exécution réelle contre une vraie base — plusieurs bugs bloquants trouvés et corrigés
+
+MongoDB local en container Docker isolé (nom, volume et réseau dédiés — ne touche pas aux autres containers de la machine), `DATABASE_URI`/`PAYLOAD_SECRET` dans `.env` (gitignored). Premier lancement réel de `scripts/seed.ts` (jamais exécuté avant, décision 32) et premier accès réel à `/admin`.
+
+**Bugs bloquants trouvés en exécutant, pas en relisant** :
+- `itemsDocument.fichier`, `Pois.image`, `Sentiers.image`, `accueil.hero.image`, `accueil.mayorWord.image`, `accueil.discoverCards[].image` étaient `required: true` alors qu'aucun vrai fichier n'est disponible pour le seed (décision 32) — validation Payload en échec, seed impossible. Passés en optionnels, à compléter manuellement dans l'admin (comportement documenté depuis le début, juste jamais appliqué correctement au schéma).
+- `seedTrombinoscope` était resté sur l'ancien schéma `fonction` en texte libre, jamais mis à jour après l'ajout de `role`/`commissions`/`note` (décision 38) — réécrit.
+- `getPageBySlug` n'avait pas de `try/catch` (seule fonction de `lib/payload.ts` dans ce cas) — corrigé, cohérent avec le reste.
+- L'Accueil (coquille vide au départ) a des champs texte `required` (`hero.titre`, `mayorWord.citation`) qui échouaient aussi — `seedPageShells` réécrit pour y mettre du vrai contenu (repris des fallbacks de `features/home/`), y compris de vraies relations vers les pages Démarches/Numéros utiles pour `quickAccessItems`/`boutonPrincipalLien`.
+- `<Image src="">` : les champs `image` vides remontaient une chaîne vide plutôt que `undefined`/un repli — Next.js refuse ça. `uploadUrl()` (`lib/payload.ts`) prend maintenant un repli obligatoire vers un visuel statique existant.
+- **Catégories sans icône/couleur** : `seedAnnuairePage`/`seedAgenda`/`seedActualites`/`seedDocuments` créaient les catégories sans reprendre les `categoryMeta` (icône/couleur) des pages statiques d'origine — tout s'affichait en gris/muted par défaut. Les mappings ont été extraits de chaque page statique et injectés dans le seed (`COMMERCES_CATEGORY_META`, `VIE_ASSOCIATIVE_CATEGORY_META`, etc.), pas de champ supplémentaire ajouté au schéma, juste des données manquantes au seed.
+- Le seed lui-même ne pouvait pas s'exécuter directement (`npx tsx scripts/seed.ts`) : il importait les données statiques depuis les fichiers `features/*/index.tsx` (composants React), qui embarquent maintenant des imports `.scss` via les composants `shared/components/*Layout` — invalide hors bundler. Les données pures (`articles`, `docs`, `maire`/`adjoints`/etc., `urgences`/`locaux`) ont été extraites dans des `data.ts` dédiés (même pattern déjà utilisé pour commerces/vie-associative/etc.), important uniquement ces fichiers depuis le script.
+
+Résultat vérifié : seed complet sans erreur (18 pages, 34 catégories avec icône/couleur réelles, 6 téléphones, 2 emails, 8 POI, 2 sentiers), site testé en dev ET en build de prod contre la vraie base (plus aucun repli statique déclenché), `/admin` accessible (propose la création du premier utilisateur — aucun `user` seedé, décision volontaire : les comptes se créent à la main, pas par script).
+
 ## Catalogue des gabarits (état actuel)
 
 | Gabarit | Type | Pages actuelles | Notes |
@@ -509,8 +524,8 @@ Phase 2 terminée.
 Phase 3 terminée.
 
 **Phase 4 — Intégration front**
-11. ~~Brancher les composants React existants sur Payload~~ — fait pour le Header (menu dynamique) et les 4 pages Annuaire, décision 33. Pattern établi, pas encore appliqué aux 14 autres pages (Démarches, Actualités, Documents, Budget & projets, Agenda, Trombinoscope, Éditorial, Catalogue de lieux, Numéros utiles, Carte interactive, Accueil)
-12. Menu dynamique ~~fait~~ (décision 33). Relations résolues au rendu (`resolvePageHref`, décision 14) : écrites, pas encore consommées — aucune page branchée n'a de champ `relationship` en jeu pour l'instant
+11. ~~Brancher les composants React existants sur Payload~~ — fait, décision 33 (Header + 4 pages Annuaire) puis étendu à tout le reste en décisions 37 à 40 (les 12 gabarits/cartes). Éditorial (Histoire/La commune) reste une exception partielle : branché dans la route générique (décision 41) mais les 2 pages statiques existantes restent en dur, pas de contenu réel migré (toujours du Lorem ipsum)
+12. ~~Menu dynamique~~ — fait (décision 33). ~~Relations résolues au rendu~~ (`resolvePageHref`, décision 14) — fait, consommée par la plupart des fonctions `lib/payload.ts` (liens de documents, boutons Hero, cartes Découvrir, etc.)
 
 **Phase 5 — Routage dynamique** (identifiée en discutant)
 13. ~~Extraire les 12 gabarits/cartes restants en composants réutilisables~~ — fait (décisions 37, 38, 39, 40)

@@ -291,7 +291,16 @@ export const Pages: CollectionConfig = {
 						{ name: 'titre', type: 'text', required: true },
 						categoryField('type'),
 						{ name: 'date', type: 'date', required: true },
-						{ name: 'fichier', type: 'upload', relationTo: 'documents', required: true }
+						{
+							// Pas `required` — décision 32 : le seed laisse ce champ
+							// vide (aucun vrai fichier disponible), à compléter
+							// manuellement dans l'admin ensuite. `required: true`
+							// bloquait littéralement le seed (erreur de validation
+							// réelle, découverte en l'exécutant).
+							name: 'fichier',
+							type: 'upload',
+							relationTo: 'documents'
+						}
 					]
 				},
 
@@ -575,7 +584,10 @@ export const Pages: CollectionConfig = {
 					name: 'hero',
 					type: 'group',
 					fields: [
-						{ name: 'image', type: 'upload', relationTo: 'media', required: true },
+						// Pas `required` sur `image` — même raison que
+						// `Pois.image`/`itemsDocument.fichier` (décision 38+) :
+						// aucun vrai fichier disponible au seed, à uploader ensuite.
+						{ name: 'image', type: 'upload', relationTo: 'media' },
 						{ name: 'titre', type: 'text', required: true },
 						{ name: 'description', type: 'textarea' },
 						{ name: 'boutonPrincipalLabel', type: 'text' },
@@ -612,7 +624,7 @@ export const Pages: CollectionConfig = {
 					name: 'mayorWord',
 					type: 'group',
 					fields: [
-						{ name: 'image', type: 'upload', relationTo: 'media', required: true },
+						{ name: 'image', type: 'upload', relationTo: 'media' },
 						{ name: 'citation', type: 'textarea', required: true },
 						{ name: 'nomSignataire', type: 'text' },
 						{ name: 'statNombre', type: 'text' },
@@ -628,7 +640,7 @@ export const Pages: CollectionConfig = {
 						{ name: 'etiquette', type: 'text' },
 						{ name: 'titre', type: 'text', required: true },
 						{ name: 'description', type: 'textarea' },
-						{ name: 'image', type: 'upload', relationTo: 'media', required: true },
+						{ name: 'image', type: 'upload', relationTo: 'media' },
 						{
 							name: 'lienPoi',
 							type: 'relationship',

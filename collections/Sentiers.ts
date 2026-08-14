@@ -48,10 +48,10 @@ export const Sentiers: CollectionConfig = {
 			]
 		},
 		{
+			// Pas `required` — même raison que `Pois.image`.
 			name: 'image',
 			type: 'upload',
-			relationTo: 'media',
-			required: true
+			relationTo: 'media'
 		}
 	]
 };
