@@ -1,0 +1,12 @@
+.label-with-info {
+	display: inline-flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.label-with-info__explanation {
+	font-weight: 400;
+	font-style: italic;
+	color: var(--theme-elevation-500);
+}

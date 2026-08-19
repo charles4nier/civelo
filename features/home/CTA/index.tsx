@@ -1,11 +1,11 @@
-import { Mail, MapPin, Phone } from 'lucide-react';
+import { Mail, MapPin, Phone, Globe } from 'lucide-react';
 import type { ContactItem } from '@shared/components/ContactCard';
 import './style.scss';
 
 const CLASS_NAME = 'cta';
 
-const ICONS = { address: MapPin, phone: Phone, email: Mail, hours: Phone } as const;
-const LABELS = { address: 'Adresse', phone: 'Téléphone', email: 'Email', hours: 'Horaires' } as const;
+const ICONS = { address: MapPin, phone: Phone, email: Mail, hours: Phone, website: Globe } as const;
+const LABELS = { address: 'Adresse', phone: 'Téléphone', email: 'Email', hours: 'Horaires', website: 'Site web' } as const;
 
 export type CTAData = {
 	titre?: string;

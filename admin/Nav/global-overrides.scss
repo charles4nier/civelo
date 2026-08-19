@@ -1,0 +1,112 @@
+// Décision 46 — réhabillage global de l'admin Payload par défaut (pas
+// seulement la sidebar sur-mesure) : accent chaud partout, plus d'arrondi,
+// bordures moins présentes. Pas de config `admin.css` disponible dans cette
+// version de Payload (vérifié) — ce fichier est chargé globalement via
+// `Client.tsx`, qui est toujours monté (fait partie de la sidebar,
+// présente sur tout l'admin), donc ses règles non scopées (sans préfixe
+// `.admin-nav`) s'appliquent à l'ensemble des écrans Payload par défaut.
+//
+// Payload encapsule ses propres styles dans `@layer payload-default,
+// payload;`. Pour une déclaration `!important`, une couche nommée gagne
+// TOUJOURS face à des styles hors couche (contre-intuitif — l'inverse est
+// vrai pour les déclarations normales). Déclarer notre propre couche en
+// premier ici la place avant celles de Payload dans l'ordre des couches,
+// ce qui lui donne la priorité sur les `!important` de Payload aussi —
+// trouvé en cherchant pourquoi "Organisation de la page" gardait la police
+// native de Payload malgré nos `!important`.
+@layer overrides-mairie, payload-default, payload;
+
+@layer overrides-mairie {
+	:root {
+		--style-radius-s: 8px !important;
+		--style-radius-m: 12px !important;
+		--style-radius-l: 16px !important;
+		--theme-border-color: #{oklch(0.91 0.012 240 / 0.6)} !important;
+	}
+
+	// Bouton "+ Ajouter" des champs répétables (array) — le plus utilisé au
+	// quotidien pour ajouter une actu/un événement/une fiche annuaire.
+	// Converti d'un lien texte discret en un vrai bouton plein, chaud et
+	// arrondi.
+	.array-field__add-row.btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 8px 18px 8px 10px !important;
+		border-radius: 999px !important;
+		background: $terracotta !important;
+		--btn-color: #fff;
+
+		.btn__icon {
+			background: transparent !important;
+			border-color: rgba(255, 255, 255, 0.55) !important;
+			color: #fff !important;
+		}
+
+		.btn__label {
+			color: #fff !important;
+			font-weight: 700 !important;
+		}
+
+		&:hover:not(:disabled) {
+			background: oklch(0.6 0.19 28) !important;
+		}
+	}
+
+	// Boutons d'action principaux (Enregistrer, Créer...) — même accent chaud
+	// que le reste de l'admin plutôt que le noir/gris par défaut de Payload.
+	.btn--style-primary {
+		--bg-color: #{$terracotta} !important;
+		--hover-bg: #{oklch(0.6 0.19 28)} !important;
+		--color: #fff !important;
+		border-radius: 999px !important;
+	}
+
+	// Aide contextuelle sous un champ (ex. "Le nom de la page...") — en
+	// italique pour la distinguer visuellement du contenu, pas juste en gris.
+	.field-description {
+		font-style: italic;
+	}
+
+	// Espace entre le titre d'un champ tableau (ex. le titre de page repris
+	// en direct) et les lignes/le tableau qui suit — jugé trop collé.
+	.array-field__header {
+		margin-bottom: 14px;
+	}
+
+	// "Organisation de la page" retiré — pas par CSS (peu fiable, dépendait
+	// d'une hypothèse de structure HTML non vérifiable), mais directement à
+	// la source : `admin/HiddenLabel` (ne rend rien) sur le groupe racine de
+	// chaque gabarit dans `collections/Pages.ts`. "Informations générales"
+	// suffit comme repère de haut niveau ; les "Section ..." juste en dessous.
+	.group-field__title,
+	.array-field__header .field-label {
+		font-size: 18px !important;
+		font-weight: 800 !important;
+		color: $coral !important;
+	}
+
+	// Ligne de guide à gauche des groupes imbriqués (ex. les sections de
+	// l'Accueil, imbriquées dans le groupe du gabarit) — retirée, jugée
+	// inutile.
+	.group-field--gutter {
+		border-left: none !important;
+		padding-left: 0 !important;
+	}
+
+	// "Organisation de la page" collé au tableau qui suit juste en dessous
+	// (ex. le tableau Liste dans un gabarit) — pas assez d'air entre les deux.
+	// Pas de trait de séparation (retiré sur demande, essayé puis refusé).
+	.group-field__header {
+		margin-bottom: 24px !important;
+	}
+
+	// Retour client : pas d'encadré (bordure/fond/carte) autour des sections
+	// — les intitulés ("Section d'introduction", "Section Découverte"...)
+	// suffisent à se repérer. Juste de l'espace entre chaque section, pas de
+	// boîte.
+	.group-field--top-level,
+	.array-field {
+		margin-bottom: 28px !important;
+	}
+}

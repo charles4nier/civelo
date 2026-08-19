@@ -31,6 +31,10 @@ export const Users: CollectionConfig = {
 		delete: isAdminOrAbove
 	},
 	fields: [
+		// Décision 69 — nom/prénom pour le "Bonjour {prénom}" du tableau de
+		// bord sur-mesure (admin/Dashboard) ; jusqu'ici seul l'email existait.
+		{ name: 'prenom', type: 'text', required: true, label: 'Prénom' },
+		{ name: 'nom', type: 'text', required: true, label: 'Nom' },
 		{
 			name: 'role',
 			type: 'select',

@@ -143,38 +143,46 @@ function toIconVariant(value: string | undefined): IconVariant {
 	return (ICON_VARIANTS as string[]).includes(value ?? '') ? (value as IconVariant) : 'muted';
 }
 
-type PayloadCategory = { id: string; nom: string; icone?: string; couleur?: string };
-type PayloadContactItem = {
-	type: 'address' | 'hours' | 'phone' | 'email';
-	valeur?: string;
-	telephone?: { numero: string } | string;
-	email?: { adresse: string } | string;
+// Décision 55 — `icone` est désormais une relation vers la collection
+// `icones` (texte libre jugé pas intuitif, même logique que la décision 49
+// sur téléphones/emails), pas un nom de composant lucide-react en clair.
+type PayloadIconRelation = { icone?: string; nom?: string } | string;
+function resolveIconName(rel: PayloadIconRelation | undefined, fallback: string): string;
+function resolveIconName(rel: PayloadIconRelation | undefined): string | undefined;
+function resolveIconName(rel: PayloadIconRelation | undefined, fallback?: string): string | undefined {
+	return (typeof rel === 'object' ? rel?.icone : undefined) ?? fallback;
+}
+
+type PayloadCategory = { id: string; nom: string; icone?: PayloadIconRelation; couleur?: string };
+// Décision 48 (annule décision 22) — plus de tableau type+valeur : un seul
+// jeu adresse/téléphone/email direct, tous optionnels. Décision 49 (annule
+// décision 22) — `telephone`/`email` redeviennent des chaînes directes, plus
+// une relation vers une collection `telephones`/`emails` (jugée pas
+// intuitive à l'usage, surtout dans les fiches).
+type PayloadContactGroup = {
+	adresse?: string;
+	telephone?: string;
+	email?: string;
+	siteWeb?: string;
 };
-type PayloadAnnuaireItem = {
+// Décision 50 — plus de sous-groupe `contacts` : adresse/téléphone/email
+// mis à plat directement sur la fiche, pour suivre le flux normal des
+// champs (plus de `group-field--within-group` visuel dans l'admin).
+type PayloadAnnuaireItem = PayloadContactGroup & {
 	nom: string;
 	categorie: PayloadCategory | string;
 	badge?: string;
 	description?: string;
-	contacts?: PayloadContactItem[];
 };
 
-function mapContacts(contacts: PayloadContactItem[] | undefined): ContactItem[] {
-	if (!contacts) return [];
-	const mapped: (ContactItem | null)[] = contacts.map((c) => {
-		if (c.type === 'address' || c.type === 'hours') {
-			return c.valeur ? { type: c.type, value: c.valeur } : null;
-		}
-		if (c.type === 'phone') {
-			const numero = typeof c.telephone === 'object' ? c.telephone?.numero : undefined;
-			return numero ? { type: 'phone', value: numero } : null;
-		}
-		if (c.type === 'email') {
-			const adresse = typeof c.email === 'object' ? c.email?.adresse : undefined;
-			return adresse ? { type: 'email', value: adresse } : null;
-		}
-		return null;
-	});
-	return mapped.filter((c): c is ContactItem => c !== null);
+function mapContactGroup(group: PayloadContactGroup | undefined): ContactItem[] {
+	if (!group) return [];
+	const items: ContactItem[] = [];
+	if (group.adresse) items.push({ type: 'address', value: group.adresse });
+	if (group.telephone) items.push({ type: 'phone', value: group.telephone });
+	if (group.email) items.push({ type: 'email', value: group.email });
+	if (group.siteWeb) items.push({ type: 'website', value: group.siteWeb });
+	return items;
 }
 
 // Item 11 — utilisé par les 4 pages Annuaire (Commerces, Vie associative,
@@ -198,13 +206,13 @@ export async function getAnnuaireItems(slug: string): Promise<AnnuaireCardData[]
 			const cat = typeof item.categorie === 'object' ? item.categorie : undefined;
 			return {
 				key: item.nom,
-				icon: cat?.icone ?? 'HelpCircle',
+				icon: resolveIconName(cat?.icone, 'HelpCircle'),
 				iconVariant: toIconVariant(cat?.couleur),
 				category: cat?.nom ?? '',
 				name: item.nom,
 				badge: item.badge,
 				description: item.description,
-				contacts: mapContacts(item.contacts)
+				contacts: mapContactGroup(item)
 			};
 		});
 	} catch (err) {
@@ -395,7 +403,7 @@ export async function getBudgetProjetItems(slug: string) {
 type PayloadDemarcheItem = {
 	titre: string;
 	categorie: PayloadCategory | string;
-	icone?: string;
+	icone?: PayloadIconRelation;
 	resume: string;
 	// JSON Lexical brut (SerializedEditorState) — pas typé finement ici,
 	// laissé à l'appelant de le passer à <RichText> (voir
@@ -426,7 +434,7 @@ export async function getDemarchesItems(slug: string) {
 			return {
 				key: String(i),
 				category: cat?.nom ?? '',
-				icon: item.icone ?? 'HelpCircle',
+				icon: resolveIconName(item.icone, 'HelpCircle'),
 				title: item.titre,
 				summary: item.resume,
 				contenu: item.contenu
@@ -486,7 +494,7 @@ type PayloadCatalogueNote = { texte: string; type?: 'info' | 'condition' };
 type PayloadCatalogueSalle = {
 	nom: string;
 	description?: string;
-	icone?: string;
+	icone?: PayloadIconRelation;
 	groupesTarifs?: PayloadCatalogueGroupe[];
 	notes?: PayloadCatalogueNote[];
 };
@@ -509,7 +517,7 @@ export async function getCatalogueLieuxItems(slug: string) {
 			key: String(i),
 			nom: s.nom,
 			description: s.description,
-			icone: s.icone,
+			icone: resolveIconName(s.icone),
 			groupesTarifs: (s.groupesTarifs ?? []).map((g) => ({ label: g.label, lignes: g.lignes ?? [] })),
 			notes: (s.notes ?? []).map((n) => ({ texte: n.texte, type: n.type ?? 'info' }))
 		}));
@@ -519,21 +527,15 @@ export async function getCatalogueLieuxItems(slug: string) {
 	}
 }
 
-type PayloadContactCoordonnee = PayloadContactItem & { description?: string };
+// Décision 50 — plus de sous-groupe `coordonnees` : adresse/téléphone/email
+// mis à plat directement sur `contact`, pour suivre le flux normal des
+// champs de la section. `precision` (était `coordonnees.description`)
+// renommé pour ne pas entrer en collision avec la description de page.
+type PayloadContact = PayloadContactGroup & { description?: string; precision?: string; formulaireActif?: boolean };
 
-const CONTACT_TYPE_META: Record<
-	PayloadContactCoordonnee['type'],
-	{ icon: string; iconVariant: IconVariant; category: string }
-> = {
-	phone: { icon: 'Phone', iconVariant: 'primary', category: 'Par téléphone' },
-	email: { icon: 'Mail', iconVariant: 'leaf', category: 'Par email' },
-	address: { icon: 'MapPin', iconVariant: 'coral', category: 'En personne' },
-	hours: { icon: 'Clock', iconVariant: 'muted', category: 'Horaires' }
-};
-
-// Item 13 — gabarit Contact. `icon`/`iconVariant`/`category` sont dérivés du
-// `type` (décision 38), pas des champs éditeur en plus — évite d'ajouter des
-// champs redondants avec une info déjà présente.
+// Item 13 — gabarit Contact. Décision 48 : un seul jeu de coordonnées par
+// page (plus de tableau) — une carte par champ rempli (adresse/téléphone/
+// email), au lieu d'une carte par ligne de tableau.
 export async function getContactData(slug: string) {
 	try {
 		const payload = await getPayloadClient();
@@ -543,37 +545,67 @@ export async function getContactData(slug: string) {
 			depth: 1,
 			limit: 1
 		});
-		const page = docs[0] as unknown as
-			| { contact?: { coordonnees?: PayloadContactCoordonnee[]; formulaireActif?: boolean } }
-			| undefined;
-		const coordonnees = page?.contact?.coordonnees;
-		if (!coordonnees || coordonnees.length === 0) return null;
+		const page = docs[0] as unknown as { contact?: PayloadContact } | undefined;
+		const coord = page?.contact;
+		if (!coord) return null;
 
-		const cards = coordonnees
-			.map((c, i) => {
-				const meta = CONTACT_TYPE_META[c.type];
-				const value =
-					c.type === 'phone'
-						? typeof c.telephone === 'object'
-							? c.telephone?.numero
-							: undefined
-						: c.type === 'email'
-							? typeof c.email === 'object'
-								? c.email?.adresse
-								: undefined
-							: c.valeur;
-				if (!value) return null;
-				return {
-					key: String(i),
-					icon: meta.icon,
-					iconVariant: meta.iconVariant,
-					category: meta.category,
-					name: value,
-					description: c.description,
-					contacts: mapContacts([{ type: c.type, valeur: c.valeur, telephone: c.telephone, email: c.email }])
-				};
-			})
-			.filter((c): c is NonNullable<typeof c> => c !== null);
+		const cards: {
+			key: string;
+			icon: string;
+			iconVariant: IconVariant;
+			category: string;
+			name: string;
+			description?: string;
+			contacts: ContactItem[];
+		}[] = [];
+
+		if (coord.telephone) {
+			cards.push({
+				key: 'phone',
+				icon: 'Phone',
+				iconVariant: 'primary',
+				category: 'Par téléphone',
+				name: coord.telephone,
+				description: coord.precision,
+				contacts: [{ type: 'phone', value: coord.telephone }]
+			});
+		}
+
+		if (coord.email) {
+			cards.push({
+				key: 'email',
+				icon: 'Mail',
+				iconVariant: 'leaf',
+				category: 'Par email',
+				name: coord.email,
+				description: coord.precision,
+				contacts: [{ type: 'email', value: coord.email }]
+			});
+		}
+
+		if (coord.adresse) {
+			cards.push({
+				key: 'address',
+				icon: 'MapPin',
+				iconVariant: 'coral',
+				category: 'En personne',
+				name: coord.adresse,
+				description: coord.precision,
+				contacts: [{ type: 'address', value: coord.adresse }]
+			});
+		}
+
+		if (coord.siteWeb) {
+			cards.push({
+				key: 'website',
+				icon: 'Globe',
+				iconVariant: 'sunshine',
+				category: 'Sur le web',
+				name: coord.siteWeb,
+				description: coord.precision,
+				contacts: [{ type: 'website', value: coord.siteWeb }]
+			});
+		}
 
 		if (cards.length === 0) return null;
 		return { cards, formulaireActif: page?.contact?.formulaireActif ?? true };
@@ -584,7 +616,7 @@ export async function getContactData(slug: string) {
 }
 
 type PayloadUrgence = { numero: string; label: string; description?: string; couleur?: 'red' | 'blue' | 'muted' };
-type PayloadContactLocal = { label: string; detail?: string; telephone?: { numero: string } | string };
+type PayloadContactLocal = { label: string; detail?: string; telephone?: string };
 
 // Item 13 — gabarit Numéros utiles.
 export async function getNumerosUtilesData(slug: string) {
@@ -593,7 +625,7 @@ export async function getNumerosUtilesData(slug: string) {
 		const { docs } = await payload.find({
 			collection: 'pages',
 			where: { slug: { equals: slug } },
-			depth: 2,
+			depth: 1,
 			limit: 1
 		});
 		const page = docs[0] as unknown as
@@ -611,16 +643,13 @@ export async function getNumerosUtilesData(slug: string) {
 				desc: u.description,
 				color: u.couleur ?? 'muted'
 			})),
-			locaux: (locaux ?? []).map((l, i) => {
-				const numero = typeof l.telephone === 'object' ? l.telephone?.numero : undefined;
-				return {
-					key: String(i),
-					label: l.label,
-					number: numero ?? '',
-					detail: l.detail,
-					href: numero ? `tel:${numero.replace(/\s/g, '')}` : '#'
-				};
-			})
+			locaux: (locaux ?? []).map((l, i) => ({
+				key: String(i),
+				label: l.label,
+				number: l.telephone ?? '',
+				detail: l.detail,
+				href: l.telephone ? `tel:${l.telephone.replace(/\s/g, '')}` : '#'
+			}))
 		};
 	} catch (err) {
 		console.warn(`[payload] getNumerosUtilesData("${slug}") : base injoignable, repli sur les données statiques.`, err);
@@ -640,12 +669,12 @@ const JOUR_LABELS: Record<(typeof JOURS)[number], string> = {
 };
 
 type PayloadJourHoraire = { matin?: string; apresMidi?: string };
-type PayloadContactPratique = {
-	icone?: string;
+// Décision 50 — plus de sous-groupe `contacts` : mis à plat directement.
+type PayloadContactPratique = PayloadContactGroup & {
+	icone?: PayloadIconRelation;
 	label: string;
 	nom: string;
 	description?: string;
-	contacts?: PayloadContactItem[];
 };
 type PayloadHoraires = Partial<Record<(typeof JOURS)[number], PayloadJourHoraire>> & {
 	fermetures?: { libelle: string }[];
@@ -679,12 +708,12 @@ export async function getHorairesData(slug: string) {
 			fermetures: (horaires.fermetures ?? []).map((f) => f.libelle),
 			contacts: (horaires.contactsPratiques ?? []).map((c, i) => ({
 				key: String(i),
-				icon: c.icone ?? 'HelpCircle',
+				icon: resolveIconName(c.icone, 'HelpCircle'),
 				iconVariant: CONTACT_VARIANTS[i % CONTACT_VARIANTS.length],
 				category: c.label,
 				name: c.nom,
 				description: c.description,
-				contacts: mapContacts(c.contacts)
+				contacts: mapContactGroup(c)
 			}))
 		};
 	} catch (err) {
@@ -764,7 +793,7 @@ type PayloadAccueil = {
 		boutonSecondaireLabel?: string;
 		boutonSecondaireLien?: PayloadPageRelation;
 	};
-	quickAccessItems?: { icone?: string; titre: string; description?: string; lien?: PayloadPageRelation }[];
+	quickAccessItems?: { icone?: PayloadIconRelation; titre: string; description?: string; lien?: PayloadPageRelation }[];
 	mayorWord?: {
 		image?: PayloadUpload;
 		citation: string;
@@ -780,7 +809,8 @@ type PayloadAccueil = {
 		lienPoi?: PayloadPoiRelation;
 		lienSentier?: PayloadPoiRelation;
 	}[];
-	cta?: { titre?: string; description?: string; boutonLabel?: string; coordonnees?: PayloadContactItem[] };
+	// Décision 50 — plus de sous-groupe `coordonnees` : mis à plat directement.
+	cta?: PayloadContactGroup & { titre?: string; description?: string; boutonLabel?: string };
 };
 
 // Repli sur `fallback` (jamais une chaîne vide) — `<Image src="">` déclenche
@@ -827,7 +857,7 @@ export async function getAccueilData() {
 				: null,
 			quickAccessItems: (accueil.quickAccessItems ?? []).map((it, i) => ({
 				key: String(i),
-				icon: it.icone ?? 'HelpCircle',
+				icon: resolveIconName(it.icone, 'HelpCircle'),
 				title: it.titre,
 				desc: it.description,
 				href: resolvePageHref(it.lien) ?? '#'
@@ -864,7 +894,7 @@ export async function getAccueilData() {
 						titre: accueil.cta.titre,
 						description: accueil.cta.description,
 						boutonLabel: accueil.cta.boutonLabel,
-						contacts: mapContacts(accueil.cta.coordonnees)
+						contacts: mapContactGroup(accueil.cta)
 					}
 				: null
 		};
@@ -893,4 +923,89 @@ export function resolvePageHref(
 	if (!relation) return undefined;
 	if (typeof relation === 'string') return undefined; // non peuplé, à dépth>0 côté requête
 	return relation.slug ? `/${relation.slug}` : undefined;
+}
+
+// Décision 61 — en-tête/pied de page du site (jusqu'ici en dur). Repli sur
+// les valeurs qui étaient codées en dur (même logique que DEFAULT_NAV_LINKS)
+// si Payload est injoignable, pour ne jamais casser le rendu du site.
+
+export type IdentiteData = { titre: string; sousTitre?: string; logoUrl: string };
+
+export async function getIdentiteData(): Promise<IdentiteData> {
+	try {
+		const payload = await getPayloadClient();
+		const identite = (await payload.findGlobal({ slug: 'identite', depth: 1 })) as unknown as {
+			titre?: string;
+			sousTitre?: string;
+			logo?: PayloadUpload;
+		};
+		return {
+			titre: identite.titre || 'Saint-Hilaire-Bonneval',
+			sousTitre: identite.sousTitre,
+			logoUrl: uploadUrl(identite.logo, '/saint-hilaire-bonneval-logo.png')
+		};
+	} catch (err) {
+		console.warn('[payload] getIdentiteData() : base injoignable, repli sur les données statiques.', err);
+		return { titre: 'Saint-Hilaire-Bonneval', sousTitre: 'Haute-Vienne · 87260', logoUrl: '/saint-hilaire-bonneval-logo.png' };
+	}
+}
+
+export type BoutonEnteteData = { label: string; href: string };
+
+export async function getBoutonEnteteData(): Promise<BoutonEnteteData> {
+	try {
+		const payload = await getPayloadClient();
+		const bouton = (await payload.findGlobal({ slug: 'bouton-entete', depth: 1 })) as unknown as {
+			boutonLabel?: string;
+			boutonLien?: PayloadPageRelation;
+		};
+		return {
+			label: bouton.boutonLabel || 'Location de salles',
+			href: resolvePageHref(bouton.boutonLien) || '/location-salle'
+		};
+	} catch (err) {
+		console.warn('[payload] getBoutonEnteteData() : base injoignable, repli sur les données statiques.', err);
+		return { label: 'Location de salles', href: '/location-salle' };
+	}
+}
+
+export type FooterData = {
+	description: string;
+	adresse?: string;
+	telephone?: string;
+	email?: string;
+	siteWeb?: string;
+	joursOuverture?: string;
+	horaires?: string;
+	facebook?: string;
+	instagram?: string;
+};
+
+const FOOTER_FALLBACK: FooterData = {
+	description:
+		'Site officiel de la Mairie de Saint-Hilaire-Bonneval. Retrouvez ici toutes les informations relatives à la vie municipale, aux services publics et au territoire communal.',
+	adresse: 'Place de la Mairie, 87260 Saint-Hilaire-Bonneval',
+	joursOuverture: 'Lundi – Vendredi',
+	horaires: '9h–12h / 14h–17h'
+};
+
+export async function getFooterData(): Promise<FooterData> {
+	try {
+		const payload = await getPayloadClient();
+		const footer = (await payload.findGlobal({ slug: 'footer', depth: 0 })) as unknown as FooterData;
+		return {
+			description: footer.description || FOOTER_FALLBACK.description,
+			adresse: footer.adresse || FOOTER_FALLBACK.adresse,
+			telephone: footer.telephone,
+			email: footer.email,
+			siteWeb: footer.siteWeb,
+			joursOuverture: footer.joursOuverture || FOOTER_FALLBACK.joursOuverture,
+			horaires: footer.horaires || FOOTER_FALLBACK.horaires,
+			facebook: footer.facebook,
+			instagram: footer.instagram
+		};
+	} catch (err) {
+		console.warn('[payload] getFooterData() : base injoignable, repli sur les données statiques.', err);
+		return FOOTER_FALLBACK;
+	}
 }

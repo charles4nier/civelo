@@ -7,16 +7,34 @@ import { fr } from '@payloadcms/translations/languages/fr';
 import { Users } from './collections/Users';
 import { Pages } from './collections/Pages';
 import { Categories } from './collections/Categories';
-import { Telephones } from './collections/Telephones';
-import { Emails } from './collections/Emails';
+import { Icones } from './collections/Icones';
 import { Media } from './collections/Media';
 import { DocumentsCollection } from './collections/Documents';
 import { Pois } from './collections/Pois';
 import { Sentiers } from './collections/Sentiers';
+import { Identite } from './globals/Identite';
+import { BoutonEntete } from './globals/BoutonEntete';
+import { Footer } from './globals/Footer';
 
 export default buildConfig({
 	admin: {
-		user: Users.slug
+		user: Users.slug,
+		// Décision 43 — sidebar sur-mesure, remplace le nav par défaut de Payload.
+		components: {
+			Nav: '/admin/Nav',
+			// Décision 68 — logo Payload par défaut remplacé sur l'écran de
+			// connexion par l'identité du site.
+			graphics: {
+				Logo: '/admin/LoginLogo'
+			},
+			// Décision 69 — tableau de bord par défaut (grille de collections)
+			// remplacé par une page d'accueil qui salue l'utilisateur connecté.
+			views: {
+				dashboard: {
+					Component: '/admin/Dashboard'
+				}
+			}
+		}
 	},
 	i18n: {
 		supportedLanguages: { en, fr },
@@ -27,13 +45,13 @@ export default buildConfig({
 		Users,
 		Pages,
 		Categories,
-		Telephones,
-		Emails,
+		Icones,
 		Media,
 		DocumentsCollection,
 		Pois,
 		Sentiers
 	],
+	globals: [Identite, BoutonEntete, Footer],
 	secret: process.env.PAYLOAD_SECRET || '',
 	db: mongooseAdapter({
 		url: process.env.DATABASE_URI || ''

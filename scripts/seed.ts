@@ -18,14 +18,16 @@
  *   créées avec leur structure (titre, catégorie, résumé) mais `contenu`
  *   reste vide, à compléter dans l'éditeur riche texte de l'admin.
  * - Coordonnées (téléphones/emails) divergentes dans le code actuel selon
- *   l'endroit (ex. CTA Accueil vs page Contact, cf. décision 22) : ce script
- *   ne tranche PAS arbitrairement lequel est "le bon" — voir le commentaire
- *   dans `seedTelephonesEmails()`.
+ *   l'endroit (ex. CTA Accueil vs page Contact) : plus un souci depuis la
+ *   décision 49 (`telephone`/`email` en texte libre direct, plus de source
+ *   unique centralisée) — ce script ne les seed simplement plus (voir
+ *   `buildContacts` retirée en décision 50).
  *
  * Non exécuté dans cette session (pas de base connectée, choix explicite de
  * l'item 5). À lancer avec `DATABASE_URI` renseigné : `npx tsx scripts/seed.ts`.
  */
 
+import { fileURLToPath } from 'url';
 import { getPayload } from 'payload';
 import config from '../payload.config';
 
@@ -126,11 +128,74 @@ const DOCUMENTS_CATEGORY_META: Record<string, { couleur: string }> = {
 	Urbanisme: { couleur: 'muted' }
 };
 
+// Décision 55 — `icone` est désormais une relation vers la collection
+// `icones`, pas un nom de composant lucide-react en texte libre. Décision 58
+// — liste étendue à TOUTES les icônes déjà utilisées dans le code du site
+// (pas seulement celles réellement seedées par ce script) : audit exhaustif
+// de tout le projet (`grep icon: '...'`), y compris les icônes du contenu
+// statique de secours (`features/demarches/index.tsx`, `features/contact/
+// index.tsx`, `features/horaires/index.tsx`) pas encore migré dans Payload
+// (item 10, `itemsDemarches` non seedé) — demande explicite du client de
+// "reporter toutes les icônes qu'on avait jusqu'ici dans style-edito", pas
+// seulement celles déjà branchées à un champ éditable. Le super-admin peut
+// en ajouter d'autres ensuite depuis Paramètres > Icônes. Clé de
+// `SEED_ICONES` = nom du composant lucide-react, réutilisé comme clé de la
+// map retournée — évite de renommer tous les `icone: 'NomIcone'` littéraux
+// plus bas dans ce fichier.
+export const SEED_ICONES: { nom: string; icone: string }[] = [
+	{ nom: 'Question', icone: 'HelpCircle' },
+	{ nom: 'Alimentation', icone: 'ShoppingBasket' },
+	{ nom: 'Restauration', icone: 'UtensilsCrossed' },
+	{ nom: 'Café', icone: 'Coffee' },
+	{ nom: 'Beauté', icone: 'Sparkles' },
+	{ nom: 'Santé', icone: 'Stethoscope' },
+	{ nom: 'Mécanique', icone: 'Wrench' },
+	{ nom: 'Artisanat', icone: 'Hammer' },
+	{ nom: 'Commerce', icone: 'Store' },
+	{ nom: 'Éducation', icone: 'GraduationCap' },
+	{ nom: 'Trophée', icone: 'Trophy' },
+	{ nom: 'Nature', icone: 'Leaf' },
+	{ nom: 'Mémoire', icone: 'Flame' },
+	{ nom: 'Justice', icone: 'Scale' },
+	{ nom: 'Arbre', icone: 'TreePine' },
+	{ nom: 'École', icone: 'School' },
+	{ nom: 'Étoile', icone: 'Star' },
+	{ nom: 'Groupe', icone: 'Users' },
+	{ nom: 'Petite enfance', icone: 'Baby' },
+	{ nom: 'Musculation', icone: 'Dumbbell' },
+	{ nom: 'Médaille', icone: 'Medal' },
+	{ nom: 'Bâtiment', icone: 'Building2' },
+	{ nom: 'Immeuble', icone: 'Building' },
+	{ nom: 'Document', icone: 'FileText' },
+	{ nom: 'Démarche officielle', icone: 'Gavel' },
+	{ nom: 'Téléphone', icone: 'Phone' },
+	{ nom: 'Transport', icone: 'Bus' },
+	{ nom: 'Paiement', icone: 'CreditCard' },
+	{ nom: 'Solidarité', icone: 'Heart' },
+	{ nom: 'Courriel', icone: 'Mail' },
+	{ nom: 'Localisation', icone: 'MapPin' },
+	{ nom: 'État civil', icone: 'PenLine' },
+	{ nom: 'Recyclage', icone: 'Recycle' },
+	{ nom: 'Alerte', icone: 'ShieldAlert' },
+	{ nom: 'Sécurité', icone: 'ShieldCheck' },
+	{ nom: 'Danger', icone: 'Skull' },
+	{ nom: 'Environnement', icone: 'Sprout' }
+];
+
+export async function seedIcones(payload: Awaited<ReturnType<typeof getPayload>>): Promise<CategoryMap> {
+	const icones: CategoryMap = {};
+	for (const i of SEED_ICONES) {
+		const doc = await payload.create({ collection: 'icones', data: i });
+		icones[i.icone] = String(doc.id);
+	}
+	return icones;
+}
+
 async function seed() {
 	const payload = await getPayload({ config });
 
-	console.log('--- Téléphones & emails ---');
-	const { telephones, emails } = await seedTelephonesEmails(payload);
+	console.log('--- Icônes ---');
+	const icones = await seedIcones(payload);
 
 	console.log('--- Annuaire (4 pages) ---');
 	await seedAnnuairePage(payload, {
@@ -140,7 +205,8 @@ async function seed() {
 		items: commerces,
 		nameKey: 'name',
 		categoryKey: 'category',
-		categoryMeta: COMMERCES_CATEGORY_META
+		categoryMeta: COMMERCES_CATEGORY_META,
+		icones
 	});
 	await seedAnnuairePage(payload, {
 		title: 'Vie associative',
@@ -150,7 +216,8 @@ async function seed() {
 		nameKey: 'name',
 		categoryKey: 'category',
 		badgeKey: 'shortName',
-		categoryMeta: VIE_ASSOCIATIVE_CATEGORY_META
+		categoryMeta: VIE_ASSOCIATIVE_CATEGORY_META,
+		icones
 	});
 	await seedAnnuairePage(payload, {
 		title: 'Enfance & jeunesse',
@@ -159,7 +226,8 @@ async function seed() {
 		items: services,
 		nameKey: 'name',
 		categoryKey: 'category',
-		categoryMeta: ENFANCE_JEUNESSE_CATEGORY_META
+		categoryMeta: ENFANCE_JEUNESSE_CATEGORY_META,
+		icones
 	});
 	await seedAnnuairePage(payload, {
 		title: 'Sports & loisirs',
@@ -168,7 +236,8 @@ async function seed() {
 		items: activities,
 		nameKey: 'name',
 		categoryKey: 'category',
-		categoryMeta: SPORTS_LOISIRS_CATEGORY_META
+		categoryMeta: SPORTS_LOISIRS_CATEGORY_META,
+		icones
 	});
 
 	console.log('--- Agenda ---');
@@ -184,58 +253,24 @@ async function seed() {
 	await seedBudgetProjets(payload);
 
 	console.log('--- Numéros utiles ---');
-	await seedNumerosUtiles(payload, telephones);
+	await seedNumerosUtiles(payload);
 
 	console.log('--- Trombinoscope (élus) ---');
 	await seedTrombinoscope(payload);
 
 	console.log('--- Catalogue de lieux (location de salles) ---');
-	await seedCatalogueLieux(payload);
+	await seedCatalogueLieux(payload, icones);
 
 	console.log('--- Carte interactive : POI & sentiers ---');
 	await seedPoisSentiers(payload);
 
 	console.log('--- Pages structurelles sans contenu riche (à compléter manuellement) ---');
-	await seedPageShells(payload);
+	await seedPageShells(payload, icones);
+
+	console.log('--- Identité, bouton d\'en-tête, pied de page ---');
+	await seedSiteSettings(payload);
 
 	console.log('Seed terminé.');
-}
-
-// ---------------------------------------------------------------------------
-// Téléphones & emails
-// ---------------------------------------------------------------------------
-
-async function seedTelephonesEmails(payload: Awaited<ReturnType<typeof getPayload>>) {
-	// JUGEMENT NON TRANCHÉ : le code actuel a deux numéros/emails différents
-	// pour "la mairie" selon l'endroit (CTA Accueil vs page Contact — déjà
-	// noté comme incohérence en décision 22). Ce script seed les DEUX comme
-	// entrées distinctes avec des libellés explicites plutôt que d'en
-	// arbitrer un — à l'utilisateur de dire lequel est le vrai numéro et de
-	// supprimer/fusionner l'autre après le seed.
-	const telephoneData = [
-		{ label: 'Secrétariat mairie (page Horaires)', numero: '05 55 00 60 15' },
-		{ label: 'Secrétariat mairie (page Contact)', numero: '05 55 00 62 00' },
-		{ label: 'Secrétariat mairie (ancien CTA Accueil — doublon à vérifier)', numero: '05 55 00 61 65' },
-		{ label: 'Service urbanisme', numero: '05 55 00 60 20' },
-		{ label: 'Police municipale / Gendarmerie', numero: '05 55 00 60 17' },
-		{ label: 'CHU de Limoges', numero: '05 55 05 55 55' }
-	];
-	const emailData = [
-		{ label: 'Contact général (page Contact)', adresse: 'mairie@saint-hilaire-bonneval.fr' },
-		{ label: 'Contact général (ancien CTA Accueil — doublon à vérifier)', adresse: 'contact@saint-hilaire-bonneval.fr' }
-	];
-
-	const telephones: CategoryMap = {};
-	for (const t of telephoneData) {
-		const doc = await payload.create({ collection: 'telephones', data: t });
-		telephones[t.label] = String(doc.id);
-	}
-	const emails: CategoryMap = {};
-	for (const e of emailData) {
-		const doc = await payload.create({ collection: 'emails', data: e });
-		emails[e.label] = String(doc.id);
-	}
-	return { telephones, emails };
 }
 
 // ---------------------------------------------------------------------------
@@ -248,6 +283,7 @@ type AnnuaireSourceItem = {
 	hours?: string;
 	phone?: string;
 	email?: string;
+	website?: string;
 	[key: string]: unknown;
 };
 
@@ -266,6 +302,9 @@ async function seedAnnuairePage<T extends AnnuaireSourceItem>(
 		// restent vides et tout s'affiche avec l'icône/couleur par défaut
 		// ("muted") — trouvé en testant contre la vraie base, pas en relisant.
 		categoryMeta?: Record<string, { icone?: string; couleur?: string }>;
+		// Décision 55 — map nom de composant lucide-react → id `icones`,
+		// construite par `seedIcones()`.
+		icones: CategoryMap;
 	}
 ) {
 	const page = await payload.create({
@@ -285,17 +324,31 @@ async function seedAnnuairePage<T extends AnnuaireSourceItem>(
 		const meta = opts.categoryMeta?.[nom];
 		const cat = await payload.create({
 			collection: 'categories',
-			data: { nom, page: page.id, icone: meta?.icone, couleur: meta?.couleur }
+			data: { nom, page: page.id, icone: meta?.icone ? opts.icones[meta.icone] : undefined, couleur: meta?.couleur }
 		});
 		categories[nom] = String(cat.id);
 	}
 
+	// Décision 50 — plus de sous-groupe `contacts` : adresse/téléphone/email
+	// mis à plat directement sur la fiche. Décision 49 ayant transformé
+	// `telephone`/`email` en champs texte directs (plus une relation vers
+	// `telephones`/`emails`), `item.phone`/`item.email` peuvent enfin être
+	// repris tels quels — avant, ils étaient volontairement laissés de côté
+	// (une relation vers les numéros officiels de la mairie ne convenait pas
+	// aux coordonnées propres à chaque commerçant/association). `hours` n'a
+	// pas de champ correspondant dans le modèle simplifié (décision 48) et
+	// n'est pas repris.
 	const itemsAnnuaire = opts.items.map((item) => ({
 		nom: String(item[opts.nameKey]),
 		categorie: categories[String(item[opts.categoryKey])],
 		badge: opts.badgeKey ? (item[opts.badgeKey] as string | undefined) : undefined,
 		description: item.desc,
-		contacts: buildContacts(item)
+		adresse: item.address,
+		telephone: item.phone,
+		email: item.email,
+		// Décision 65 — 2 fiches commerces avaient un site web rangé par
+		// erreur dans `email` (données source corrigées).
+		siteWeb: item.website
 	}));
 
 	await payload.update({
@@ -303,21 +356,6 @@ async function seedAnnuairePage<T extends AnnuaireSourceItem>(
 		id: page.id,
 		data: { liste: { itemsAnnuaire } }
 	});
-}
-
-function buildContacts(item: AnnuaireSourceItem) {
-	const contacts: { type: string; valeur?: string }[] = [];
-	if (item.address) contacts.push({ type: 'address', valeur: item.address });
-	if (item.hours) contacts.push({ type: 'hours', valeur: item.hours });
-	// Téléphone/email réels non liés à la collection `telephones` ici : ces
-	// numéros sont spécifiques à chaque commerçant/association, pas des
-	// coordonnées mairie réutilisables (décision 22 concerne les numéros de
-	// la mairie elle-même, pas ceux des tiers listés dans l'annuaire). Stockés
-	// en `valeur` texte via le type "address"/"hours" existant serait
-	// incorrect ; le schéma actuel de `contactItemFields` suppose une
-	// relation pour phone/email, ce qui ne convient pas ici. Laissé de côté
-	// volontairement — voir note dans le .md après ce script.
-	return contacts;
 }
 
 // ---------------------------------------------------------------------------
@@ -476,10 +514,7 @@ async function seedBudgetProjets(payload: Awaited<ReturnType<typeof getPayload>>
 // Numéros utiles
 // ---------------------------------------------------------------------------
 
-async function seedNumerosUtiles(
-	payload: Awaited<ReturnType<typeof getPayload>>,
-	telephones: CategoryMap
-) {
+async function seedNumerosUtiles(payload: Awaited<ReturnType<typeof getPayload>>) {
 	const urgencesItems = urgences.map((u) => ({
 		numero: u.number,
 		label: u.label,
@@ -487,19 +522,12 @@ async function seedNumerosUtiles(
 		couleur: u.color
 	}));
 
-	// `locaux` référence des numéros déjà seedés dans `telephones` quand la
-	// correspondance est évidente (mairie, gendarmerie) ; sinon on en crée un
-	// nouveau (ex. CHU de Limoges, déjà seedé plus haut).
-	const localToTelephoneLabel: Record<string, string> = {
-		'Mairie de Saint-Hilaire-Bonneval': 'Secrétariat mairie (page Horaires)',
-		'Gendarmerie de Saint-Hilaire-Bonneval': 'Police municipale / Gendarmerie',
-		'Centre hospitalier universitaire de Limoges': 'CHU de Limoges'
-	};
-
+	// Décision 49 (annule décision 22) — `telephone` est un texte direct, plus
+	// une relation : `locaux` porte déjà le numéro en clair (`number`).
 	const contactsLocaux = locaux.map((l) => ({
 		label: l.label,
 		detail: l.detail ?? undefined,
-		telephone: telephones[localToTelephoneLabel[l.label]]
+		telephone: l.number
 	}));
 
 	await payload.create({
@@ -555,7 +583,7 @@ async function seedTrombinoscope(payload: Awaited<ReturnType<typeof getPayload>>
 // Catalogue de lieux — Location de salles
 // ---------------------------------------------------------------------------
 
-async function seedCatalogueLieux(payload: Awaited<ReturnType<typeof getPayload>>) {
+async function seedCatalogueLieux(payload: Awaited<ReturnType<typeof getPayload>>, icones: CategoryMap) {
 	// Retranscrit à la main (pas de data.ts source, contenu JSX à structure
 	// tabulaire simple — faible risque contrairement aux pages tout-prose).
 	// Schéma étoffé en décision 38 (groupesTarifs + notes + caution dédiée) :
@@ -572,7 +600,7 @@ async function seedCatalogueLieux(payload: Awaited<ReturnType<typeof getPayload>
 					{
 						nom: 'Salle polyvalente',
 						description: 'Location à caractère associatif ou familial.',
-						icone: 'Building2',
+						icone: icones.Building2,
 						groupesTarifs: [
 							{
 								label: 'Manifestations',
@@ -601,7 +629,7 @@ async function seedCatalogueLieux(payload: Awaited<ReturnType<typeof getPayload>
 						nom: 'Salle du restaurant scolaire',
 						description:
 							'Disponible uniquement le week-end pour les associations et particuliers, pour des manifestations à caractère familial ou associatif.',
-						icone: 'UtensilsCrossed',
+						icone: icones.UtensilsCrossed,
 						groupesTarifs: [
 							{
 								label: 'Location',
@@ -670,7 +698,7 @@ async function seedPoisSentiers(payload: Awaited<ReturnType<typeof getPayload>>)
 // l'éditeur de l'admin (pas de conversion JSX → Lexical automatisée)
 // ---------------------------------------------------------------------------
 
-async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
+async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>, icones: CategoryMap) {
 	const demarchesPage = await payload.create({
 		collection: 'pages',
 		data: { title: 'Mes démarches', slug: 'demarches', menu: 'essentiel', gabarit: 'liste', liste: { layoutType: 'demarches' } }
@@ -723,19 +751,19 @@ async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
 				},
 				quickAccessItems: [
 					{
-						icone: 'FileText',
+						icone: icones.FileText,
 						titre: 'Démarches administratives',
 						description: 'État civil, urbanisme, demandes en quelques clics.',
 						lien: demarchesPage.id
 					},
 					{
-						icone: 'Gavel',
+						icone: icones.Gavel,
 						titre: 'Délibérations & Actes',
 						description: 'Comptes-rendus du conseil municipal et arrêtés.',
 						lien: demarchesPage.id
 					},
 					{
-						icone: 'Phone',
+						icone: icones.Phone,
 						titre: 'Services & Urgences',
 						description: 'Numéros utiles et services publics à proximité.',
 						lien: numerosUtilesPage.docs[0]?.id ?? demarchesPage.id
@@ -769,7 +797,15 @@ async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
 					titre: 'Nous contacter',
 					description:
 						'La mairie vous accueille du lundi au vendredi, de 9h à 12h et de 14h à 17h. Le secrétariat reste à votre disposition pour toute démarche.',
-					boutonLabel: 'Prendre rendez-vous'
+					boutonLabel: 'Prendre rendez-vous',
+					// Décision 63 — repris de saint-hilaire-demo (features/home/
+					// CTA/index.tsx), oublié lors du premier seed (décision 50
+					// notait "coordonnées... ce script ne les seed plus", ce qui
+					// s'appliquait à raison à l'ambiguïté entre CTA/Contact
+					// (décision 22), mais pas à l'absence totale de coordonnées ici).
+					adresse: 'Le Bourg, 87260 Saint-Hilaire-Bonneval',
+					telephone: '05 55 00 61 65',
+					email: 'contact@saint-hilaire-bonneval.fr'
 				}
 			}
 		}
@@ -784,9 +820,66 @@ async function seedPageShells(payload: Awaited<ReturnType<typeof getPayload>>) {
 	);
 }
 
-seed()
-	.then(() => process.exit(0))
-	.catch((err) => {
-		console.error(err);
-		process.exit(1);
+// ---------------------------------------------------------------------------
+// Identité, bouton d'en-tête, pied de page (décision 61)
+// ---------------------------------------------------------------------------
+
+export async function seedSiteSettings(payload: Awaited<ReturnType<typeof getPayload>>) {
+	await payload.updateGlobal({
+		slug: 'identite',
+		data: {
+			titre: 'Saint-Hilaire-Bonneval',
+			sousTitre: 'Haute-Vienne · 87260'
+			// `logo` laissé vide — aucun fichier réel disponible (décision 32).
+		}
 	});
+
+	// `depth: 0` — seul l'id de la page est utile ici ; certains champs
+	// imbriqués (ex. `catalogueLieux.salles[].icone`) peuvent encore porter
+	// l'ancienne valeur texte d'avant la décision 55 sur d'autres pages,
+	// et Payload tenterait de la peupler comme une relation (CastError).
+	const { docs: locationSalle } = await payload.find({
+		collection: 'pages',
+		where: { slug: { equals: 'location-salle' } },
+		limit: 1,
+		depth: 0
+	});
+
+	await payload.updateGlobal({
+		slug: 'bouton-entete',
+		data: {
+			boutonLabel: 'Location de salles',
+			boutonLien: locationSalle[0]?.id
+		}
+	});
+
+	await payload.updateGlobal({
+		slug: 'footer',
+		data: {
+			description:
+				'Site officiel de la Mairie de Saint-Hilaire-Bonneval. Retrouvez ici toutes les informations relatives à la vie municipale, aux services publics et au territoire communal.',
+			adresse: 'Place de la Mairie, 87260 Saint-Hilaire-Bonneval',
+			joursOuverture: 'Lundi – Vendredi',
+			horaires: '9h–12h / 14h–17h'
+			// `telephone`/`email`/`facebook`/`instagram` laissés vides — pas de
+			// valeur d'origine à migrer (n'existaient pas dans le pied de page
+			// en dur), à renseigner par le client dans l'admin.
+		}
+	});
+}
+
+// Décision 58 — ne s'exécute QUE si ce fichier est lancé directement (`npx
+// tsx scripts/seed.ts`), pas quand il est importé (ex. `seedIcones` réutilisée
+// par `scripts/seed-icones.ts`). Bug réel trouvé en testant : l'ancien code
+// relançait tout `seed()` au moment de l'import (effet de bord au niveau du
+// module), dupliquant l'annuaire/les catégories/les icônes en même temps que
+// le seed isolé des icônes — deux exécutions concurrentes de `seed()` avec
+// des `process.exit()` qui se percutaient.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+	seed()
+		.then(() => process.exit(0))
+		.catch((err) => {
+			console.error(err);
+			process.exit(1);
+		});
+}

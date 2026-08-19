@@ -1,4 +1,4 @@
-import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Globe } from 'lucide-react';
 import { LucideIconByName } from '@shared/lib/icons';
 import './style.scss';
 
@@ -8,7 +8,15 @@ export type ContactItem =
 	| { type: 'address'; value: string }
 	| { type: 'hours'; value: string }
 	| { type: 'phone'; value: string }
-	| { type: 'email'; value: string };
+	| { type: 'email'; value: string }
+	| { type: 'website'; value: string };
+
+// Décision 65 — les sites web des fiches source n'étaient pas toujours
+// écrits avec un protocole (ex. "www.ladequate.fr") ; `href` en a besoin
+// pour rester un vrai lien cliquable, l'affichage garde le texte d'origine.
+function websiteHref(value: string) {
+	return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
 
 export type IconVariant = 'primary' | 'coral' | 'leaf' | 'muted' | 'sunshine';
 
@@ -103,6 +111,25 @@ export default function ContactCard({
 									/>
 									<a
 										href={`mailto:${c.value}`}
+										className={`${B}__link`}
+									>
+										{c.value}
+									</a>
+								</div>
+							);
+						}
+						if (c.type === 'website') {
+							return (
+								<div key={i} className={`${B}__row`}>
+									<Globe
+										size={13}
+										className={`${B}__row-icon`}
+										aria-hidden="true"
+									/>
+									<a
+										href={websiteHref(c.value)}
+										target="_blank"
+										rel="noopener noreferrer"
 										className={`${B}__link`}
 									>
 										{c.value}

@@ -197,6 +197,8 @@ Entre Postgres et MongoDB, **MongoDB retenu**, pour une raison directement liée
 
 ### 22. Collections `telephones` et `emails` — source unique des coordonnées, jamais de texte libre dupliqué
 
+**Annulée par la décision 49** : le sélecteur en liste déroulante jugé pas intuitif à l'usage réel, surtout dans les fiches. `telephone`/`email` sont redevenus des champs texte directs, les collections `telephones`/`emails` supprimées.
+
 Découvert en modélisant : les coordonnées de la mairie sont aujourd'hui ressaisies en texte libre à 4 endroits différents (Footer, CTA/Accueil, page Contact, Horaires) — et ont déjà divergé dans le code actuel (numéros et emails différents selon l'endroit). Une mairie a en réalité **plusieurs** numéros/emails (secrétariat, urbanisme, standard...), donc pas un simple champ global unique — il faut une vraie liste, gérée une fois.
 
 - Deux collections dédiées, `telephones` et `emails` (pas un array imbriqué dans un global — même raisonnement que pour `pois`/`sentiers`, décision 23 : un array imbriqué ne peut pas être proprement référencé par une relation ailleurs).
@@ -478,6 +480,342 @@ MongoDB local en container Docker isolé (nom, volume et réseau dédiés — ne
 - Le seed lui-même ne pouvait pas s'exécuter directement (`npx tsx scripts/seed.ts`) : il importait les données statiques depuis les fichiers `features/*/index.tsx` (composants React), qui embarquent maintenant des imports `.scss` via les composants `shared/components/*Layout` — invalide hors bundler. Les données pures (`articles`, `docs`, `maire`/`adjoints`/etc., `urgences`/`locaux`) ont été extraites dans des `data.ts` dédiés (même pattern déjà utilisé pour commerces/vie-associative/etc.), important uniquement ces fichiers depuis le script.
 
 Résultat vérifié : seed complet sans erreur (18 pages, 34 catégories avec icône/couleur réelles, 6 téléphones, 2 emails, 8 POI, 2 sentiers), site testé en dev ET en build de prod contre la vraie base (plus aucun repli statique déclenché), `/admin` accessible (propose la création du premier utilisateur — aucun `user` seedé, décision volontaire : les comptes se créent à la main, pas par script).
+
+### 43. Interface admin sur-mesure — priorité produit, pas juste de l'esthétique
+
+En regardant le vrai back-office Payload pour la première fois (décision 42), constat client : l'admin par défaut est "moche" et peu ergonomique. Décision de positionnement : **l'interface admin est l'argument de vente principal auprès des mairies, davantage que le site public lui-même** — une secrétaire de mairie l'utilise au quotidien, contrairement au site public qui est surtout consulté par les habitants.
+
+Deux niveaux distincts identifiés, à ne pas confondre :
+- **Petites améliorations sur l'admin Payload natif** (rapide, faible risque) : `admin.group` pour regrouper les collections du menu par sous-section (ex. "Contenu", "Configuration"), couleur d'accent, logo — garde les écrans par défaut de Payload, juste retouchés.
+- **Interface entièrement sur-mesure** (chantier à part entière) : reconstruire les écrans en React par-dessus Payload utilisé en headless (API/base), pas les vues admin par défaut. Exemple concret donné par le client (capture d'écran) : sidebar avec icônes et sous-menus groupés, écran "Équipe municipale" en grille de cartes avec photos, pastilles de rôle colorées, réordonnancement par flèches, recherche/filtre, header avec sélecteur de commune et mode sombre.
+
+**C'est la deuxième option qui est visée.** Techniquement possible (Payload est conçu pour être exploité en headless avec des vues 100% custom), mais c'est un vrai chantier front — refaire chaque écran principal (Trombinoscope, Pages, Actualités...) en composants sur-mesure, pas une session de finitions. Volontairement pas commencé ce soir (fin de session déjà longue) — à cadrer avec sa propre feuille de route (écrans prioritaires, système de composants réutilisable) lors d'une prochaine session, sur le même modèle que ce document pour le chantier données.
+
+**Piste identifiée pour un futur écran prioritaire** : Agenda et Actualités ont besoin d'un écran de création minimal (juste les champs pertinents — titre/date/catégorie/lieu — pas le document Page complet avec son hero/menu/CTA). Décision explicite de ne PAS faire de ça un gabarit à part ni de revenir à des collections séparées (le modèle de données/routes reste celui de décision 6/36) — c'est un problème de vue d'admin, pas de schéma : une vue d'édition sur-mesure conditionnée sur `layoutType` peut cacher tout le bruit sans toucher aux données ni aux routes publiques. Pas commencé, à faire dans la session dédiée à l'interface.
+
+### 44. Sidebar admin sur-mesure — premier écran concret du chantier interface
+
+Remplace le `Nav` par défaut de Payload (`admin.components.Nav`) par un composant écrit à la main (`admin/Nav/index.tsx`), plutôt que de s'appuyer sur l'itération générique des collections de Payload — structure décidée avec le client, pas dérivée automatiquement :
+
+- **Mon site** : Mes pages, Actualités et Agenda (raccourcis directs vers leur page via `?where[slug][equals]=...`, décidé après un aller-retour — la donnée reste dans `pages.liste`, seule la navigation pour la retrouver a changé), puis sous-groupe **Annuaire** (Téléphones, Emails)
+- **Carte interactive** : Lieux (POI), Sentiers
+- **Paramètres** : Catégories, Médiathèque, Documents, Utilisateurs
+
+Style repris de la palette du site public ($leaf en vert d'accent sur l'item actif) plutôt qu'une nouvelle palette inventée pour l'admin. `useAuth`/`useConfig`/`Link` de `@payloadcms/ui` réutilisés pour rester dans les conventions Payload (session, base `/admin`) sans reconstruire l'authentification.
+
+**Découverte utile en le construisant** : l'importMap (décision 41/42) se régénère automatiquement tant qu'un vrai serveur `next dev` tourne et regarde les fichiers — seule une régénération "à froid" (aucun serveur actif) nécessite le script de contournement (`scripts/gen-importmap.ts`).
+
+### 45. Sélecteur visuel de gabarit/carte abandonné — retour à un menu déroulant classique avec descriptif
+
+Le composant `PreviewPicker` (décision 11/30, aperçus image par option) jugé peu lisible à l'usage réel — testé pour la première fois ce soir. Remplacé par le `select` par défaut de Payload, avec un texte `admin.description` qui explique en une phrase ce que fait chaque option (ex. "Trombinoscope : liste des élus avec photos"), sur `gabarit` et `liste.layoutType`.
+
+**Pas supprimé, juste plus utilisé** : `fields/PreviewPicker/` et les SVG dans `public/admin-previews/` restent dans le projet (reprenable plus tard, notamment si le chantier interface sur-mesure produit de vraies captures d'écran plutôt que des illustrations schématiques generées).
+
+### 46. Retours client en rafale sur l'admin natif — wording, hiérarchie, réhabillage global
+
+Session de retours directs en testant l'admin en vrai. Regroupés ici plutôt qu'en décisions séparées, tous dans la même direction (voir aussi [[feedback-admin-ui-design-direction]] en mémoire) :
+
+- **Sidebar** (`admin/Nav/`) : "Mon site" liste maintenant **toutes les pages existantes** par leur titre (pas de raccourcis choisis à la main pour 2-3 pages, ça ne passait pas à l'échelle) + un lien "Nouvelle page" en haut. Lieux (POI)/Sentiers rattachés visuellement à "Mon site" (sous-groupe) plutôt qu'en section à part — restent des collections séparées (relation depuis Découvrir, décision 14/23), seule la présentation a changé. Médiathèque retirée (jugée inutile pour l'instant).
+- **Palette/hiérarchie** : accent terracotta partout (pas de config `admin.css` dans cette version de Payload — le réhabillage global passe par `admin/Nav/global-overrides.scss`, chargé de façon non scopée puisque `Client.tsx` est toujours monté). Rayons `--style-radius-s/m/l` de Payload surchargés pour plus d'arrondi partout, `--theme-border-color` assoupli.
+- **Bouton "+ Ajouter"** (`array-field__add-row`) et boutons d'action principaux (`btn--style-primary`) : reskinnés en pilule terracotta pleine, texte/icône blancs — plus le style discret par défaut.
+- **Wording "Item"** : chaque champ tableau a maintenant un `labels: { singular, plural }` en français (ex. "Ajouter une actualité" au lieu de "Ajouter un item") — 22 champs tableau de `collections/Pages.ts` couverts.
+- **Titre de section dynamique** (`admin/DynamicArrayLabel`) : pour les 9 tableaux qui sont le contenu principal (unique) de leur gabarit — les 6 `layoutType` de Liste, `membres` (Trombinoscope), `salles` (Catalogue de lieux), `coordonnees` (Contact) — le titre affiché au-dessus du tableau reprend en direct le champ `titre` de la page (ex. "Commerces & artisans" au lieu de "Liste de fiches"), via `useFormFields`. Pas appliqué aux tableaux secondaires (`commissions`, `contacts`, `groupesTarifs`...) ni aux gabarits à deux tableaux sur la même page (Numéros utiles, Horaires) où ça aurait dupliqué le même titre deux fois sans rien distinguer.
+- **`gabarit` bloqué tant que `titre` est vide** (`admin.condition: (data) => Boolean(data?.title)`) — cohérent avec le titre dynamique ci-dessus, force un ordre de remplissage logique.
+- **Premier bloc de la page (titre/slug/menu/gabarit) sans titre de section** — corrigé avec un champ `type: 'ui'` dédié (`admin/SectionHeading`) inséré avant `title`, "Informations générales".
+- **`title`/`slug` en anglais** — `title` relabellé "Titre" ; `slug` gardé tel quel (jugé acceptable, terme technique). Les deux ont maintenant une description en italique (`.field-description { font-style: italic }`, global) expliquant à quoi ils servent, pour un usage non-technique.
+
+**Non vérifié visuellement** — testé par typecheck et lecture du code, pas par un vrai rendu navigateur (contrainte de cette session : je ne dois plus faire de `next build`/`rm -rf .next` pendant que le `next dev` du client tourne, ça lui a corrompu son cache une fois déjà).
+
+### 47. Deuxième vague de retours — capture d'écran de l'Accueil en vrai
+
+Retours en observant concrètement le gabarit Accueil dans l'admin. Toujours "0 anglais", "clair et rapide", et un principe de vocabulaire fixé explicitement : **toujours "section", jamais "bloc"** — appliqué partout à partir de maintenant.
+
+- **`admin/LabelWithInfo`** (nouveau) : l'aide contextuelle passe d'un texte permanent sous le champ à une icône ⓘ à côté de l'intitulé (infobulle au survol) — appliqué à `title`, `slug`, `menu`. `gabarit` garde sa description en dessous (texte trop long pour une infobulle).
+- **`admin/RowLabel`** (nouveau) : chaque ligne d'un tableau affiche son vrai contenu + numéro (ex. "Fiche Boulangerie Martin 01") au lieu d'un intitulé générique — sur les mêmes 8 tableaux que le titre de section dynamique (décision 46).
+- **Titre de chaque groupe/gabarit renommé "Organisation de la page"** (au lieu du nom auto-généré du gabarit, ex. "Accueil") — **transverse aux 9 gabarits**, pas seulement l'Accueil.
+- **Sous-sections de l'Accueil renommées**, zéro anglais : `hero` → "Section d'introduction", `quickAccessItems` → "Section Accès rapides" (+ description), `mayorWord` → "Mot du maire", `discoverCards` → "Section Découverte" (+ description), `cta` → "Section contact".
+- **CSS globale (`global-overrides.scss`)** : "Informations générales" (notre `SectionHeading`) et "Organisation de la page" (titre natif Payload d'un groupe) forcés à la même taille/graisse (18px/800) — incohérence visuelle repérée sur la capture. Les groupes de haut niveau (`hero`, `mayorWord`, `cta`) et les tableaux (`quickAccessItems`, `discoverCards`) reçoivent le même traitement de carte (bordure, radius, fond, padding) — avant, seuls les tableaux avaient un "encadré" visible, les groupes avaient juste une ligne fine, jugé incohérent.
+
+Même limite que décision 46 : vérifié par typecheck, pas par rendu réel.
+
+**Corrigé par la décision 48 ci-dessous** : "Organisation de la page" n'est plus renommé, il est retiré (`admin/HiddenLabel`) — "Informations générales" suffit seul comme repère de haut niveau. Plus de trait sous les groupes/sections. "Informations générales" est en corail (pas noir).
+
+### 48. Simplification du modèle contact (annuaire + Contact + Horaires + Accueil)
+
+Le tableau "choisis un type (adresse/horaires/téléphone/mail), puis remplis la valeur" (décision 22, `contactItemFields`) jugé trop compliqué à l'usage réel pour une secrétaire de mairie non technique — il fallait comprendre l'abstraction "type" avant de pouvoir saisir quoi que ce soit. Remplacé partout par 3 champs directs et explicites, tous optionnels : **Adresse** (texte), **Téléphone**, **Email** — `contactFields` dans `collections/Pages.ts` (voir décision 49 ci-dessous : `telephone`/`email` sont redevenus des champs texte directs, plus des relations). Le champ `type` disparaît : on affiche ce qui est attendu plutôt que de demander à l'éditeur de le choisir.
+
+- **Passage array → group** sur les 4 emplacements qui utilisaient `contactItemFields` : `liste.itemsAnnuaire[].contacts`, `contact.coordonnees`, `accueil.cta.coordonnees`, `horaires.contactsPratiques[].contacts`. Un seul jeu de coordonnées par fiche/page (pas de second numéro) — simplification assumée, cohérente avec "on met ce qui est attendu, pas un tableau à gérer".
+- Le bouton "Ajouter une coordonnée" disparaît avec l'array. Pas de titre de groupe "Coordonnées" non plus, sur les 4 emplacements (`admin/HiddenLabel`) : les coordonnées font partie intrinsèque de la section/fiche qui les contient (la fiche annuaire, la section contact de l'Accueil, le contact pratique des Horaires, la page Contact elle-même) — un titre séparé serait redondant. Les 3 sous-libellés Adresse/Téléphone/Email suffisent à comprendre ce qui est attendu.
+- `lib/payload.ts` : `PayloadContactItem`/`mapContacts` remplacés par `PayloadContactGroup`/`mapContactGroup` ; `getContactData` reconstruit jusqu'à 3 cartes (une par champ rempli) au lieu d'itérer un tableau.
+- `scripts/seed.ts` : `buildContacts` ne reprend plus que `adresse` (texte libre dans la donnée source) — `telephone`/`email` restent volontairement non peuplés par le seed (numéros propres à chaque commerçant/association de l'annuaire, pas des coordonnées mairie réutilisables via les collections `telephones`/`emails`, décision 22) ; `hours` n'a plus de champ correspondant dans le modèle simplifié et n'est plus repris.
+
+Vérifié par `npx tsc --noEmit` (propre sur l'ensemble du projet), pas par rendu réel (même limite que décisions 46/47).
+
+### 49. Suppression des collections `telephones`/`emails` (annule décision 22)
+
+Retour client sur le vif : "je ne veux plus d'annuaire de mail ni de tel [...] tu fais toujours choisir dans une liste [...] c'est pas du tout intuitif ce système." La logique de décision 22 (numéro/email jamais en texte libre, toujours une relation vers une collection centrale `telephones`/`emails`, pour n'avoir qu'un seul endroit à corriger si un numéro change) est explicitement abandonnée : le compromis "source unique" ne valait pas la complexité d'un sélecteur en liste déroulante à l'usage réel, notamment dans les fiches.
+
+- **`telephone`/`email` redeviennent des champs directs** (`type: 'text'` / `type: 'email'`, ce dernier avec la validation native de Payload) sur les 4 emplacements de `contactFields` (décision 48) et sur les 3 autres endroits qui utilisaient encore une relation : `liste.cta.email` (CTA de bas de liste), `trombinoscope.membres[].email`, `numerosUtiles.contactsLocaux[].telephone`.
+- **Collections `Telephones`/`Emails` supprimées** (`collections/Telephones.ts`, `collections/Emails.ts`, retirées de `payload.config.ts`).
+- **Sidebar** (`admin/Nav/Client.tsx`) : sous-section "Annuaire" (liens Téléphones/Emails) retirée — plus de collection à y faire pointer.
+- `lib/payload.ts` : `PayloadContactGroup.telephone`/`email` passent de `{numero:string}|string` / `{adresse:string}|string` (forme relation-résolue-ou-id) à `string` simple ; `mapContactGroup`, `getContactData`, `getNumerosUtilesData` simplifiés en conséquence (plus de `typeof === 'object'`).
+- `scripts/seed.ts` : `seedTelephonesEmails` supprimée. `seedNumerosUtiles` reprend directement `locaux[].number` (déjà un numéro en clair dans `features/numeros-utiles/data.ts`) au lieu de résoudre une relation. Les numéros/emails mairie qui étaient seedés dans les collections supprimées (secrétariat, urbanisme...) ne sont plus repris nulle part — à ressaisir manuellement dans l'admin si besoin (pages Contact/Horaires/Accueil).
+
+Vérifié par `npx tsc --noEmit` (propre) + recherche exhaustive des références résiduelles à `telephones`/`emails` dans le code (aucune trouvée). Pas vérifié par rendu réel.
+
+### 50. Retrait du sous-groupe `coordonnees`/`contacts` — champs à plat
+
+Retour client en inspectant le DOM de l'admin (section contact de l'Accueil) : Adresse/Téléphone/Email s'affichaient dans un wrapper `field-type group-field group-field--within-group group-field--gutter`, visuellement détaché du flux normal des autres champs de la section. Plutôt que de continuer à chasser les classes CSS de Payload (approche déjà jugée peu fiable en décision 46/47), le sous-groupe est retiré à la source : `contactFields` est désormais **inséré à plat** (`...contactFields`) directement dans le tableau `fields` du parent, sur les 4 emplacements de la décision 48, au lieu d'être enveloppé dans un `{ name: 'coordonnees'/'contacts', type: 'group', fields: contactFields }`.
+
+- **`liste.itemsAnnuaire[].contacts`** → `adresse`/`telephone`/`email` deviennent des champs directs de la fiche (aux côtés de `nom`/`badge`/`description`), plus de sous-objet `contacts`.
+- **`contact.coordonnees`** → idem, à plat dans `contact`. Collision évitée avec la `description` de page (textarea) déjà présente au même niveau : le texte d'accompagnement des coordonnées (décision 38) est renommé `description` → **`precision`**.
+- **`accueil.cta.coordonnees`** → idem, à plat dans `cta` (aux côtés de `titre`/`description`/`boutonLabel`).
+- **`horaires.contactsPratiques[].contacts`** → idem, à plat dans chaque ligne (aux côtés de `label`/`nom`/`description`).
+- `lib/payload.ts` : `PayloadAnnuaireItem`, `PayloadContactPratique`, `PayloadAccueil.cta` étendent maintenant `PayloadContactGroup` directement (`&`) plutôt que de porter un champ `contacts?`/`coordonnees?` séparé ; `PayloadContactCoordonnee` renommé `PayloadContact` (avec `precision`) ; tous les appels `mapContactGroup(x.contacts)` → `mapContactGroup(x)`.
+- `scripts/seed.ts` : le seed annuaire reprend maintenant `item.phone`/`item.email` directement dans `itemsAnnuaire` (en plus de `item.address`) — possible car décision 49 a fait de `telephone`/`email` des champs texte directs, plus des relations qui ne convenaient pas aux coordonnées de tiers. `buildContacts` supprimée (plus nécessaire, les champs sont assignés directement).
+
+Vérifié par `npx tsc --noEmit` (propre) + recherche exhaustive des références résiduelles à `coordonnees`/`.contacts` côté schéma (les occurrences restantes de `.contacts` dans `features/`/`shared/components/` sont la prop d'affichage `ContactItem[]` déjà résolue, sans rapport avec le champ Payload). Pas vérifié par rendu réel.
+
+### 51. Bug réel trouvé — `label`/`required` jamais fournis à un composant Label personnalisé
+
+Retour client avec capture d'écran : dans "Informations générales", Titre/Slug/Menu n'affichaient plus que l'icône ⓘ, sans le texte de l'intitulé (alors que "Gabarit", qui n'utilise pas de composant Label personnalisé, s'affichait normalement). D'abord attribué par erreur à du cache navigateur/serveur (comme le retour précédent sur "Coordonnées") — en réalité un vrai bug de code, présent depuis la décision 46.
+
+**Cause racine** (trouvée en lisant le code source de `@payloadcms/ui`, `RenderServerComponent`/`renderField.js`) : Payload ne passe **jamais** `label`/`required` directement en props à un composant `admin.components.Label` personnalisé — seulement au composant `FieldLabel` interne par défaut. Un composant Label personnalisé reçoit `field` (la config client du champ, avec `field.label`/`field.required` dedans), pas `label`/`required` au premier niveau. Le type `GenericLabelProps` de Payload déclare pourtant `label`/`required` comme props valides — un piège : ça compile, mais ces props ne sont jamais peuplées à l'exécution pour un composant custom.
+
+- **`admin/LabelWithInfo`** : lisait `label`/`required` directement — toujours `undefined`, `FieldLabel` ne rendait donc rien (elle retourne `null` si `label` est falsy). Corrigé : lit `field?.label`/`field?.required` (typé via un cast local, `field` couvrant plusieurs types de champs qui n'ont pas tous `label`).
+- **`admin/DynamicArrayLabel`** : même bug — le repli sur le libellé statique (tableau) quand `titre` est vide ne s'affichait jamais. Corrigé de la même façon.
+- **`admin/RowLabel`** : non affecté (n'utilise pas `label`/`required`, lit `useRowLabel()`).
+- **`admin/HiddenLabel`** : non affecté (ne rend jamais rien, quels que soient les props).
+
+Bug présent depuis la décision 46, jamais détecté avant faute de rendu réel vérifié (limite déjà notée sur les décisions 46 à 50). Première fois qu'un retour utilisateur pointe vers un vrai bug de code plutôt qu'un problème de cache/rendu pas à jour — à garder en tête : ne pas systématiquement supposer le cache la prochaine fois qu'un retour visuel semble contredire le code.
+
+### 52. Wording des champs bouton (Section d'introduction)
+
+Retour client : `boutonPrincipalLabel`/`boutonSecondaireLabel` s'affichaient avec le libellé générique "Label" (auto-généré par Payload, faute de `label` explicite), ne disant pas de quel bouton il s'agit. Un regroupement en encadré visuel (texte + lien dans un sous-groupe avec bordure) a été tenté puis retiré à la demande du client au milieu du travail — un style CSS deviné sans pouvoir voir le rendu réel était jugé trop risqué à garder ; préférence pour des champs plats déjà éprouvés (cohérent avec la décision 50).
+
+- **`boutonPrincipalLabel`/`boutonSecondaireLabel`** : libellé explicite ajouté — "Texte du bouton principal"/"Texte du bouton secondaire" (au lieu du "Label" générique).
+- **`boutonPrincipalLien`/`boutonSecondaireLien`** : libellé explicite "Lien du bouton principal"/"Lien du bouton secondaire" + explication : "Vers quelle page du site voulez-vous que ce bouton redirige ?" (voir décision 53 ci-dessous : en description toujours visible, pas en info-bulle).
+- **Confirmé au passage** : ces champs sont déjà des `relationship → pages` (menu déroulant de toutes les pages du site), cohérent avec tous les autres champs de navigation interne du BO (`quickAccessItems.lien`, `lienDocument`) — aucun changement nécessaire sur ce point, déjà le bon pattern partout où un bouton pointe vers une page du site (à distinguer des liens vers `pois`/`sentiers`, qui sont un autre type de destination).
+- `collections/Pages.ts` : factorisé dans un helper `boutonFields(prefix, label)` (retourne les 2 champs plats), réutilisé pour principal et secondaire — évite la duplication du wording sans introduire de sous-groupe.
+
+Vérifié par `npx tsc --noEmit` (propre). Pas vérifié par rendu réel.
+
+### 53. Abandon de l'info-bulle ⓘ (`admin/LabelWithInfo`) — description toujours visible
+
+Retour client, après le correctif du bug de la décision 51 (le texte de l'intitulé était revenu, l'icône ⓘ aussi) : "tu avais aussi supprimé les infos... l'explication pour titre, menu et slug" puis, en testant concrètement, "tu as mis une bulle i mais elle ne renvoie rien" — l'info-bulle au survol (texte natif HTML `title`, décision 46/47) ne s'affiche pas de façon perceptible à l'usage réel.
+
+- **`title`/`slug`/`menu`** : `admin.components.Label` (`LabelWithInfo`) retiré, remplacé par un simple `admin.description` — texte toujours visible sous le champ, en italique (`.field-description`, déjà stylée globalement depuis la décision 46), plutôt que caché derrière un survol. Même pattern que `gabarit`, qui avait gardé sa description en dessous depuis le début.
+- **`boutonPrincipalLien`/`boutonSecondaireLien`** (décision 52, ajoutés dans la même session avec le même pattern d'info-bulle) : corrigés en même temps, avant même un premier retour dessus — même `admin.description`.
+- **`admin/LabelWithInfo`** : plus utilisé nulle part dans `collections/Pages.ts` après ce changement. Pas supprimé (même logique que `PreviewPicker`, décision 44 : repris plus tard si le survol est un jour fiabilisé/nécessaire) — mais son info-bulle native n'a pas été diagnostiquée plus loin ; à vérifier avant toute réutilisation.
+
+Vérifié par `npx tsc --noEmit` (propre). Pas vérifié par rendu réel — mais cette fois le choix (texte toujours visible) ne dépend plus d'un survol qui pourrait à nouveau ne rien afficher.
+
+**Corrigé par la décision 54 ci-dessous** : le placement (sous le champ) n'était pas celui voulu — déplacé à droite de l'intitulé.
+
+### 54. Explication à droite de l'intitulé, pas en dessous
+
+Retour client sur le placement choisi en décision 53 : "j'aurais préféré que ce soit à droite de l'intitulé du champ, genre Titre – explication." `admin/LabelWithInfo` reprend son rôle (retiré en décision 53), mais change de forme : au lieu d'une icône ⓘ avec info-bulle au survol (jamais fiable, décision 53), il concatène l'explication directement après l'intitulé, sur la même ligne, séparée par un tiret — toujours visible, aucune interaction requise.
+
+- `admin/LabelWithInfo` réécrit : rendu `<FieldLabel label={field?.label} /> – {info}` au lieu de l'icône + `title` HTML. `style.scss` mis à jour en conséquence (plus de `.label-with-info__icon`, nouveau `.label-with-info__explanation` en italique, ton atténué).
+- Réappliqué sur `title`/`slug`/`menu` et `boutonPrincipalLien`/`boutonSecondaireLien` (les `admin.description` de la décision 53 remplacés par ce composant).
+- Toujours le même bug de fond corrigé en décision 51 (`field.label`, pas `label` au premier niveau) : ce composant en dépend directement, donc tout changement futur dessus doit re-vérifier ce point.
+
+Vérifié par `npx tsc --noEmit` (propre). Pas vérifié par rendu réel.
+
+### 55. Collection `Icônes` — remplace le texte libre lucide-react partout
+
+Retour client, dans la foulée : "pour les icônes, je voudrais aussi le même principe que pour les pages, que ça ouvre une liste avec le nom de l'icône et la visualisation de l'icône... dans paramètres il faudrait ajouter une section icône." Jusqu'ici, chaque champ "icône" (catégories, démarches, salles, tuiles d'accès rapide de l'Accueil, contacts pratiques des Horaires) était un texte libre : l'éditeur devait connaître et taper à la main le nom exact d'un composant lucide-react, sans repère visuel — la note laissée dans `Categories.ts` en décision 11 anticipait déjà ce chantier ("remplacé par un vrai sélecteur visuel"). Même logique que la décision 49 (téléphones/emails) : remplacer une saisie libre par une vraie liste gérée, relation plutôt que texte.
+
+- **Nouvelle collection `Icones`** (`collections/Icones.ts`, slug `icones`) : `nom` (texte, ex. "Téléphone") + `icone` (texte, nom exact du composant lucide-react, ex. "Phone"). Créée/gérée par le super-admin uniquement (même logique que `Categories`, décision 10) ; lisible par tous. Ajoutée à `payload.config.ts` et à la sidebar (`admin/Nav/Client.tsx`) sous Paramètres, entre Catégories et Documents.
+- **`admin/IconPreviewField`** (nouveau, `afterInput`) : aperçu du glyphe rendu à côté de l'input pendant la saisie du nom lucide-react, sur la fiche d'une icône. En `afterInput` plutôt qu'en `Field` complet — l'input texte natif de Payload continue de fonctionner tel quel (évite de réimplémenter la logique d'un champ natif à la main, cf. la prudence acquise en décision 51).
+- **`admin/IconCell`** (nouveau, `admin.components.Cell` sur le champ `icone`) : la liste `/collections/icones` affiche le glyphe + le nom, pas juste le texte brut — répond au "ça ouvre une liste avec le nom de l'icône et la visualisation de l'icône" pour la gestion en Paramètres.
+- **Les 5 champs "icône" existants convertis** de `type: 'text'` à `type: 'relationship', relationTo: 'icones'` : `Categories.icone`, `liste.itemsDemarches[].icone`, `catalogueLieux.salles[].icone`, `accueil.quickAccessItems[].icone`, `horaires.contactsPratiques[].icone`. Chacun ouvre désormais le même sélecteur en liste (recherche + nom) que les champs `relationship → pages` — plus de faute de frappe possible, plus besoin de connaître lucide-react par cœur.
+- **Limite assumée à l'origine, levée par la décision 56 ci-dessous** : le sélecteur de relation par défaut de Payload n'affichait que le nom dans sa liste, pas le glyphe — jugé essentiel par le client ("oui je veux le glyphe, c'est essentiel"), donc repris immédiatement après.
+- `lib/payload.ts` : nouveau type `PayloadIconRelation` (`{icone?, nom?} | string`) + helper `resolveIconName()` (avec surcharge de type pour un usage avec/sans valeur de repli) ; tous les champs `PayloadCategory.icone`, `PayloadDemarcheItem.icone`, `PayloadCatalogueSalle.icone`, `PayloadContactPratique.icone`, `quickAccessItems[].icone` mis à jour et leurs 5 points de lecture adaptés.
+- `scripts/seed.ts` : nouvelle fonction `seedIcones()` (liste `SEED_ICONES`, 25 icônes reprenant tout ce qui était déjà utilisé en dur dans ce script) exécutée en tout premier, retourne une map nom-lucide → id, propagée aux fonctions qui en ont besoin (`seedAnnuairePage`, `seedCatalogueLieux`, `seedPageShells`). Commentaire obsolète sur `seedTelephonesEmails()` (supprimée en décision 49) corrigé au passage dans l'en-tête du fichier.
+
+Vérifié par `npx tsc --noEmit` (propre). Pas vérifié par rendu réel.
+
+### 56. Glyphe dans la liste de choix — `admin/IconPickerField` (remplace le sélecteur natif)
+
+"Oui je veux le glyphe, c'est essentiel" — le sélecteur en liste déroulante par défaut d'un champ `relationship` (utilisé pour "Icône" depuis la décision 55) n'affiche que le nom, jamais le glyphe rendu, dans sa propre liste d'options. Confirmé non négociable, donc repris tout de suite plutôt que différé.
+
+- **`admin/IconPickerField`** (nouveau) remplace entièrement le rendu par défaut du champ (`admin.components.Field`, pas juste `Label`/`afterInput`/`Cell` comme les décisions précédentes) sur les 5 champs "icône" (décision 55). Architecture à deux étages, même principe que `admin/Nav` :
+  - `index.tsx` — Server Component qui récupère la liste complète des icônes une fois (`payload.find({collection:'icones', ...})`, `payload` reçu via les ServerProps injectées automatiquement par Payload).
+  - `Client.tsx` — composant 100% custom (bouton déclencheur + panneau avec recherche + liste cliquable, chaque ligne glyphe + nom), utilisant `useField<string>({path})` de `@payloadcms/ui` pour lire/écrire la valeur du champ directement (un `relationship` à une seule collection stocke un id brut, pas un objet `{relationTo, value}` — vérifié dans le code source de `RelationshipField` avant d'écrire quoi que ce soit, même discipline que la décision 51).
+  - Choix délibéré de ne PAS réutiliser les internes react-select de Payload (non documentés, non conçus pour être étendus) plutôt qu'une reconstruction complète et autonome — moins de surface de bug caché, même si plus de code écrit à la main.
+- **Pourquoi une réécriture complète plutôt qu'une simple option de formatage** : `RenderField.js` (côté Payload) montre qu'un `admin.components.Field` personnalisé remplace intégralement le composant par défaut du type de champ (`RelationshipField` inclus) — il n'existe pas de point d'extension plus léger (genre `formatOptionLabel`) exposé publiquement pour injecter un rendu personnalisé dans les options d'un `relationship` existant.
+- `collections/Pages.ts` : nouveau helper `iconField(access?)` factorisant les 5 usages (`label:'Icône'`, `admin.components.Field:'/admin/IconPickerField'`, `access` optionnel pour les 4 verrouillés au super-admin). `Categories.ts` câblé directement (pas de helper partagé entre les deux fichiers).
+- **`app/(payload)/admin/importMap.js`** : `scripts/gen-importmap.ts` échouait à ce moment (voir cause racine identifiée en décision 58 : mauvaise version de Node active). Les 4 entrées manquantes (`LabelWithInfo` — jamais régénéré depuis son introduction en décision 46/54 —, `IconPickerField`, `IconPreviewField`, `IconCell`) ajoutées à la main en attendant, en suivant le format déjà généré. **Depuis remplacé** : `next dev` (ou une régénération manuelle réussie après la décision 58) a régénéré le fichier proprement, avec les vrais hash — les entrées ajoutées à la main ont fait leur office le temps de débloquer la suite.
+
+Vérifié par `npx tsc --noEmit` (propre). Pas vérifié par rendu réel — c'est le composant le plus ambitieux de la session (lecture/écriture directe de la valeur du champ, pas juste de l'affichage), donc celui qui mérite le premier test réel le plus attentif.
+
+### 57. `admin/IconPreviewField`/`IconCell`/`IconPickerField` réécrits pour réutiliser `LucideIconByName`
+
+Les 3 composants de la décision 55/56 faisaient chacun `import * as LucideIcons from 'lucide-react'` puis un lookup par nom (`LucideIcons[name]`) — exactement le pattern documenté comme abandonné dans `shared/lib/icons.ts` (mesuré : +167 Ko de bundle, tout lucide-react embarqué au lieu d'un import à la demande). Repéré en auditant le code pour la décision 58 ci-dessous (pas un retour client), corrigé avant que ça ne devienne un vrai problème de taille de bundle admin.
+
+- Les 3 composants réutilisent maintenant `LucideIconByName` (`@shared/lib/icons`, `lucide-react/dynamic`) — même fonction que le site public (`QuickAccess`, `ContactCard`, `DemarchesLayout`...), au lieu de dupliquer une logique de résolution différente et plus coûteuse.
+- CSS de repli devenue inutile supprimée (`.icon-preview-field__empty`, `.icon-picker__placeholder`) — `LucideIconByName` a son propre repli (`HelpCircle`) intégré, plus besoin d'un état vide géré à la main.
+
+Vérifié par `npx tsc --noEmit` (propre).
+
+### 58. Cause racine des échecs `tsx`/Payload : version de Node — bug réel trouvé et incident de duplication corrigé
+
+Le client a demandé de reporter dans la collection `Icones` **toutes** les icônes déjà utilisées dans le code du site (pas seulement celles déjà branchées à un champ éditable, décision 55/58 ci-dessus étend `SEED_ICONES` à 37 entrées après audit exhaustif de `features/**/*.tsx` — y compris le contenu statique de secours des Démarches/Contact/Horaires, item 10, pas encore migré). Puis, autorisation explicite ("vas-y fais-le") de résoudre l'erreur `ERR_PACKAGE_PATH_NOT_EXPORTED` qui bloquait tout script Payload Local API lancé via `tsx` depuis plusieurs décisions (46, 55, 56).
+
+**Cause racine trouvée** (pas devinée) : le shell par défaut de ce projet a Node **v16.15.0** actif (`node --version`), alors que Payload exige `^18.20.2 || >=20.9.0` (`node_modules/payload/package.json`) et sa dépendance `file-type@21.3.4` exige `>=20` et est pur ESM (`"type": "module"`, aucune condition `require` dans ses `exports`) — un `require('file-type')` sous Node 16 ne peut tout simplement pas le résoudre. Rien à voir avec `tsx`, ni avec `richtext-lexical` (l'incompatibilité ESM/CJS notée en décision 30/44 était un problème voisin mais distinct). `nvm` est installé sur la machine avec plusieurs versions plus récentes déjà disponibles (`v20.19.5`, `v22.21.1`) — non actives par défaut dans ce shell.
+
+- **Contournement retenu** : `nvm use 22` (ou 20) avant tout script Payload Local API, plus `node --env-file=.env node_modules/.bin/tsx <script>` — `payload.config.ts` lit `process.env.PAYLOAD_SECRET`/`DATABASE_URI` directement (pas de `dotenv` dans les dépendances), auto-chargé par Next.js mais pas par un script `tsx` autonome. `--env-file` est un flag natif Node ≥20 (pas besoin d'installer `dotenv`).
+- **Bug réel trouvé en testant ce contournement** : exporter `seedIcones`/`SEED_ICONES` depuis `scripts/seed.ts` pour les réutiliser dans un script isolé (`scripts/seed-icones.ts`, décision 58) a eu un effet de bord inattendu — `seed.ts` avait un appel `seed().then(...)` au niveau racine du module, qui s'exécute **dès l'import**, pas seulement à l'exécution directe du fichier. Importer `seedIcones` déclenchait donc AUSSI tout `seed()` en parallèle. Corrigé par un garde d'entrée standard ESM : `if (process.argv[1] === fileURLToPath(import.meta.url)) { seed()... }`.
+- **Incident et réparation** : ce bug non détecté avant un premier run réel a fait tourner `seedIcones()` 4 fois (2 exécutions du script × 2 appels concurrents chacune), créant 148 icônes au lieu de 37. Vérifié par une lecture directe de la base (`payload.find` sur `icones`/`pages`/`categories`, aucun autre doublon trouvé — l'exécution parallèle de `seed()` s'est arrêtée tôt, avant `seedAnnuairePage`, à cause d'un `process.exit()` concurrent). Réparé : les 148 icônes supprimées puis les 37 recréées une seule fois, une fois le bug corrigé. Scripts de diagnostic/réparation utilisés une fois puis supprimés (pas des outils à garder dans le projet).
+- **`scripts/seed-icones.ts`** (nouveau, permanent) : seed isolé de la seule collection `Icones`, réutilisable sans relancer tout `seed.ts` (qui échouerait de toute façon sur la page Accueil déjà seedée, singleton, décision 9).
+
+Vérifié par lecture directe de la base après coup (37 icônes, aucun doublon de slug de page). Le vrai `npx tsx scripts/gen-importmap.ts` (décision 55/56) fonctionne maintenant aussi sous Node 22 — plus besoin des entrées d'`importMap.js` ajoutées à la main.
+
+**Correctif immédiat** : "je veux que des noms en français" — quelques `nom` de `SEED_ICONES` n'étaient pas du français propre (anglicismes "Fitness"/"Email", tournures doubles "Trophée / Sport", "Justice / Civique", "Vérifié / Sécurité"...). Toute la liste relue et simplifiée à un seul concept par nom, en français sans exception (ex. "Fitness" → "Musculation", "Email" → "Courriel", "Vérifié / Sécurité" → "Sécurité"). Les 37 icônes déjà seedées supprimées puis recréées avec les noms corrigés (rien n'y référençait encore).
+
+### 59. Reliaison des 34 catégories existantes à leurs icônes d'origine
+
+"Relie bien les catégories aux icônes, en fonction de ce que j'avais dans le site" — les 34 catégories déjà en base avaient été seedées **avant** la conversion de `Categories.icone` en relation (décision 55) : leur champ `icone` contenait encore l'ancienne valeur texte (ex. `"TreePine"`), désormais interprétée comme une relation vers `icones` — donc cassée (une chaîne de caractères n'est pas un identifiant Mongo valide).
+
+- Script ponctuel (`scripts/relink-category-icons.ts`, supprimé après usage) : reconstruit le mapping catégorie → icône d'origine à partir des 4 constantes `*_CATEGORY_META` de `scripts/seed.ts` (ce sont elles qui reflètent fidèlement le rendu statique du site avant migration, comme documenté dans leur propre commentaire), retrouve l'id de chaque icône correspondante dans la collection `icones`, et met à jour chaque catégorie.
+- **Piège Mongoose rencontré et contourné** : lire les catégories avec la profondeur par défaut de Payload fait planter la requête (`CastError`, Payload/Mongoose tente de peupler `icone` comme une relation et échoue sur l'ancienne valeur texte). Corrigé avec `depth: 0` sur la lecture — retourne la valeur brute telle quelle, sans tentative de résolution, seul le `nom` de la catégorie (pas son ancien `icone`) sert à retrouver la bonne icône.
+- **Résultat** : 21 catégories reliées avec succès (Commerces, Vie associative, Enfance & jeunesse, Sports & loisirs). 13 catégories ignorées sans erreur — Agenda/Actualités/Documents (`AGENDA_CATEGORY_META`, `ACTUALITES_CATEGORY_META`, `DOCUMENTS_CATEGORY_META`) n'ont jamais eu d'icône dans le site d'origine, seulement une couleur — comportement attendu, pas un oubli. "Cafés - Bars" (type TypeScript valide dans `features/commerces/data.ts`) n'apparaît dans aucune des deux listes : aucun commerce réel n'utilise cette catégorie aujourd'hui, donc elle n'a jamais existé comme document en base — pas un bug de ce script.
+
+Vérifié par la sortie du script (compte exact 21 + 13 = 34, aucune "icône introuvable"). Confirmé par le client en testant en vrai (icônes identiques à la version en dur, vérifié entrée par entrée contre `features/*/index.tsx`).
+
+### 60. Sous-catégorie "Mes pages" dans "Mon site"
+
+"Mes pages" ajoutée comme sous-en-tête explicite (`admin/Nav/Client.tsx`), même pattern que "Lieux & sentiers" juste en dessous — regroupe "+ Nouvelle page" et la liste de toutes les pages existantes, plutôt que de les laisser au premier niveau de "Mon site" sans repère.
+
+### 61. En-tête et pied de page éditables — 3 nouveaux `globals` Payload
+
+Chantier discuté avant d'être codé (voir l'échange dans la session) : l'en-tête et le pied de page du site étaient entièrement en dur dans `shared/components/Header`/`Footer`, aucun moyen pour le client de changer son logo, son numéro, ses horaires ou le bouton d'action de l'en-tête. Le client a proposé le découpage, confirmé après discussion :
+
+- **`Identite`** (slug `identite`, "Identité du site") : `titre`, `sousTitre`, `logo` (upload). Un seul global, lu à la fois par le Header et le Footer — évite la resaisie qui existait déjà en dur en double dans les deux composants ("ça fait chier de le taper deux fois").
+- **`BoutonEntete`** (slug `bouton-entete`, "Bouton d'en-tête") : réutilise `boutonFields` (décision 52, maintenant exportée depuis `collections/Pages.ts`) — texte + lien vers une page du site. Séparé de l'identité : contenu que le client change plus souvent (quelle page mettre en avant), pas une donnée de marque fixe. Accès `isLoggedIn` (pas verrouillé super-admin) — n'importe quel éditeur peut changer le texte et la cible.
+- **`Footer`** (slug `footer`, "Pied de page") : réutilise `contactFields` (décision 48/49/50, maintenant exportée) pour adresse/téléphone/email — cohérence totale avec le reste du site. Ajoute `description` (texte de présentation), `joursOuverture`/`horaires` (2 champs texte simples, pas le modèle jour-par-jour complet de la page Horaires — le pied de page n'affichait qu'une seule ligne récapitulative avant, pas un tableau), `facebook`/`instagram` (texte, optionnels).
+
+**Placement dans la sidebar — décidé en discussion** : les 3 restent groupés sous "Mon site" (nouveau sous-en-tête "En-tête & pied de page"), pas éclatés entre "Mon site" et "Paramètres" comme envisagé un temps. Raisonnement retenu : la distinction "Mon site" / "Paramètres" jusqu'ici, c'est "contenu que le client édite" vs "listes structurelles gérées une fois par le dev" (catégories, icônes) — en-tête et pied de page sont clairement du premier type, les séparer aurait cassé ce repère mental.
+
+- `lib/payload.ts` : `getIdentiteData`/`getBoutonEnteteData`/`getFooterData`, avec repli sur les valeurs qui étaient codées en dur si Payload est injoignable (même logique que `DEFAULT_NAV_LINKS`).
+- `app/(frontend)/layout.tsx` : les 3 fetchés en parallèle (`Promise.all`) avec `getNavLinks`, passés en props à `Header`/`Footer`.
+- **Nettoyage au passage dans `Footer`** : colonnes de liens "La mairie" (Délibérations & arrêtés, Démarches en ligne, Marchés publics) et "Découvrir" (Tourisme & loisirs, Vie associative, Agenda communal, Patrimoine), ainsi que les liens légaux du bas (Mentions légales, Accessibilité, Confidentialité, Plan du site), **retirés** — c'étaient tous des `href="#"` qui ne menaient nulle part ("aucun lien ne mène actuellement vers une redirection de site interne", observation du client). Un lien mort a été jugé pire qu'un lien absent ; pas remplacés par du contenu inventé. Grille CSS ajustée de 3 à 2 colonnes en conséquence. À reprendre dans un chantier séparé si des pages réelles doivent être créées pour ces liens.
+- **Seed** : `seedSiteSettings()` (exportée, `scripts/seed.ts`) peuple les 3 globals avec les valeurs d'origine (titre, sous-titre, adresse, jours/horaires, bouton → page "Location de salles"). `telephone`/`email`/`facebook`/`instagram` laissés vides : aucune valeur d'origine à migrer, à saisir par le client. Exécutée isolément via `scripts/seed-site-settings.ts` (même raison que `seed-icones.ts`, décision 58 : `seed()` complet replanterait sur les slugs déjà seedés).
+
+**Bug de données pré-existant découvert et corrigé en cours de route** : lire la page "Location de salles" pour trouver son id (pour le lien du bouton) faisait planter Payload — `CastError` Mongoose sur `catalogueLieux.salles[].icone`, qui portait encore l'ancienne valeur texte ("Building2") d'avant la décision 55, exactement comme les catégories en décision 59. Différence cette fois : `depth: 0` sur la requête n'a **pas** suffi (contrairement aux catégories) — Mongoose caste apparemment ce genre de champ imbriqué dans un tableau dès l'hydratation du document, avant même que la profondeur de peuplement de Payload n'entre en jeu. Contourné en écrivant directement via le driver MongoDB natif (`payload.db.connection.db`), qui bypasse le cast Mongoose. Un audit complet de toutes les pages a ensuite trouvé le même problème sur `accueil.quickAccessItems[].icone` (3 tuiles) — corrigé de la même façon. Scripts de diagnostic/réparation utilisés une fois puis supprimés.
+
+Vérifié par l'exécution réelle du seed isolé (aucune erreur après les 2 correctifs) et un audit final confirmant zéro icône obsolète restante dans toute la base.
+
+### 62. Migration du contenu réel des 13 démarches
+
+Suite à l'audit "est-ce que tout est transféré ?" (le plus gros manque identifié) : les 13 démarches n'existaient que dans le JSX statique de secours (`features/demarches/index.tsx`), jamais dans `itemsDemarches` — contrairement à l'essentiel du reste du site, ce n'est pas du Lorem ipsum mais du vrai contenu déjà rédigé, donc une vraie migration, pas une invention de contenu.
+
+- Un convertisseur JSX→Lexical générique reste hors scope (décision 32 — cas trop variés à couvrir de façon fiable). Ici, transcription manuelle entrée par entrée d'un contenu fini et connu (13 démarches, pas un flux arbitraire) : un petit builder construit à la main la structure JSON Lexical attendue (paragraphes, listes à puces, liens), vérifiée contre les types de `lexical`/`@payloadcms/richtext-lexical` (`SerializedTextNode`, `SerializedLinkNode`...) avant d'écrire quoi que ce soit — même discipline que la décision 51 (lire le code source plutôt que deviner un format).
+- Les 6 catégories de démarches (État civil, Scolarité, Citoyenneté, Urbanisme & voirie, Environnement, Titres & documents) n'existaient pas non plus (jamais seedées, puisque `itemsDemarches` ne l'était pas) — créées au passage, liées à la page comme pour l'Annuaire.
+- Icônes de chaque démarche (Baby, Heart, PenLine, Skull, ShieldCheck, GraduationCap, Bus, Users, CreditCard, Hammer, Building, Recycle, Sprout) : toutes déjà présentes dans la collection `Icones` (décision 55/58), pas de nouvelle icône à créer.
+- Contenu du site officiel externe préservé tel quel : liens vers Service-Public.fr, ANTS, Région Nouvelle-Aquitaine, Syded87 — rien de raccourci ni résumé, transcription fidèle du texte existant.
+- Script de migration (`scripts/migrate-demarches.ts`, usage unique) supprimé après exécution, comme les autres scripts ponctuels de cette session.
+
+Vérifié par une relecture complète via l'API Payload après écriture (13 démarches, catégories et icônes bien résolues en relations, nombre de blocs de contenu par démarche cohérent avec le texte d'origine) — pas seulement un statut "sans erreur" à l'écriture.
+
+### 63. Coordonnées manquantes dans la section contact de l'Accueil
+
+Retour client : la section contact (`accueil.cta`) de l'Accueil affichait un titre/description/bouton corrects mais pas d'adresse/téléphone/email — un oubli du premier seed (`seedPageShells`), pas une conséquence des décisions 48/49/50 sur les coordonnées.
+
+- **Source des vraies données : `/Users/c.fournier/Documents/perso/saint-hilaire-demo`** — l'ancien projet de travail avant le déménagement vers `communes/style-edito` (voir mémoire du chantier), toujours dans le périmètre autorisé de ce compte. Son composant `features/home/CTA/index.tsx` contient les coordonnées d'origine en dur : adresse "Le Bourg, 87260 Saint-Hilaire-Bonneval", téléphone "05 55 00 61 65", email "contact@saint-hilaire-bonneval.fr" — cohérent avec `titre`/`description`/`boutonLabel`, déjà corrects, qui viennent du même composant.
+- `scripts/seed.ts` corrigé pour les prochains seeds complets. Base déjà seedée corrigée séparément (page Accueil = singleton, un seed complet aurait replanté sur les pages déjà existantes, décision 58/61) : lecture de `accueil` à `depth: 0`, fusion à la main en JS des 3 nouveaux champs dans `cta` (sans écraser `titre`/`description`/`boutonLabel`, ni le reste d'`accueil` — pas fait confiance à un merge partiel de Payload à une profondeur incertaine, préféré fusionner explicitement avant écriture).
+- **Piste à garder en tête** : `saint-hilaire-demo` reste une source fiable pour retrouver du contenu réel oublié en cours de migration — à consulter en priorité avant d'inventer quoi que ce soit, si d'autres trous du même genre sont trouvés plus tard.
+
+Vérifié par une relecture complète de la page Accueil après écriture (hero, 3 tuiles, mot du maire, 3 cartes découverte tous intacts, `cta` complet avec les 6 champs).
+
+### 64. Coordonnées perdues sur les 63 fiches annuaire — rebranchées
+
+Même famille de problème que la décision 63, à plus grande échelle : "je vois aussi que des données ont été perdues en cours de route... remplir toutes les fiches médecin, commerçant etc." Vérifié : les 63 fiches des 4 pages Annuaire (Commerces, Vie associative, Enfance & jeunesse, Sports & loisirs) n'avaient **aucune** adresse/téléphone/email en base — ces champs n'existaient tout simplement pas sur les documents. Cause : ces pages ont été seedées avec le schéma `contacts` d'origine (décision 22), jamais re-seedées après les refontes successives de ce schéma (décisions 48, 49, 50) — chaque changement de schéma rendait la donnée existante un peu plus incompatible, sans jamais la faire migrer.
+
+- Script ponctuel (`scripts/backfill-annuaire-contacts.ts`, supprimé après usage) : reprend le même mapping que `seedAnnuairePage` (déjà correct dans le code depuis la décision 50/58) mais en `update`, en faisant correspondre chaque fiche existante à son entrée source par le nom (`nom` en base = `name` dans `features/*/data.ts`), plutôt que de tout recréer.
+- **Piège de données trouvé en route** : 2 fiches commerces ("L'Adéquate", "Les Chevaux de Moncontour") ont un site web stocké dans le champ `email` de la donnée source d'origine ("www.ladequate.fr", "leschevauxdemoncontour.com") — pas une adresse email valide, rejetée par le champ `email` strict de Payload. Exclues proprement (regex de validation avant écriture) plutôt que de planter tout le script ou d'écrire une donnée invalide ; loggées pour rester visibles.
+- **Résultat** : 63/63 fiches correspondues sans exception. Les champs qui restent vides ensuite (ex. **aucune** des 12 fiches "Vie associative" n'a de téléphone) reflètent fidèlement l'absence de cette donnée dans la source elle-même (vérifié : `features/vie-associative/data.ts` n'a jamais eu de champ `phone`) — pas un oubli du script.
+
+Vérifié par une relecture complète des 4 pages après écriture (comptage avant/après des champs manquants par page, confirmation que les champs encore vides correspondent à une absence réelle dans la source).
+
+### 65. Champ "Site web" ajouté à `contactFields`
+
+Suite directe de la décision 64 : les 2 sites web trouvés mal rangés dans l'ancien champ `email` méritent leur propre champ plutôt que d'être perdus ou de rester coincés dans un champ qui les rejette (validation stricte du type `email`).
+
+- **`contactFields`** (`collections/Pages.ts`) étendu avec `siteWeb` (texte) — se propage automatiquement partout où ce tableau est réutilisé : fiches Annuaire, Contact, Accueil (section contact), Horaires (contacts pratiques), Pied de page (décision 61).
+- **`ContactItem`** (`shared/components/ContactCard`) étendu avec le type `'website'` — icône `Globe`, lien cliquable qui s'ouvre dans un nouvel onglet. `websiteHref()` ajoute `https://` si absent (les valeurs source n'ont pas toutes un protocole, ex. "www.ladequate.fr") tout en affichant la valeur telle quelle.
+- **`features/home/CTA/index.tsx`** : `ICONS`/`LABELS` (mapping type → icône/libellé, propre à ce composant) mis à jour en conséquence — repéré par le typecheck, pas oublié silencieusement.
+- **Page Contact** (`getContactData`) : nouvelle carte "Sur le web" si `siteWeb` est renseigné, même pattern que les cartes téléphone/email/adresse existantes.
+- **Données sources corrigées à la racine** (`features/commerces/data.ts`) : les 2 valeurs de site web déplacées du champ `email` (invalide) vers un nouveau champ `website` — pour qu'un futur seed complet depuis zéro produise directement la bonne donnée, sans repasser par un script de réparation. `AnnuaireSourceItem`/`seedAnnuairePage` (`scripts/seed.ts`) mis à jour pour le reprendre (`siteWeb: item.website`).
+- Base déjà seedée corrigée séparément (script ponctuel, supprimé après usage) : les 2 fiches concernées ("L'Adéquate", "Les Chevaux de Moncontour") ont maintenant leur site web au bon endroit.
+
+Vérifié par `npx tsc --noEmit` (propre — a justement débusqué le mapping `ICONS`/`LABELS` du CTA qui aurait sinon silencieusement affiché une icône manquante pour le type `website`) et par l'exécution réelle du script de correction.
+
+### 66. "Médiathèque" réintégrée à la sidebar, renommée "Médias"
+
+Retirée en décision 46 ("jugée inutile pour l'instant"), remise après un usage réel : en testant l'upload d'images (logo, hero...), plusieurs doublons se sont accumulés dans la collection `media` (Payload ajoute `-1`, `-2`... au nom de fichier au lieu d'écraser quand le même nom existe déjà — repéré 5 images uploadées 2 à 3 fois chacune). Sans lien direct dans la sidebar, impossible de les repérer ou de les nettoyer facilement. Renommée "Médias" au passage (moins ambigu que "Médiathèque").
+
+- `admin/Nav/Client.tsx` : lien "Médias" ajouté sous Paramètres (entre Icônes et Documents), icône `Images`.
+
+Pas d'action sur les doublons eux-mêmes cette fois — juste rendu l'accès possible pour que le client les gère lui-même (garder laquelle, supprimer les autres) depuis l'admin, plutôt que de trancher à sa place laquelle des 2-3 versions de chaque image garder.
+
+### 67. Sous-groupes de "Mon site" repliables (fermés par défaut), ligne de séparation retirée
+
+"Retire les lignes en dessous des sous-catégories Lieux et sentiers, En-tête et Mes pages. Peut-on aussi faire un dropdown à ce niveau ? Les tabs sont fermés quand on ouvre Mon site, et je peux déployer ?"
+
+- **`admin/Nav/Client.tsx`** : `NavSubheaderItem` (un simple séparateur texte suivi d'items toujours visibles) remplacé par `NavSubgroupItem` (`{kind:'subgroup', label, items}`) — chaque sous-groupe ("Mes pages", "En-tête & pied de page", "Lieux & sentiers") a maintenant son propre état replié/déplié, **fermé par défaut** (`useState(false)`), avec un bouton + chevron comme "Mon site"/"Paramètres" mais un cran plus petit (nouveau composant `NavSubgroup`, même principe que `NavGroup`).
+- **`admin/Nav/style.scss`** : `.admin-nav__subheader` (avec sa `border-bottom`) remplacée par `.admin-nav__subgroup`/`.admin-nav__subgroup-header`/`.admin-nav__subgroup-chevron`/`.admin-nav__subgroup-items` — pas de ligne de séparation dans le nouveau style.
+- `Paramètres` non concerné (n'a jamais eu de sous-catégories, reste une liste plate).
+
+Vérifié par `npx tsc --noEmit` (propre).
+
+### 68. Logo Payload remplacé sur l'écran de connexion
+
+"Je ne veux plus le logo Payload, mais mon espace administrateur" — `admin.components.graphics.Logo` (`payload.config.ts`) pointé vers un nouveau composant `admin/LoginLogo`.
+
+- Server Component (comme `admin/Nav`) : va chercher le `titre` du global `Identite` (décision 61) au lieu d'un texte en dur — cohérent avec le reste de l'admin, une seule source pour le nom du site. Repli sur "Espace administrateur" si le global n'est pas encore renseigné.
+- Pastille de marque avec les initiales dérivées du titre (ex. "Saint-Hilaire-Bonneval" → "SH", split sur espaces et tirets) + libellé "Espace administrateur" en eyebrow au-dessus du nom — même esprit que la pastille de marque de la sidebar (`admin/Nav`), pas le même code (contextes différents : sidebar toujours authentifiée, logo affiché avant connexion).
+
+Vérifié par `npx tsc --noEmit` (propre) ; l'importMap s'est régénéré tout seul correctement cette fois (le vrai `next dev`/`gen-importmap.ts` fonctionne depuis la décision 58, Node 22).
+
+### 69. Tableau de bord sur-mesure — "Bonjour {prénom}"
+
+"Le tableau de bord ne doit pas être des collections, je veux une page qui me dit Bonjour avec le nom de l'utilisateur."
+
+- **`collections/Users.ts`** : `prenom`/`nom` ajoutés (texte, obligatoires) — n'existaient pas avant, seul l'email identifiait un utilisateur.
+- **`admin/Dashboard`** (nouveau) : remplace entièrement l'accueil par défaut de Payload (`admin.components.views.dashboard.Component`, `payload.config.ts`) — Server Component qui affiche "Bonjour {prénom}" à partir de l'utilisateur connecté (`user` reçu via les ServerProps).
+- **Utilisateur existant sans prénom/nom** (`admin@style-edito.local`, le compte de test créé en décision 26) : pas de valeur inventée — champ vide géré proprement (message discret invitant à renseigner son prénom dans son profil) plutôt qu'un texte fabriqué à sa place.
+
+**Discussion ouverte, pas encore tranchée** : ce qu'on pourrait ajouter sur ce tableau de bord ensuite. Recommandation donnée au client : prioriser des raccourcis vers les actions vraiment fréquentes (+ nouvelle actualité, + nouvel évènement agenda — déjà identifiées comme le geste le plus courant d'une secrétaire de mairie, voir la discussion sur un futur écran dédié Agenda/Actualités) et un état "reste à compléter" (contenu encore vide repéré lors des décisions 62-65 : démarches sans contenu, images pas encore uploadées...) plutôt que des statistiques décoratives qui ne font rien faire à l'utilisateur.
+
+Vérifié par `npx tsc --noEmit` (propre). Pas testé en vrai (pas de prénom encore renseigné sur le compte existant pour voir le rendu avec un vrai nom).
+
+### 70. Tableau de bord — raccourcis + "reste à compléter" dynamique, date du jour
+
+Suite directe de la décision 69 : "go, partons là-dessus" sur la recommandation (raccourcis vers les actions fréquentes + état "reste à compléter" plutôt que des statistiques décoratives), plus une date du jour ("toujours utile").
+
+- **Date du jour** : formatée en français complet (`Intl.DateTimeFormat('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'})`), sous le "Bonjour".
+- **Raccourcis** : 2 cartes pleines terracotta, vers les pages Actualités (`mairie/actualites`) et Agenda (`agenda`) — les deux gestes les plus fréquents identifiés. Pas un "+ ajouter directement une ligne" (ça demanderait le chantier d'écrans sur-mesure Agenda/Actualités déjà explicitement différé) — juste un accès direct à la bonne page d'édition, sans avoir à la chercher dans "Mes pages".
+- **"Reste à compléter"** : liste dynamique construite en interrogeant la base à chaque chargement (Server Component), pas une liste figée — se vide au fur et à mesure. Vérifie : sections vides sur Histoire/La commune (gabarit éditorial, `editorial.sections`), aucune coordonnée sur Contact, aucun horaire renseigné sur aucun jour de la page Horaires, logo absent sur Identité du site, téléphone et email absents du Pied de page. Chaque ligne est un lien direct vers l'écran d'édition concerné.
+- **Vérifié contre la vraie base** (pas juste un statut "sans erreur") : script de vérification ponctuel (supprimé après usage) confirmant que chaque condition s'évalue correctement sur les données réelles actuelles — a confirmé au passage que le logo est déjà uploadé depuis la décision 68 (`identite.logo` non vide), donc n'apparaît plus dans la liste, comme attendu.
+
+Vérifié par `npx tsc --noEmit` (propre) et par une vérification directe de la logique contre la base réelle (pas seulement compilée, testée avec les vraies données actuelles).
+
+### 71. Cartes raccourcis redessinées — "un peu sexy, avec l'envie de cliquer dessus"
+
+Les 2 pilules plates terracotta jugées moches. Refaites en vraies cartes : dégradé plein (coral pour Actualités, leaf pour Agenda — teintes déjà établies côté site public, une par raccourci pour les distinguer d'un coup d'œil), halo lumineux en coin (radial-gradient blanc translucide), icône dans un badge, titre + sous-titre descriptif ("Publier une actu sur le site" / "Ajouter une date à l'agenda"), ombre portée teintée (pas un gris générique) et flèche qui glisse vers la droite au survol, carte qui se soulève légèrement.
+
+Vérifié par `npx tsc --noEmit` (propre).
+
+### 72. Retour au thème de couleur + 3e carte "Nouvelle publication"
+
+"Reste dans le thème de couleur" — les cartes pleine couleur (dégradés coral/leaf) de la décision 71 sortaient de la palette établie de l'admin (fond blanc partout ailleurs, terracotta/corail en accent seulement). Revenu à un fond blanc/carte standard (même surface que les lignes "Reste à compléter"), avec le corail réservé à l'icône (halo clair, `$coral-15`) et à la flèche — élévation douce + bordure corail au survol pour garder l'envie de cliquer sans sortir du thème.
+
+- 2 raccourcis supplémentaires ajoutés dans la foulée : **"Nouvelle publication"** → page "Documents & publications" (`mairie/publications`), icône `FileStack` (même langage visuel que l'entrée "Documents" de Paramètres) ; **"Nouveau numéro utile"** → page "Numéros utiles" (`numeros-utiles`), icône `Phone`.
+- Les 4 cartes utilisent `flex: 1 1 260px` — s'organisent automatiquement en 2, 3 ou 4 colonnes selon la largeur disponible.
+
+Vérifié par `npx tsc --noEmit` (propre).
 
 ## Catalogue des gabarits (état actuel)
 

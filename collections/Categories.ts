@@ -37,12 +37,16 @@ export const Categories: CollectionConfig = {
 			}
 		},
 		{
+			// Décision 55 — texte libre remplacé par une relation vers la
+			// collection `icones` (liste gérée, avec aperçu visuel du glyphe).
+			// Décision 56 — `admin/IconPickerField` affiche le glyphe DANS la
+			// liste de choix (le menu déroulant natif d'un `relationship` ne
+			// montre que le nom).
 			name: 'icone',
-			type: 'text',
-			admin: {
-				description:
-					'Nom d\'icône lucide-react. Remplacé par un vrai sélecteur visuel en décision 11 (item 8 de la feuille de route).'
-			}
+			type: 'relationship',
+			relationTo: 'icones',
+			label: 'Icône',
+			admin: { components: { Field: '/admin/IconPickerField' } }
 		},
 		{
 			// Palette complète du site (shared/styles/variables.scss), pas

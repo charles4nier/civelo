@@ -7,7 +7,7 @@ import '@shared/styles/index.scss';
 import Header from '@shared/components/Header';
 import Footer from '@shared/components/Footer';
 import FloatingButtons from '@shared/components/FloatingButtons';
-import { getNavLinks } from '../../lib/payload';
+import { getNavLinks, getIdentiteData, getBoutonEnteteData, getFooterData } from '../../lib/payload';
 
 const cormorant = Cormorant({
 	subsets: ['latin'],
@@ -36,7 +36,12 @@ export const viewport: Viewport = {
 };
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-	const navLinks = await getNavLinks();
+	const [navLinks, identite, boutonEntete, footer] = await Promise.all([
+		getNavLinks(),
+		getIdentiteData(),
+		getBoutonEnteteData(),
+		getFooterData()
+	]);
 
 	return (
 		<html lang="fr" className={`${cormorant.variable} ${caveat.variable}`}>
@@ -49,11 +54,11 @@ export default async function Layout({ children }: { children: React.ReactNode }
 						Accéder aux actions rapides
 					</a>
 				</nav>
-				<Header navLinks={navLinks} />
+				<Header navLinks={navLinks} identite={identite} bouton={boutonEntete} />
 				<main id="contenu" tabIndex={-1}>
 					{children}
 				</main>
-				<Footer />
+				<Footer identite={identite} data={footer} />
 				<FloatingButtons />
 			</body>
 		</html>

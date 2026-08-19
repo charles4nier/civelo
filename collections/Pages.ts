@@ -8,46 +8,21 @@ import { isSuperAdmin, isLoggedIn, isSuperAdminField } from './access';
 
 const GABARITS_SINGLETON = ['accueil', 'horaires', 'carte-interactive'];
 
-// Décision 22 — un item de contact ne stocke jamais un numéro/email en
-// texte libre : relation vers `telephones`/`emails`. Réutilisé par
-// Annuaire, Contact, Horaires, Numéros utiles.
-const contactItemFields: Field[] = [
-	{
-		name: 'type',
-		type: 'select',
-		required: true,
-		options: [
-			{ label: 'Adresse', value: 'address' },
-			{ label: 'Horaires', value: 'hours' },
-			{ label: 'Téléphone', value: 'phone' },
-			{ label: 'Email', value: 'email' }
-		]
-	},
-	{
-		name: 'valeur',
-		type: 'text',
-		admin: {
-			description: 'Pour "Adresse" ou "Horaires" uniquement',
-			condition: (_, siblingData) =>
-				siblingData?.type === 'address' || siblingData?.type === 'hours'
-		}
-	},
-	{
-		name: 'telephone',
-		type: 'relationship',
-		relationTo: 'telephones',
-		admin: {
-			condition: (_, siblingData) => siblingData?.type === 'phone'
-		}
-	},
-	{
-		name: 'email',
-		type: 'relationship',
-		relationTo: 'emails',
-		admin: {
-			condition: (_, siblingData) => siblingData?.type === 'email'
-		}
-	}
+// Décision 49 (annule décision 22) — plus de collections `telephones`/
+// `emails` : la sélection dans une liste pour saisir un numéro/email était
+// jugée pas du tout intuitive, surtout dans les fiches. `telephone`/`email`
+// redeviennent des champs texte directs (saisis sur place), au prix de la
+// source unique (un numéro changé doit être corrigé partout où il apparaît
+// — compromis assumé). Décision 48 : 3 champs directs, tous optionnels, pas
+// de tableau. Un seul de chaque (pas de second numéro). Réutilisé par
+// Annuaire, Contact, Horaires.
+export const contactFields: Field[] = [
+	{ name: 'adresse', type: 'text', label: 'Adresse' },
+	{ name: 'telephone', type: 'text', label: 'Téléphone' },
+	{ name: 'email', type: 'email', label: 'Email' },
+	// Décision 65 — trouvé en migrant l'annuaire (décision 64) : 2 fiches
+	// avaient un site web rangé dans l'ancien champ email, faute de mieux.
+	{ name: 'siteWeb', type: 'text', label: 'Site web' }
 ];
 
 // Décision 10 — catégorie toujours verrouillée par page : relation vers
@@ -61,37 +36,49 @@ const categoryField = (name = 'categorie'): Field => ({
 	filterOptions: ({ id }) => ({ page: { equals: id } })
 });
 
-// Décision 11 / 30 — composant d'aperçu visuel par option. Illustrations
-// schématiques (pas des captures réelles, aucun outil de capture disponible
-// pour produire ça — voir item 9 de la feuille de route), dans
-// public/admin-previews/.
-const GABARIT_PREVIEWS: Record<string, string> = {
-	liste: '/admin-previews/gabarit-liste.svg',
-	editorial: '/admin-previews/gabarit-editorial.svg',
-	trombinoscope: '/admin-previews/gabarit-trombinoscope.svg',
-	'catalogue-lieux': '/admin-previews/gabarit-catalogue-lieux.svg',
-	contact: '/admin-previews/gabarit-contact.svg',
-	'numeros-utiles': '/admin-previews/gabarit-numeros-utiles.svg',
-	accueil: '/admin-previews/gabarit-accueil.svg',
-	horaires: '/admin-previews/gabarit-horaires.svg',
-	'carte-interactive': '/admin-previews/gabarit-carte-interactive.svg'
-};
-
-const LAYOUT_TYPE_PREVIEWS: Record<string, string> = {
-	annuaire: '/admin-previews/carte-annuaire.svg',
-	demarches: '/admin-previews/carte-demarches.svg',
-	actualites: '/admin-previews/carte-actualites.svg',
-	document: '/admin-previews/carte-document.svg',
-	'budget-projet': '/admin-previews/carte-budget-projet.svg',
-	agenda: '/admin-previews/carte-agenda.svg'
-};
-
-const previewPickerComponent = (previewImages: Record<string, string> = {}) => ({
-	Field: {
-		path: '/fields/PreviewPicker',
-		clientProps: { previewImages }
-	}
+// Décision 55/56 — relation vers `icones`, avec `admin/IconPickerField` pour
+// afficher le glyphe dans la liste de choix (pas juste le nom, comme le
+// menu déroulant natif d'un `relationship`). `access` optionnel : la
+// plupart de ces champs sont verrouillés au super-admin (icône fixée par
+// entrée, pas un choix éditeur au quotidien), sauf celui de Categories.
+const iconField = (access?: { update: typeof isSuperAdminField }): Field => ({
+	name: 'icone',
+	type: 'relationship',
+	relationTo: 'icones',
+	label: 'Icône',
+	admin: { components: { Field: '/admin/IconPickerField' } },
+	...(access ? { access } : {})
 });
+
+// Décision 52 — le libellé générique "Label" ne disait pas de quel bouton il
+// s'agissait. Renommé explicitement "Texte du bouton principal/secondaire" +
+// "Lien du bouton principal/secondaire". Un regroupement visuel en encadré a
+// été tenté puis retiré — rendu impossible à vérifier sans voir l'admin en
+// vrai, mieux vaut rester sur des champs plats déjà éprouvés que de deviner
+// un style à l'aveugle. Le lien reste une relation vers `pages` (menu
+// déroulant de toutes les pages du site) — cohérent avec les autres champs
+// de navigation interne du BO (`quickAccessItems.lien`, `lienDocument`...).
+// Décision 53 — l'info-bulle au survol (`admin/LabelWithInfo` v1) confirmée
+// invisible à l'usage réel ("elle ne renvoie rien") : passée en description
+// sous le champ, puis décision 54 : déplacée à droite de l'intitulé, sur la
+// même ligne (`admin/LabelWithInfo` v2 — voir ce composant).
+export const boutonFields = (prefix: string, label: string): Field[] => [
+	{ name: `${prefix}Label`, type: 'text', label: `Texte du ${label.toLowerCase()}` },
+	{
+		name: `${prefix}Lien`,
+		type: 'relationship',
+		relationTo: 'pages',
+		label: `Lien du ${label.toLowerCase()}`,
+		admin: {
+			components: {
+				Label: {
+					path: '/admin/LabelWithInfo',
+					clientProps: { info: 'Vers quelle page du site voulez-vous que ce bouton redirige ?' }
+				}
+			}
+		}
+	}
+];
 
 export const Pages: CollectionConfig = {
 	slug: 'pages',
@@ -114,17 +101,49 @@ export const Pages: CollectionConfig = {
 	},
 	fields: [
 		{
+			name: 'sectionInfosGenerales',
+			type: 'ui',
+			admin: {
+				components: {
+					Field: {
+						path: '/admin/SectionHeading',
+						clientProps: { heading: 'Informations générales' }
+					}
+				}
+			}
+		},
+		{
 			name: 'title',
+			label: 'Titre',
 			type: 'text',
 			required: true,
-			access: { update: isSuperAdminField }
+			access: { update: isSuperAdminField },
+			admin: {
+				// Décision 54 — explication à droite de l'intitulé, sur la même
+				// ligne ("Titre – explication"), pas en dessous (décision 53
+				// abandonnée : correcte mais pas à l'emplacement voulu).
+				components: {
+					Label: {
+						path: '/admin/LabelWithInfo',
+						clientProps: { info: 'Le nom de la page, affiché dans le menu et en haut de la page sur le site.' }
+					}
+				}
+			}
 		},
 		{
 			name: 'slug',
 			type: 'text',
 			required: true,
 			unique: true,
-			access: { update: isSuperAdminField }
+			access: { update: isSuperAdminField },
+			admin: {
+				components: {
+					Label: {
+						path: '/admin/LabelWithInfo',
+						clientProps: { info: "L'adresse de la page dans le navigateur (ex. \"contact\" → mairie.fr/contact). Pas d'espace ni d'accent." }
+					}
+				}
+			}
 		},
 		{
 			// Décision 2 & 3 — obligatoire, une seule section, sans exception pour
@@ -133,6 +152,14 @@ export const Pages: CollectionConfig = {
 			type: 'select',
 			required: true,
 			access: { update: isSuperAdminField },
+			admin: {
+				components: {
+					Label: {
+						path: '/admin/LabelWithInfo',
+						clientProps: { info: 'À quelle entrée du menu du site cette page doit être rattachée.' }
+					}
+				}
+			},
 			options: [
 				{ label: "L'essentiel", value: 'essentiel' },
 				{ label: 'Votre mairie', value: 'mairie' },
@@ -141,12 +168,27 @@ export const Pages: CollectionConfig = {
 			]
 		},
 		{
-			// Décision 1 — indépendant du menu.
+			// Décision 1 — indépendant du menu. Décision 44 : le sélecteur
+			// visuel (aperçus image, décision 11/30) est abandonné pour l'instant
+			// — images jugées peu lisibles — au profit d'un menu déroulant
+			// classique avec un descriptif texte de chaque option.
 			name: 'gabarit',
 			type: 'select',
 			required: true,
 			access: { update: isSuperAdminField },
-			admin: { components: previewPickerComponent(GABARIT_PREVIEWS) },
+			admin: {
+				condition: (data) => Boolean(data?.title),
+				description:
+					'Liste : page avec une collection d\'éléments (annuaire, actualités, agenda, documents...). ' +
+					'Éditorial : page de texte libre (ex. Histoire, La commune). ' +
+					'Trombinoscope : liste des élus avec photos. ' +
+					'Catalogue de lieux/prestations : fiches détaillées (ex. location de salles). ' +
+					'Contact : coordonnées et formulaire de contact. ' +
+					'Numéros utiles : urgences et contacts pratiques. ' +
+					'Accueil : page d\'accueil du site (une seule fois). ' +
+					'Horaires : horaires d\'ouverture de la mairie (une seule fois). ' +
+					'Carte interactive : carte des lieux et sentiers de la commune (une seule fois).'
+			},
 			options: [
 				{ label: 'Liste', value: 'liste' },
 				{ label: 'Éditorial', value: 'editorial' },
@@ -164,7 +206,10 @@ export const Pages: CollectionConfig = {
 		{
 			name: 'liste',
 			type: 'group',
-			admin: { condition: (data) => data.gabarit === 'liste' },
+			admin: {
+				condition: (data) => data.gabarit === 'liste',
+				components: { Label: '/admin/HiddenLabel' }
+			},
 			fields: [
 				{
 					// Décision 6 — "carte" au sens décision initiale était
@@ -177,7 +222,15 @@ export const Pages: CollectionConfig = {
 					type: 'select',
 					required: true,
 					access: { update: isSuperAdminField },
-					admin: { components: previewPickerComponent(LAYOUT_TYPE_PREVIEWS) },
+					admin: {
+						description:
+							'Annuaire : fiches avec coordonnées (ex. commerces, associations). ' +
+							'Démarches : liste dépliable de démarches administratives. ' +
+							'Actualités : articles avec date et catégorie. ' +
+							'Document : fichiers téléchargeables (ex. comptes-rendus). ' +
+							'Budget/Projet : budgets votés et projets municipaux. ' +
+							'Agenda : événements avec date et lieu.'
+					},
 					options: [
 						{ label: 'Annuaire', value: 'annuaire' },
 						{ label: 'Démarches', value: 'demarches' },
@@ -205,7 +258,7 @@ export const Pages: CollectionConfig = {
 						{ name: 'eyebrow', type: 'text' },
 						{ name: 'titre', type: 'text' },
 						{ name: 'description', type: 'textarea' },
-						{ name: 'email', type: 'relationship', relationTo: 'emails' }
+						{ name: 'email', type: 'email' }
 					]
 				},
 
@@ -213,13 +266,21 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'itemsAnnuaire',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'annuaire' },
+					labels: { singular: 'Fiche', plural: 'Fiches' },
+					admin: {
+						condition: (_, siblingData) => siblingData?.layoutType === 'annuaire',
+						components: { Label: '/admin/DynamicArrayLabel',
+						RowLabel: {
+							path: '/admin/RowLabel',
+							clientProps: { prefix: 'Fiche', titleField: 'nom' }
+						} }
+					},
 					fields: [
 						{ name: 'nom', type: 'text', required: true },
 						categoryField(),
 						{ name: 'badge', type: 'text' },
 						{ name: 'description', type: 'textarea' },
-						{ name: 'contacts', type: 'array', fields: contactItemFields }
+						...contactFields
 					]
 				},
 
@@ -229,19 +290,20 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'itemsDemarches',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'demarches' },
+					labels: { singular: 'Démarche', plural: 'Démarches' },
+					admin: {
+						condition: (_, siblingData) => siblingData?.layoutType === 'demarches',
+						components: { Label: '/admin/DynamicArrayLabel',
+						RowLabel: {
+							path: '/admin/RowLabel',
+							clientProps: { prefix: 'Démarche', titleField: 'titre' }
+						} }
+					},
 					fields: [
 						{ name: 'titre', type: 'text', required: true },
 						categoryField(),
-						{
-							name: 'icone',
-							type: 'text',
-							access: { update: isSuperAdminField },
-							admin: {
-								description:
-									"Nom d'icône lucide-react, verrouillé par démarche (pas par catégorie)"
-							}
-						},
+						// Verrouillé par démarche (pas par catégorie).
+						iconField({ update: isSuperAdminField }),
 						{ name: 'resume', type: 'text', required: true },
 						{ name: 'contenu', type: 'richText' }
 					]
@@ -256,7 +318,15 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'itemsActualites',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'actualites' },
+					labels: { singular: 'Actualité', plural: 'Actualités' },
+					admin: {
+						condition: (_, siblingData) => siblingData?.layoutType === 'actualites',
+						components: { Label: '/admin/DynamicArrayLabel',
+						RowLabel: {
+							path: '/admin/RowLabel',
+							clientProps: { prefix: 'Actualité', titleField: 'titre' }
+						} }
+					},
 					fields: [
 						{ name: 'titre', type: 'text', required: true },
 						categoryField(),
@@ -286,7 +356,15 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'itemsDocument',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'document' },
+					labels: { singular: 'Document', plural: 'Documents' },
+					admin: {
+						condition: (_, siblingData) => siblingData?.layoutType === 'document',
+						components: { Label: '/admin/DynamicArrayLabel',
+						RowLabel: {
+							path: '/admin/RowLabel',
+							clientProps: { prefix: 'Document', titleField: 'titre' }
+						} }
+					},
 					fields: [
 						{ name: 'titre', type: 'text', required: true },
 						categoryField('type'),
@@ -309,8 +387,14 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'itemsBudgetProjet',
 					type: 'array',
+					labels: { singular: 'Entrée budget/projet', plural: 'Entrées budget/projet' },
 					admin: {
-						condition: (_, siblingData) => siblingData?.layoutType === 'budget-projet'
+						condition: (_, siblingData) => siblingData?.layoutType === 'budget-projet',
+						components: { Label: '/admin/DynamicArrayLabel',
+						RowLabel: {
+							path: '/admin/RowLabel',
+							clientProps: { prefix: 'Entrée', titleField: 'titre' }
+						} }
 					},
 					fields: [
 						{
@@ -352,7 +436,15 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'itemsAgenda',
 					type: 'array',
-					admin: { condition: (_, siblingData) => siblingData?.layoutType === 'agenda' },
+					labels: { singular: 'Événement', plural: 'Événements' },
+					admin: {
+						condition: (_, siblingData) => siblingData?.layoutType === 'agenda',
+						components: { Label: '/admin/DynamicArrayLabel',
+						RowLabel: {
+							path: '/admin/RowLabel',
+							clientProps: { prefix: 'Événement', titleField: 'titre' }
+						} }
+					},
 					fields: [
 						{ name: 'titre', type: 'text', required: true },
 						categoryField(),
@@ -373,7 +465,10 @@ export const Pages: CollectionConfig = {
 		{
 			name: 'editorial',
 			type: 'group',
-			admin: { condition: (data) => data.gabarit === 'editorial' },
+			admin: {
+				condition: (data) => data.gabarit === 'editorial',
+				components: { Label: '/admin/HiddenLabel' }
+			},
 			fields: [
 				{
 					name: 'sections',
@@ -402,12 +497,25 @@ export const Pages: CollectionConfig = {
 		{
 			name: 'trombinoscope',
 			type: 'group',
-			admin: { condition: (data) => data.gabarit === 'trombinoscope' },
+			admin: {
+				condition: (data) => data.gabarit === 'trombinoscope',
+				components: { Label: '/admin/HiddenLabel' }
+			},
 			fields: [
 				{ name: 'intro', type: 'richText' },
 				{
 					name: 'membres',
 					type: 'array',
+					labels: { singular: 'Membre', plural: 'Membres' },
+					admin: {
+						components: {
+							Label: '/admin/DynamicArrayLabel',
+							RowLabel: {
+								path: '/admin/RowLabel',
+								clientProps: { prefix: 'Membre', titleField: 'nom' }
+							}
+						}
+					},
 					fields: [
 						{ name: 'nom', type: 'text', required: true },
 						{ name: 'fonction', type: 'text', required: true },
@@ -428,6 +536,7 @@ export const Pages: CollectionConfig = {
 						{
 							name: 'commissions',
 							type: 'array',
+							labels: { singular: 'Commission', plural: 'Commissions' },
 							fields: [{ name: 'nom', type: 'text', required: true }]
 						},
 						{
@@ -436,7 +545,7 @@ export const Pages: CollectionConfig = {
 							admin: { description: 'Ex. "Président de toutes les commissions" (Maire)' }
 						},
 						{ name: 'photo', type: 'upload', relationTo: 'media' },
-						{ name: 'email', type: 'relationship', relationTo: 'emails' }
+						{ name: 'email', type: 'email' }
 					]
 				},
 				{ name: 'infosReunion', type: 'textarea' }
@@ -451,29 +560,40 @@ export const Pages: CollectionConfig = {
 		{
 			name: 'catalogueLieux',
 			type: 'group',
-			admin: { condition: (data) => data.gabarit === 'catalogue-lieux' },
+			admin: {
+				condition: (data) => data.gabarit === 'catalogue-lieux',
+				components: { Label: '/admin/HiddenLabel' }
+			},
 			fields: [
 				{
 					name: 'salles',
 					type: 'array',
+					labels: { singular: 'Salle', plural: 'Salles' },
+					admin: {
+						components: {
+							Label: '/admin/DynamicArrayLabel',
+							RowLabel: {
+								path: '/admin/RowLabel',
+								clientProps: { prefix: 'Salle', titleField: 'nom' }
+							}
+						}
+					},
 					fields: [
 						{ name: 'nom', type: 'text', required: true },
 						{ name: 'description', type: 'textarea' },
 						{ name: 'capacite', type: 'text' },
-						{
-							name: 'icone',
-							type: 'text',
-							access: { update: isSuperAdminField },
-							admin: { description: "Nom d'icône lucide-react, verrouillé par salle" }
-						},
+						// Verrouillé par salle.
+						iconField({ update: isSuperAdminField }),
 						{
 							name: 'groupesTarifs',
 							type: 'array',
+							labels: { singular: 'Groupe de tarifs', plural: 'Groupes de tarifs' },
 							fields: [
 								{ name: 'label', type: 'text', required: true },
 								{
 									name: 'lignes',
 									type: 'array',
+									labels: { singular: 'Tarif', plural: 'Tarifs' },
 									fields: [
 										{ name: 'public', type: 'text', required: true },
 										{ name: 'prix', type: 'text', required: true },
@@ -485,6 +605,7 @@ export const Pages: CollectionConfig = {
 						{
 							name: 'notes',
 							type: 'array',
+							labels: { singular: 'Note', plural: 'Notes' },
 							fields: [
 								{ name: 'texte', type: 'text', required: true },
 								{
@@ -508,23 +629,22 @@ export const Pages: CollectionConfig = {
 		{
 			name: 'contact',
 			type: 'group',
-			admin: { condition: (data) => data.gabarit === 'contact' },
+			admin: {
+				condition: (data) => data.gabarit === 'contact',
+				components: { Label: '/admin/HiddenLabel' }
+			},
 			fields: [
 				{ name: 'description', type: 'textarea' },
+				...contactFields,
 				{
-					name: 'coordonnees',
-					type: 'array',
-					fields: [
-						...contactItemFields,
-						{
-							// Décision 38 — chaque coordonnée s'affiche comme une
-							// fiche (ContactCard), pas juste une ligne : il lui
-							// manquait un texte d'accompagnement (ex. horaires
-							// d'ouverture du standard téléphonique).
-							name: 'description',
-							type: 'text'
-						}
-					]
+					// Décision 38 — texte d'accompagnement (ex. horaires
+					// d'ouverture du standard téléphonique), commun aux
+					// coordonnées de cette page (décision 48 : plus de tableau,
+					// un seul jeu de coordonnées par page Contact). Renommé
+					// `precision` (décision 50, plus de groupe `coordonnees` —
+					// collision évitée avec la `description` de page ci-dessus).
+					name: 'precision',
+					type: 'text'
 				},
 				{ name: 'formulaireActif', type: 'checkbox', defaultValue: true }
 			]
@@ -534,11 +654,15 @@ export const Pages: CollectionConfig = {
 		{
 			name: 'numerosUtiles',
 			type: 'group',
-			admin: { condition: (data) => data.gabarit === 'numeros-utiles' },
+			admin: {
+				condition: (data) => data.gabarit === 'numeros-utiles',
+				components: { Label: '/admin/HiddenLabel' }
+			},
 			fields: [
 				{
 					name: 'urgences',
 					type: 'array',
+					labels: { singular: "Numéro d'urgence", plural: "Numéros d'urgence" },
 					fields: [
 						{ name: 'numero', type: 'text', required: true },
 						{ name: 'label', type: 'text', required: true },
@@ -565,10 +689,11 @@ export const Pages: CollectionConfig = {
 					// aucun nom, incomplet pour ce cas précis.
 					name: 'contactsLocaux',
 					type: 'array',
+					labels: { singular: 'Contact local', plural: 'Contacts locaux' },
 					fields: [
 						{ name: 'label', type: 'text', required: true },
 						{ name: 'detail', type: 'text' },
-						{ name: 'telephone', type: 'relationship', relationTo: 'telephones', required: true }
+						{ name: 'telephone', type: 'text', required: true }
 					]
 				}
 			]
@@ -578,11 +703,15 @@ export const Pages: CollectionConfig = {
 		{
 			name: 'accueil',
 			type: 'group',
-			admin: { condition: (data) => data.gabarit === 'accueil' },
+			admin: {
+				condition: (data) => data.gabarit === 'accueil',
+				components: { Label: '/admin/HiddenLabel' }
+			},
 			fields: [
 				{
 					name: 'hero',
 					type: 'group',
+					label: "Section d'introduction",
 					fields: [
 						// Pas `required` sur `image` — même raison que
 						// `Pois.image`/`itemsDocument.fichier` (décision 38+) :
@@ -590,10 +719,8 @@ export const Pages: CollectionConfig = {
 						{ name: 'image', type: 'upload', relationTo: 'media' },
 						{ name: 'titre', type: 'text', required: true },
 						{ name: 'description', type: 'textarea' },
-						{ name: 'boutonPrincipalLabel', type: 'text' },
-						{ name: 'boutonPrincipalLien', type: 'relationship', relationTo: 'pages' },
-						{ name: 'boutonSecondaireLabel', type: 'text' },
-						{ name: 'boutonSecondaireLien', type: 'relationship', relationTo: 'pages' }
+						...boutonFields('boutonPrincipal', 'Bouton principal'),
+						...boutonFields('boutonSecondaire', 'Bouton secondaire')
 					]
 				},
 				{
@@ -601,15 +728,14 @@ export const Pages: CollectionConfig = {
 					// automatique. Seules les 3 tuiles sont éditables.
 					name: 'quickAccessItems',
 					type: 'array',
+					label: 'Section Accès rapides',
+					labels: { singular: 'Tuile', plural: 'Tuiles' },
+					admin: { description: '3 fiches qui orientent vers une page précise du site (ex. Démarches, Contact).' },
 					minRows: 3,
 					maxRows: 3,
 					fields: [
-						{
-							name: 'icone',
-							type: 'text',
-							access: { update: isSuperAdminField },
-							admin: { description: 'Verrouillé par tuile, comme Démarches' }
-						},
+						// Verrouillé par tuile, comme Démarches.
+						iconField({ update: isSuperAdminField }),
 						{ name: 'titre', type: 'text', required: true },
 						{ name: 'description', type: 'text' },
 						{ name: 'lien', type: 'relationship', relationTo: 'pages', required: true }
@@ -623,6 +749,7 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'mayorWord',
 					type: 'group',
+					label: 'Section Mot du maire',
 					fields: [
 						{ name: 'image', type: 'upload', relationTo: 'media' },
 						{ name: 'citation', type: 'textarea', required: true },
@@ -634,6 +761,9 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'discoverCards',
 					type: 'array',
+					label: 'Section Découverte',
+					labels: { singular: 'Carte Découvrir', plural: 'Cartes Découvrir' },
+					admin: { description: 'Met en avant 3 fiches qui poussent vers un lieu ou un sentier précis de la carte interactive.' },
 					minRows: 3,
 					maxRows: 3,
 					fields: [
@@ -653,11 +783,12 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'cta',
 					type: 'group',
+					label: 'Section contact',
 					fields: [
 						{ name: 'titre', type: 'text' },
 						{ name: 'description', type: 'textarea' },
 						{ name: 'boutonLabel', type: 'text' },
-						{ name: 'coordonnees', type: 'array', fields: contactItemFields }
+						...contactFields
 					]
 				}
 			]
@@ -667,7 +798,10 @@ export const Pages: CollectionConfig = {
 		{
 			name: 'horaires',
 			type: 'group',
-			admin: { condition: (data) => data.gabarit === 'horaires' },
+			admin: {
+				condition: (data) => data.gabarit === 'horaires',
+				components: { Label: '/admin/HiddenLabel' }
+			},
 			fields: [
 				// Jours verrouillés (champs fixes, pas un array) — l'éditeur ne
 				// peut ni en ajouter ni en retirer, seulement éditer matin/après-midi.
@@ -686,17 +820,19 @@ export const Pages: CollectionConfig = {
 				{
 					name: 'fermetures',
 					type: 'array',
+					labels: { singular: 'Fermeture exceptionnelle', plural: 'Fermetures exceptionnelles' },
 					fields: [{ name: 'libelle', type: 'text', required: true }]
 				},
 				{
 					name: 'contactsPratiques',
 					type: 'array',
+					labels: { singular: 'Contact pratique', plural: 'Contacts pratiques' },
 					fields: [
-						{ name: 'icone', type: 'text', access: { update: isSuperAdminField } },
+						iconField({ update: isSuperAdminField }),
 						{ name: 'label', type: 'text', required: true },
 						{ name: 'nom', type: 'text', required: true },
 						{ name: 'description', type: 'text' },
-						{ name: 'contacts', type: 'array', fields: contactItemFields }
+						...contactFields
 					]
 				}
 			]
@@ -708,7 +844,10 @@ export const Pages: CollectionConfig = {
 		{
 			name: 'carteInteractive',
 			type: 'group',
-			admin: { condition: (data) => data.gabarit === 'carte-interactive' },
+			admin: {
+				condition: (data) => data.gabarit === 'carte-interactive',
+				components: { Label: '/admin/HiddenLabel' }
+			},
 			fields: [{ name: 'description', type: 'textarea' }]
 		}
 	],

@@ -1,0 +1,43 @@
+.login-logo {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin-bottom: 8px;
+}
+
+.login-logo__mark {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 14px;
+	background: $terracotta;
+	color: #fff;
+	font-size: 15px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	flex-shrink: 0;
+}
+
+.login-logo__text {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	text-align: left;
+}
+
+.login-logo__eyebrow {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: $terracotta;
+}
+
+.login-logo__titre {
+	font-size: 17px;
+	font-weight: 800;
+	color: var(--theme-text);
+}

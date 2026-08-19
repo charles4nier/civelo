@@ -25,7 +25,9 @@
 		gap: $spacing-4xl;
 
 		@media (min-width: $breakpoint-sm + 1) {
-			grid-template-columns: 2fr 1fr 1fr;
+			// Décision 61 — colonne "Découvrir" retirée (liens "#" qui ne
+			// menaient nulle part) : 2 colonnes au lieu de 3.
+			grid-template-columns: 2fr 1fr;
 		}
 	}
 

@@ -18,6 +18,12 @@ type Props = {
 	// Component) : ce composant reste client (interactions clavier/focus du
 	// menu), il ne peut pas interroger Payload lui-même.
 	navLinks: NavLink[];
+	// Décision 61 — identité (logo/titre/sous-titre) et bouton d'action,
+	// jusqu'ici en dur, viennent maintenant des globals `Identite`/
+	// `BoutonEntete` (lib/payload.ts, avec repli sur les mêmes valeurs
+	// qu'avant si Payload est injoignable).
+	identite: { titre: string; sousTitre?: string; logoUrl: string };
+	bouton: { label: string; href: string };
 };
 
 // Disclosure pattern (WAI-ARIA APG), not the Menu/Menubar pattern: the APG
@@ -173,7 +179,7 @@ function MobileNavItem({
 	);
 }
 
-export default function Header({ navLinks }: Props) {
+export default function Header({ navLinks, identite, bouton }: Props) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
 
@@ -202,19 +208,21 @@ export default function Header({ navLinks }: Props) {
 					<Link href="/" className={`${CLASS_NAME}__logo`}>
 						<div className={`${CLASS_NAME}__logo-badge`}>
 							<Image
-								src="/saint-hilaire-bonneval-logo.png"
-								alt="Blason de Saint-Hilaire-Bonneval"
+								src={identite.logoUrl}
+								alt={`Blason de ${identite.titre}`}
 								width={36}
 								height={36}
 							/>
 						</div>
 						<div className={`${CLASS_NAME}__logo-text`}>
 							<span className={`${CLASS_NAME}__logo-name`}>
-								Saint-Hilaire-Bonneval
+								{identite.titre}
 							</span>
-							<span className={`${CLASS_NAME}__logo-sub`}>
-								Haute-Vienne · 87260
-							</span>
+							{identite.sousTitre && (
+								<span className={`${CLASS_NAME}__logo-sub`}>
+									{identite.sousTitre}
+								</span>
+							)}
 						</div>
 					</Link>
 
@@ -226,10 +234,10 @@ export default function Header({ navLinks }: Props) {
 
 					<div className={`${CLASS_NAME}__actions`}>
 						<Link
-							href="/location-salle"
+							href={bouton.href}
 							className={`${CLASS_NAME}__cta`}
 						>
-							Location de salles
+							{bouton.label}
 						</Link>
 						<button
 							className={`${CLASS_NAME}__burger`}
@@ -269,13 +277,15 @@ export default function Header({ navLinks }: Props) {
 									<span
 										className={`${CLASS_NAME}__drawer-logo-name`}
 									>
-										Saint-Hilaire-Bonneval
+										{identite.titre}
 									</span>
-									<span
-										className={`${CLASS_NAME}__drawer-logo-sub`}
-									>
-										Haute-Vienne · 87260
-									</span>
+									{identite.sousTitre && (
+										<span
+											className={`${CLASS_NAME}__drawer-logo-sub`}
+										>
+											{identite.sousTitre}
+										</span>
+									)}
 								</Link>
 								<button
 									className={`${CLASS_NAME}__drawer-close`}
@@ -296,11 +306,11 @@ export default function Header({ navLinks }: Props) {
 							</div>
 							<div className={`${CLASS_NAME}__drawer-footer`}>
 								<Link
-									href="/location-salle"
+									href={bouton.href}
 									className={`${CLASS_NAME}__drawer-cta`}
 									onClick={() => setIsOpen(false)}
 								>
-									Location de salles
+									{bouton.label}
 								</Link>
 							</div>
 						</nav>

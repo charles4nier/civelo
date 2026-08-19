@@ -1,0 +1,148 @@
+.dashboard-home {
+	max-width: 720px;
+	padding: 48px 32px;
+}
+
+.dashboard-home__greeting {
+	font-size: 32px;
+	font-weight: 800;
+	color: var(--theme-text);
+}
+
+.dashboard-home__date {
+	margin-top: 4px;
+	font-size: 15px;
+	color: var(--theme-elevation-500);
+	text-transform: capitalize;
+}
+
+.dashboard-home__hint {
+	margin-top: 8px;
+	font-size: 14px;
+	font-style: italic;
+	color: var(--theme-elevation-500);
+}
+
+// Décision 71 — "un peu sexy, avec l'envie de cliquer dessus", puis
+// décision 72 — "reste dans le thème de couleur" : fond blanc (comme le
+// reste de l'admin), corail réservé à l'icône (halo clair) et à la flèche,
+// pas de carte pleine couleur. Ombre douce + légère élévation au survol
+// pour l'envie de cliquer, sans sortir de la palette terracotta/corail déjà
+// établie.
+.dashboard-home__shortcuts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-top: 32px;
+}
+
+.dashboard-home__shortcut {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	flex: 1 1 260px;
+	min-width: 260px;
+	padding: 20px 22px;
+	background: var(--theme-input-bg);
+	border: 1px solid var(--theme-border-color);
+	border-radius: 18px;
+	color: var(--theme-text);
+	text-decoration: none;
+	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+
+	&:hover {
+		transform: translateY(-2px);
+		border-color: $coral;
+		box-shadow: 0 14px 28px -14px oklch(0.72 0.18 18 / 0.35);
+	}
+
+	&:active {
+		transform: translateY(0);
+	}
+}
+
+.dashboard-home__shortcut-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 46px;
+	height: 46px;
+	border-radius: 14px;
+	background: $coral-15;
+	color: $coral;
+	flex-shrink: 0;
+}
+
+.dashboard-home__shortcut-text {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex: 1;
+	min-width: 0;
+}
+
+.dashboard-home__shortcut-title {
+	font-size: 16px;
+	font-weight: 800;
+	color: var(--theme-text);
+}
+
+.dashboard-home__shortcut-desc {
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--theme-elevation-500);
+}
+
+.dashboard-home__shortcut-arrow {
+	flex-shrink: 0;
+	color: $coral;
+	transition: transform 0.18s ease;
+}
+
+.dashboard-home__shortcut:hover .dashboard-home__shortcut-arrow {
+	transform: translateX(4px);
+}
+
+.dashboard-home__todo {
+	margin-top: 40px;
+}
+
+.dashboard-home__todo-title {
+	font-size: 14px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--theme-elevation-500);
+	margin-bottom: 12px;
+}
+
+.dashboard-home__todo-list {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.dashboard-home__todo-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 16px;
+	background: var(--theme-elevation-50);
+	border: 1px solid var(--theme-border-color);
+	border-radius: var(--style-radius-s);
+	color: var(--theme-text);
+	font-size: 14px;
+	text-decoration: none;
+
+	svg {
+		flex-shrink: 0;
+		color: $terracotta;
+	}
+
+	&:hover {
+		border-color: $terracotta;
+	}
+}

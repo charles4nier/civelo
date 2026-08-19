@@ -1,0 +1,231 @@
+// Décision 46 — retour client : couleurs fades, hiérarchie section/sous-
+// section/item trop peu marquée. Palette recentrée sur $terracotta (chaud)
+// plutôt que $leaf (vert, trop proche du reste du site public), échelle de
+// taille/poids nettement plus tranchée à chaque niveau, coins plus arrondis.
+
+$nav-accent: $terracotta;
+$nav-accent-fg: oklch(0.99 0.005 60);
+$nav-accent-tint: oklch(0.68 0.19 28 / 0.12);
+$nav-accent-tint-strong: oklch(0.68 0.19 28 / 0.22);
+
+.admin-nav {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 22px 14px 16px;
+	background: $background;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.admin-nav__brand {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 4px 8px 20px;
+	margin-bottom: 12px;
+	border-bottom: 2px solid $border;
+}
+
+.admin-nav__brand-mark {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border-radius: 11px;
+	background: $nav-accent;
+	color: $nav-accent-fg;
+	font-size: 12px;
+	font-weight: 800;
+	letter-spacing: 0.02em;
+	flex-shrink: 0;
+}
+
+.admin-nav__brand-name {
+	font-size: 15px;
+	font-weight: 800;
+	color: $foreground;
+}
+
+.admin-nav__body {
+	flex: 1;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 26px;
+}
+
+// "Partie" — Mon site / Paramètres. Le niveau le plus visible : grand,
+// épais, noir franc — pas de gris ici, contrairement à avant.
+.admin-nav__group-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 2px 8px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 14px;
+	font-weight: 800;
+	color: $foreground;
+	letter-spacing: -0.005em;
+}
+
+.admin-nav__group-chevron {
+	transition: transform 0.15s ease;
+	color: $foreground-50;
+
+	&--open {
+		transform: rotate(180deg);
+	}
+}
+
+.admin-nav__group-items {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	margin-top: 8px;
+}
+
+// "Sous-partie" — Mes pages / En-tête & pied de page / Lieux & sentiers.
+// Décision 67 — devient un sous-groupe repliable (fermé par défaut, comme
+// "Mon site"/"Paramètres" mais un cran plus petit), pas juste un séparateur
+// visuel. Pas de ligne sous l'intitulé (retirée sur demande).
+.admin-nav__subgroup {
+	margin-top: 10px;
+}
+
+.admin-nav__subgroup-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 4px 10px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 11px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: $terracotta;
+}
+
+.admin-nav__subgroup-chevron {
+	transition: transform 0.15s ease;
+	color: $terracotta;
+	opacity: 0.7;
+
+	&--open {
+		transform: rotate(180deg);
+	}
+}
+
+.admin-nav__subgroup-items {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	margin-top: 4px;
+}
+
+// "Item" — le lien lui-même. Texte noir franc (pas de gris), fond arrondi
+// et bien visible au survol/à l'actif.
+.admin-nav__link {
+	display: flex;
+	align-items: center;
+	gap: 11px;
+	padding: 9px 12px;
+	border-radius: 12px;
+	font-size: 14px;
+	font-weight: 600;
+	color: $foreground;
+	text-decoration: none;
+	transition: background 0.12s ease, color 0.12s ease;
+
+	svg {
+		flex-shrink: 0;
+		color: $foreground-50;
+		transition: color 0.12s ease;
+	}
+
+	&:hover {
+		background: $nav-accent-tint;
+
+		svg {
+			color: $nav-accent;
+		}
+	}
+
+	&--active {
+		background: $nav-accent;
+		color: $nav-accent-fg;
+
+		svg {
+			color: $nav-accent-fg;
+		}
+
+		&:hover {
+			background: $nav-accent;
+		}
+	}
+}
+
+.admin-nav__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding: 12px 8px 4px;
+	margin-top: 12px;
+	border-top: 2px solid $border;
+}
+
+.admin-nav__user {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	min-width: 0;
+}
+
+.admin-nav__user-avatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: $nav-accent-tint-strong;
+	color: $terracotta;
+	font-size: 12px;
+	font-weight: 800;
+	flex-shrink: 0;
+}
+
+.admin-nav__user-email {
+	font-size: 13px;
+	font-weight: 600;
+	color: $foreground;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.admin-nav__logout {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 10px;
+	border: none;
+	background: none;
+	color: $foreground-50;
+	cursor: pointer;
+	flex-shrink: 0;
+
+	&:hover {
+		background: $nav-accent-tint;
+		color: $nav-accent;
+	}
+}

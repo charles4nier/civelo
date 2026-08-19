@@ -16,6 +16,7 @@ export type Commerce = {
 	hours?: string;
 	phone?: string;
 	email?: string;
+	website?: string;
 };
 
 export const commerces: Commerce[] = [
@@ -25,7 +26,7 @@ export const commerces: Commerce[] = [
 	{ name: 'Dentistes — Dr Isabelle Lalo, Dr Aurélie Boirleaud', category: 'Santé', desc: 'Soins dentaires au cabinet médical.', phone: '05 19 56 89 66' },
 	{ name: 'Orthophoniste — Mme Durand', category: 'Santé', desc: 'Maison Communale, 1 rue du Lavoir.', address: '1 rue du Lavoir, 87260 Saint-Hilaire-Bonneval' },
 	{ name: 'Psychologue — Mme Méaume', category: 'Santé', desc: 'Maison Communale, 1 rue du Lavoir.', address: '1 rue du Lavoir, 87260 Saint-Hilaire-Bonneval', phone: '06 74 05 25 65' },
-	{ name: "L'Adéquate — Bar restaurant traiteur", category: 'Restauration', desc: 'Aurélien Demars. Restaurant, bar et service traiteur au bourg.', address: 'Le Bourg, 87260 Saint-Hilaire-Bonneval', phone: '05 55 00 61 67', email: 'www.ladequate.fr' },
+	{ name: "L'Adéquate — Bar restaurant traiteur", category: 'Restauration', desc: 'Aurélien Demars. Restaurant, bar et service traiteur au bourg.', address: 'Le Bourg, 87260 Saint-Hilaire-Bonneval', phone: '05 55 00 61 67', website: 'www.ladequate.fr' },
 	{ name: 'Boulangerie Saint Hilaire', category: 'Alimentation', desc: 'Boulangerie pâtisserie au cœur du bourg.', address: 'Le Bourg, 87260 Saint-Hilaire-Bonneval', phone: '05 55 30 55 48' },
 	{ name: 'Mme Carmen Coteur — Coiffeuse', category: 'Beauté', address: 'Le Vert Vallon, 87260 Saint-Hilaire-Bonneval', phone: '06 18 88 17 72' },
 	{ name: 'Mme Evelyne Cheminade — Coiffeuse', category: 'Beauté', address: 'Leysserie, 87260 Saint-Hilaire-Bonneval', phone: '05 55 09 60 79 · 06 76 69 56 18' },
@@ -39,7 +40,7 @@ export const commerces: Commerce[] = [
 	{ name: 'Edibat Construction — Maçonnerie', category: 'Artisans & entreprises', address: 'La Croix, 87260 Saint-Hilaire-Bonneval', phone: '05 55 30 44 08' },
 	{ name: 'LCD Menuiserie', category: 'Artisans & entreprises', desc: 'Menuiserie, agencement.', address: 'Le Bourg, 87260 Saint-Hilaire-Bonneval', phone: '05 55 09 55 01' },
 	{ name: 'SAS Financière — Écurie (M. Montel)', category: 'Autres', desc: 'Écurie, activités équestres.', address: 'Le Treuil, 87260 Saint-Hilaire-Bonneval', phone: '06 80 73 33 01' },
-	{ name: 'Les Chevaux de Moncontour', category: 'Autres', desc: 'Compétitions de chevaux.', phone: '06 77 04 00 58', email: 'leschevauxdemoncontour.com' },
+	{ name: 'Les Chevaux de Moncontour', category: 'Autres', desc: 'Compétitions de chevaux.', phone: '06 77 04 00 58', website: 'leschevauxdemoncontour.com' },
 	{ name: 'Les Sabots de Laine', category: 'Autres', desc: "Ferme pédagogique, production biologique, vente directe, gîte d'enfants, accueil à la ferme, séjours et animations. Cécile et Jean-Louis Brunet.", address: 'Le Pouyol, 87260 Saint-Hilaire-Bonneval', phone: '05 55 09 61 13 · 06 83 07 79 66' },
 	{ name: 'Éditions Passtime', category: 'Autres', desc: "Maison d'édition. Mme Céline Courtaud.", address: 'Résidence les Tandaridiers, 87260 Saint-Hilaire-Bonneval', phone: '06 87 56 31 24' },
 	{ name: 'Pôle de Lanaud — JM Alcover, M. Gambarotto', category: 'Autres', address: 'Lanaud, 87260 Saint-Hilaire-Bonneval', phone: '05 55 06 46 00' },

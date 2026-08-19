@@ -1,0 +1,120 @@
+.icon-picker {
+	position: relative;
+}
+
+.icon-picker__trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	max-width: 320px;
+	padding: 10px 14px;
+	background: var(--theme-input-bg);
+	border: 1px solid var(--theme-border-color);
+	border-radius: var(--style-radius-s);
+	color: var(--theme-text);
+	font-size: 14px;
+	text-align: left;
+	cursor: pointer;
+
+	&:hover:not(:disabled) {
+		border-color: $terracotta;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	svg {
+		flex-shrink: 0;
+		color: $terracotta;
+	}
+}
+
+.icon-picker__trigger-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.icon-picker__panel {
+	position: absolute;
+	z-index: 10;
+	top: calc(100% + 6px);
+	left: 0;
+	width: 100%;
+	max-width: 320px;
+	background: var(--theme-input-bg);
+	border: 1px solid var(--theme-border-color);
+	border-radius: var(--style-radius-s);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	overflow: hidden;
+}
+
+.icon-picker__search {
+	width: 100%;
+	padding: 10px 14px;
+	border: none;
+	border-bottom: 1px solid var(--theme-border-color);
+	font-size: 14px;
+	background: transparent;
+	color: var(--theme-text);
+
+	&:focus {
+		outline: none;
+	}
+}
+
+.icon-picker__list {
+	margin: 0;
+	padding: 6px;
+	list-style: none;
+	max-height: 260px;
+	overflow-y: auto;
+}
+
+.icon-picker__option {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 8px 10px;
+	background: none;
+	border: none;
+	border-radius: var(--style-radius-s);
+	font-size: 14px;
+	text-align: left;
+	color: var(--theme-text);
+	cursor: pointer;
+
+	&:hover {
+		background: var(--theme-elevation-100);
+	}
+
+	svg {
+		flex-shrink: 0;
+		color: $terracotta;
+	}
+}
+
+.icon-picker__option--active {
+	background: var(--theme-elevation-100);
+	font-weight: 600;
+}
+
+.icon-picker__option--clear {
+	color: var(--theme-elevation-500);
+	font-style: italic;
+
+	svg {
+		color: var(--theme-elevation-500);
+	}
+}
+
+.icon-picker__empty {
+	padding: 10px;
+	font-size: 13px;
+	color: var(--theme-elevation-400);
+	text-align: center;
+}
