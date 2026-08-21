@@ -27,20 +27,38 @@
 	// Bouton "+ Ajouter" des champs répétables (array) — le plus utilisé au
 	// quotidien pour ajouter une actu/un événement/une fiche annuaire.
 	// Converti d'un lien texte discret en un vrai bouton plein, chaud et
-	// arrondi.
+	// arrondi. Décision 79/80 — remonté en haut de la liste (`order`
+	// ci-dessus) puis aligné à droite (`align-self: flex-end`, remplace le
+	// `flex-start` par défaut de Payload) pour bien s'en détacher au lieu de
+	// se fondre sous le titre du champ ; fond et texte forcés en terracotta
+	// plein + ombre pour rester nettement visibles même isolé là-haut.
 	.array-field__add-row.btn {
 		display: inline-flex;
 		align-items: center;
+		align-self: flex-end !important;
 		gap: 8px;
+		margin: 12px 0 !important;
 		padding: 8px 18px 8px 10px !important;
 		border-radius: 999px !important;
 		background: $terracotta !important;
-		--btn-color: #fff;
+		box-shadow: 0 2px 8px oklch(0.68 0.19 28 / 0.35) !important;
+		// `!important` nécessaire ici : sans ça, la variable perd contre celle
+		// posée par Payload sur ce même sélecteur — pour une déclaration
+		// normale (pas les `!important`), c'est la couche déclarée en dernier
+		// qui gagne (`payload-default`, après `overrides-mairie`), d'où
+		// l'icône "+" restée grise malgré ce `--btn-color: #fff` non protégé.
+		--btn-color: #fff !important;
 
 		.btn__icon {
 			background: transparent !important;
 			border-color: rgba(255, 255, 255, 0.55) !important;
+			border-width: 2px !important;
 			color: #fff !important;
+
+			path {
+				stroke: #fff !important;
+				stroke-width: 2px !important;
+			}
 		}
 
 		.btn__label {
@@ -109,4 +127,53 @@
 	.array-field {
 		margin-bottom: 28px !important;
 	}
+
+	// Décision 74 — fil d'ariane (StepNav) : icône Payload remplacée par
+	// "Mon tableau de bord" (`admin/BreadcrumbHome`), rendu dans un `<span>`
+	// dimensionné pour une icône 18×18 par Payload (`.step-nav__home`) — élargi
+	// ici pour laisser la place au texte. Couleur corail sur tout le fil pour
+	// le rendre visible, page courante en gras (`.step-nav__last`, dernier
+	// maillon = page sur laquelle on est, fourni tel quel par Payload).
+	.step-nav__home {
+		width: auto !important;
+		height: auto !important;
+	}
+
+	.step-nav__home span {
+		max-width: none !important;
+		overflow: visible !important;
+		white-space: nowrap !important;
+	}
+
+	.breadcrumb-home {
+		font-weight: 700;
+	}
+
+	.step-nav {
+		a,
+		> span,
+		.breadcrumb-home,
+		.step-nav__last {
+			color: $coral !important;
+		}
+
+		.step-nav__last {
+			font-weight: 800 !important;
+		}
+	}
+
+	// Décision 75 — bouton hamburger de repli mobile de Payload (bascule sa
+	// nav par défaut) : inutile avec une sidebar sur-mesure toujours visible
+	// (`admin/Nav`), pas de mode replié équivalent construit ici.
+	.template-default__nav-toggler-wrapper {
+		display: none !important;
+	}
+
+	// Décision 79 — un premier essai remontait l'unique bouton "+ Ajouter" en
+	// haut via `order` flex. Décision 81 — remplacé par un vrai second bouton
+	// (`admin/ArrayAddRowBefore`, posé en `beforeInput`) : il fallait un
+	// bouton tout en haut ET un tout en bas, pas juste un seul déplacé. Le
+	// nouveau bouton se place naturellement avant les lignes (slot
+	// `beforeInput` de Payload, rendu juste après le titre du champ) — plus
+	// besoin de `order`, le flux normal suffit désormais.
 }

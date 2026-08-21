@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload';
 import { isSuperAdmin, isLoggedIn } from './access';
+import { withInfo } from './Pages';
 
 // Décision 10 — catégories verrouillées PAR PAGE (pas une liste globale
 // partagée). Chaque catégorie appartient à une page précise, et porte son
@@ -21,11 +22,14 @@ export const Categories: CollectionConfig = {
 		read: isLoggedIn
 	},
 	fields: [
-		{
-			name: 'nom',
-			type: 'text',
-			required: true
-		},
+		withInfo(
+			{
+				name: 'nom',
+				type: 'text',
+				required: true
+			},
+			'Le nom de la catégorie, affiché dans les filtres et les fiches.'
+		),
 		{
 			name: 'page',
 			type: 'relationship',
@@ -55,6 +59,7 @@ export const Categories: CollectionConfig = {
 			// absent de la liste précédente.
 			name: 'couleur',
 			type: 'select',
+			admin: { description: 'La couleur utilisée pour cette catégorie sur le site.' },
 			options: [
 				{ label: 'Primary', value: 'primary' },
 				{ label: 'Coral', value: 'coral' },

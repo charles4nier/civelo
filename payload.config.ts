@@ -23,9 +23,12 @@ export default buildConfig({
 		components: {
 			Nav: '/admin/Nav',
 			// Décision 68 — logo Payload par défaut remplacé sur l'écran de
-			// connexion par l'identité du site.
+			// connexion par l'identité du site. Décision 74 — même logique pour
+			// l'icône du fil d'ariane (premier maillon, lien vers le tableau de
+			// bord) : "Mon tableau de bord" en texte plutôt que le logo Payload.
 			graphics: {
-				Logo: '/admin/LoginLogo'
+				Logo: '/admin/LoginLogo',
+				Icon: '/admin/BreadcrumbHome'
 			},
 			// Décision 69 — tableau de bord par défaut (grille de collections)
 			// remplacé par une page d'accueil qui salue l'utilisateur connecté.

@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload';
 import { isLoggedIn } from '../collections/access';
+import { withInfo } from '../collections/Pages';
 
 // Décision 61 — logo/titre/sous-titre du site étaient dupliqués en dur dans
 // `Header` ET `Footer` (même blason, même nom de commune répétés dans les
@@ -14,7 +15,10 @@ export const Identite: GlobalConfig = {
 		update: isLoggedIn
 	},
 	fields: [
-		{ name: 'titre', type: 'text', required: true, label: 'Titre du site' },
+		withInfo(
+			{ name: 'titre', type: 'text', required: true, label: 'Titre du site' },
+			"Le nom de la commune, affiché dans l'en-tête et le pied de page."
+		),
 		{
 			name: 'sousTitre',
 			type: 'text',

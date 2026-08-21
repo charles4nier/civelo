@@ -817,6 +817,68 @@ Vérifié par `npx tsc --noEmit` (propre).
 
 Vérifié par `npx tsc --noEmit` (propre).
 
+### 73. Chevron repliable mal positionné — "empiète sur le titre"
+
+Le libellé (`<span>{label}</span>`) n'avait aucune contrainte de largeur — avec `justify-content: space-between` sur le bouton, un libellé long (notamment "En-tête & pied de page", le plus long de la sidebar) pouvait pousser le chevron sans espace garanti, voire le faire chevaucher. Corrigé : le libellé reçoit sa propre classe (`admin-nav__group-label`/`admin-nav__subgroup-label`) avec `flex:1; min-width:0` + troncature propre (`text-overflow: ellipsis`, une seule ligne, jamais de retour à la ligne qui décale le chevron) ; le chevron passe à `flex-shrink:0` avec une marge gauche fixe (10px) — toujours collé au bord droit, jamais compressé.
+
+Vérifié par `npx tsc --noEmit` (propre).
+
+### 74. Fil d'ariane personnalisé, avatar utilisateur, sidebar sticky
+
+Quatre demandes groupées dans le même message.
+
+- **Fil d'ariane** : icône Payload du premier maillon (`.step-nav__home`, lien vers `/admin`) remplacée par le texte "Mon tableau de bord" (`admin/BreadcrumbHome`, câblé via `admin.components.graphics.Icon` — même point d'extension que le logo de connexion, décision 68, mais un usage différent : ce composant contrôle le fil d'ariane, pas l'écran de connexion). Trouvé en lisant le code source de `StepNav`/`Default template` (`@payloadcms/ui`/`@payloadcms/next`) avant d'écrire quoi que ce soit — même discipline que la décision 51 : `.step-nav__home` est dimensionné pour une icône 18×18 par Payload, élargi en conséquence pour laisser la place au texte, sinon coupé.
+- **Couleur + gras** : tout le fil d'ariane en corail, dernier maillon (page courante, `.step-nav__last`, déjà fourni tel quel par Payload) en gras plus prononcé.
+- **Avatar utilisateur** : `Users.photo` (upload → `media`) ajouté. Pied de la sidebar (`admin/Nav`) affiche la photo si renseignée (peuplée par défaut par `useAuth`, profondeur REST par défaut), repli sur l'initiale de l'email sinon — comportement inchangé pour un utilisateur sans photo.
+- **Sidebar sticky — tenté puis annulé** : `.admin-nav` passé en `position: sticky; top: 0; height: 100vh` avec défilement interne propre. A cassé toute la mise en page de l'admin en vrai ("tout le CSS est pété", tableau de bord invisible) — probablement `height: 100vh` en conflit avec la structure flex/hauteur du `Wrapper` de Payload autour du Nav (jamais vue en détail, pas de fichier `.scss` trouvé pour ce conteneur). Retiré immédiatement sur demande, retour à `height: 100%` (état d'avant, qui fonctionnait) plutôt qu'une nouvelle tentative à l'aveugle. Sticky sidebar reste à refaire un jour, en comprenant d'abord la structure DOM réelle autour de `.admin-nav` (inspection navigateur nécessaire, pas juste le code source).
+
+Vérifié par `npx tsc --noEmit` (propre).
+
+### 75. Bouton hamburger mobile masqué
+
+"On n'a pas besoin du burger" — le bouton de repli mobile de Payload (`.template-default__nav-toggler-wrapper`, bascule sa nav par défaut) n'a pas d'équivalent utile avec une sidebar sur-mesure toujours visible (`admin/Nav`) : masqué (`display: none !important`, `global-overrides.scss`).
+
+Vérifié par `npx tsc --noEmit` (propre).
+
+### 76. Explication à droite de l'intitulé sur (quasiment) tous les champs du site
+
+"Une indication d'aide derrière chaque intitulé de champ, en grisé, comme on a déjà fait à certains endroits — j'ai fait tester à des gens, c'est beaucoup plus clair." Étend le pattern de la décision 54 (`admin/LabelWithInfo`, "Titre – explication", déjà en place sur Titre/Slug/Menu/boutons d'en-tête) à la quasi-totalité des champs du site, plutôt qu'à une poignée.
+
+- **`withInfo(field, info)`** (nouveau helper, `collections/Pages.ts`, exporté et réutilisé dans toutes les collections/globals) — fusionne `admin.components.Label` sur un champ sans écraser un `admin.condition`/`admin.description` déjà présent dessus. Évite de répéter le bloc `{admin:{components:{Label:{path,clientProps}}}}` des dizaines de fois.
+- **`collections/Pages.ts` réécrit intégralement** (fichier le plus dense du projet, ~90 champs) : quasiment chaque champ des 9 gabarits a maintenant son explication — sauf 3 exceptions délibérées, pas des oublis :
+  - `gabarit`/`liste.layoutType` : explication multi-options déjà longue, gardée **en dessous** du champ (`admin.description`), pas à droite — trop long pour une ligne, tranché ainsi en décision 46.
+  - Champs `icone` (`iconField()`) : pas d'ajout — le sélecteur `admin/IconPickerField` a sa propre interface déjà explicite (liste + glyphes), et rend son `label` en interne sans passer par `admin/LabelWithInfo` (un ajout n'aurait aucun effet visible).
+  - `contactFields` (adresse/téléphone/email/site web) : expliqué une seule fois à la source, propagé automatiquement partout où ce tableau est réutilisé (Annuaire, Contact, Accueil, Horaires, Pied de page).
+- **Étendu aussi aux autres collections/globals** : `Categories`, `Users` (dont les nouveaux champs prénom/nom/photo), `Media`, `Pois` (notamment `latitude`/`longitude`, peu clairs sans aide), `Sentiers`, `Identite`, `Footer`. Laissés tels quels : `Icones`/`Documents`/`BoutonEntete` (déjà entièrement couverts par `admin.description` ou `withInfo` via un helper partagé, décision 52/55).
+
+Vérifié par `npx tsc --noEmit` (propre) sur l'ensemble du projet après une réécriture complète de `collections/Pages.ts` — le fichier le plus à risque de casse silencieuse vu sa taille.
+
+### 77. Alignement gauche de la sidebar — 2e passe
+
+Après la décision 73 (padding en-tête/sous-en-tête aligné à 8px), le client signale que l'alignement n'est toujours pas bon. Deuxième écart trouvé : `.admin-nav__link` (les liens eux-mêmes — "Nouvelle page", "Catégories"...) avait `padding: 9px 12px`, soit 4px de plus que les en-têtes (8px) — corrigé à `9px 8px`.
+
+Non vérifié par rendu réel (pas de nouvelle capture après ce correctif) — à confirmer par le client. Si le décalage persiste après ça, il faudra une capture d'écran précise pour repérer l'écart exact plutôt que de continuer à deviner valeur par valeur.
+
+### 78. Alignement gauche de la sidebar — vraie cause trouvée par le client
+
+Les décisions 73 et 77 corrigeaient des écarts de padding (10px→8px, 12px→8px) : plausibles, sans effet réel sur le problème signalé, puisque le client a de nouveau constaté "toujours pas bon". Le client a inspecté lui-même l'élément dans le navigateur et donné la cause exacte : `.admin-nav__group-header` et `.admin-nav__subgroup-header` sont des `<button>`, qui centrent leur texte par défaut dans ce contexte — pas un souci de padding. `text-align: left` ajouté sur les deux en-têtes, et par précaution sur `.admin-nav__group-label`/`.admin-nav__subgroup-label` (les `<span>` de libellé à l'intérieur, même risque). Leçon : deux passes de correctifs plausibles mais non vérifiés (padding) n'ont rien résolu — la bonne piste est venue de l'inspecteur du navigateur, pas d'une hypothèse de plus.
+
+### 79. Listes répétables (array) : bouton "Ajouter" remonté, intitulé sans numéro, tri chronologique automatique
+
+Trois retours groupés sur l'ergonomie des listes (Actualités, Agenda, Documents, Budget/Projet, Annuaire, etc.) :
+
+- **Bouton "+ Ajouter" en bas de liste** : Payload le rend après toutes les lignes, donc en bas de page sur une longue liste (Actualités notamment) — il fallait tout scroller pour l'atteindre. `.array-field` étant déjà en `display: flex; flex-direction: column` côté Payload, un simple `order` (dans `admin/Nav/global-overrides.scss`, chargé globalement) suffit à le remonter juste sous le titre du champ, sans toucher au DOM ni à la logique d'ajout — la nouvelle ligne est toujours ajoutée en fin de liste, l'écran défile ensuite automatiquement jusqu'à elle (comportement Payload existant, `scrollToID`). S'applique à tous les champs `array` de l'admin, pas seulement Actualités.
+- **Intitulé de ligne avec numéro ("Fiche Boulangerie Martin 01")** : le numéro d'ordre est retiré dans `admin/RowLabel/index.tsx` — n'affiche plus que le nom/titre de la ligne (`prefix` ne sert plus que de repli pour une ligne vide, juste ajoutée).
+- **Ordre d'affichage pas lié à la date** : `itemsActualites`, `itemsAgenda`, `itemsDocument`, `itemsBudgetProjet` gardaient l'ordre de saisie/glisser-déposer. Vérifié dans `lib/payload.ts` : le site public affiche ces listes telles quelles, sans re-trier — donc l'ordre stocké dans Payload est aussi l'ordre public. Un hook `beforeChange` sur `collections/Pages.ts` trie désormais ces 4 listes par date décroissante à chaque enregistrement (les autres arrays, sans champ `date` — Annuaire, Démarches, Membres... — ne sont pas concernés).
+
+### 80. Bouton "Ajouter" : à droite, plus visible, icône "+" blanche à trait 2px
+
+Trois retours rapides sur le bouton remonté en décision 79 : aligné à droite (`align-self: flex-end`, plutôt que collé à gauche sous le titre où il se fondait dans le flux de lecture) ; fond terracotta + ombre portée renforcés (le client le trouvait trop pâle/peu visible) ; marge `12px 0` ajoutée pour l'aérer du titre au-dessus et des lignes en dessous. Bug trouvé au passage : l'icône "+" restait grise malgré `--btn-color: #fff` posé sur `.array-field__add-row.btn` — cette variable n'avait pas de `!important`, et pour une déclaration *normale* (pas `!important`), c'est la couche CSS déclarée en dernier qui gagne (`payload-default`, après notre `overrides-mairie`) — l'inverse de la règle pour les `!important` documentée en décision 46. `!important` ajouté sur `--btn-color`, plus `stroke-width: 2px` (icône) et `border-width: 2px` (cercle autour) sur demande.
+
+### 81. Un second bouton "Ajouter" en haut de liste, en plus de celui du bas
+
+La décision 79 déplaçait l'unique bouton natif de Payload en haut via `order` flex — mais le client voulait les deux : un en haut ET un en bas, pour ne jamais avoir à chercher selon l'endroit où on scrolle. Un `order` CSS ne peut pas dupliquer un élément interactif, donc retour en arrière sur ce point précis de la décision 79 (bloc `order` retiré de `global-overrides.scss`) au profit d'un vrai second bouton : `admin/ArrayAddRowBefore` (nouveau composant), posé en `admin.components.beforeInput` — le seul emplacement où Payload rend un composant personnalisé juste après le titre du champ `array`, avant les lignes (vérifié dans `@payloadcms/ui`, `fields/Array/index.js`). Réutilise `Button` et `useForm().addFieldRow` de `@payloadcms/ui` — les mêmes briques que le bouton natif — donc même rendu, mêmes classes CSS (`.array-field__add-row.btn`), donc même style automatiquement, sans dupliquer le moindre CSS. Appliqué via un nouveau helper `withAddRowTop` (dans `collections/Pages.ts`, à côté de `withInfo`) aux 8 listes qui avaient déjà un `RowLabel` sur-mesure (Annuaire, Démarches, Actualités, Documents, Budget/Projet, Agenda, Membres, Salles) — les listes les plus longues/les plus utilisées au quotidien ; les autres arrays (tarifs, notes, numéros utiles...) gardent le bouton natif seul. `importMap.js` régénéré (nouveau composant, piège déjà rencontré en décision 74).
+
 ## Catalogue des gabarits (état actuel)
 
 | Gabarit | Type | Pages actuelles | Notes |

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Link, useAuth, useConfig } from '@payloadcms/ui';
 import {
@@ -91,7 +92,7 @@ function NavSubgroup({ item, base, pathname }: { item: NavSubgroupItem; base: st
 				onClick={() => setOpen((o) => !o)}
 				aria-expanded={open}
 			>
-				<span>{item.label}</span>
+				<span className="admin-nav__subgroup-label">{item.label}</span>
 				<ChevronDown
 					size={12}
 					className={`admin-nav__subgroup-chevron${open ? ' admin-nav__subgroup-chevron--open' : ''}`}
@@ -120,7 +121,7 @@ function NavGroup({ section, base, pathname }: { section: NavSection; base: stri
 				onClick={() => setOpen((o) => !o)}
 				aria-expanded={open}
 			>
-				<span>{section.label}</span>
+				<span className="admin-nav__group-label">{section.label}</span>
 				<ChevronDown
 					size={13}
 					className={`admin-nav__group-chevron${open ? ' admin-nav__group-chevron--open' : ''}`}
@@ -148,6 +149,10 @@ export default function AdminNavClient({ pages }: Props) {
 	const pathname = usePathname();
 	const base = useAdminBase();
 	const { user, logOut } = useAuth();
+	// `useAuth` peuple `photo` (relation `media`) par défaut (profondeur REST
+	// par défaut) — objet {url} si renseignée, sinon absente/non peuplée.
+	const photo = (user as { photo?: { url?: string } | string } | undefined)?.photo;
+	const photoUrl = typeof photo === 'object' ? photo?.url : undefined;
 
 	const monSite: NavSection = {
 		label: 'Mon site',
@@ -225,9 +230,21 @@ export default function AdminNavClient({ pages }: Props) {
 			{user && (
 				<div className="admin-nav__footer">
 					<div className="admin-nav__user">
-						<span className="admin-nav__user-avatar">
-							{(user.email as string)?.charAt(0).toUpperCase()}
-						</span>
+						{/* Décision 74 — photo si renseignée (Users.photo), repli sur
+						    l'initiale de l'email sinon, comme avant. */}
+						{photoUrl ? (
+							<Image
+								src={photoUrl}
+								alt=""
+								width={28}
+								height={28}
+								className="admin-nav__user-photo"
+							/>
+						) : (
+							<span className="admin-nav__user-avatar">
+								{(user.email as string)?.charAt(0).toUpperCase()}
+							</span>
+						)}
 						<span className="admin-nav__user-email">{user.email as string}</span>
 					</div>
 					<button type="button" className="admin-nav__logout" onClick={() => logOut()}>

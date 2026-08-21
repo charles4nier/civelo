@@ -1,6 +1,6 @@
 import type { GlobalConfig } from 'payload';
 import { isLoggedIn } from '../collections/access';
-import { contactFields } from '../collections/Pages';
+import { contactFields, withInfo } from '../collections/Pages';
 
 // Décision 61 — pied de page entièrement en dur jusqu'ici (adresse,
 // horaires, réseaux sociaux, texte de présentation). Réutilise
@@ -33,7 +33,13 @@ export const Footer: GlobalConfig = {
 			label: 'Horaires',
 			admin: { description: 'Ex. "9h–12h / 14h–17h".' }
 		},
-		{ name: 'facebook', type: 'text', label: 'Lien Facebook' },
-		{ name: 'instagram', type: 'text', label: 'Lien Instagram' }
+		withInfo(
+			{ name: 'facebook', type: 'text', label: 'Lien Facebook' },
+			'Le lien vers la page Facebook de la commune (optionnel).'
+		),
+		withInfo(
+			{ name: 'instagram', type: 'text', label: 'Lien Instagram' },
+			'Le lien vers le compte Instagram de la commune (optionnel).'
+		)
 	]
 };

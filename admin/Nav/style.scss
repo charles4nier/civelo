@@ -8,10 +8,18 @@ $nav-accent-fg: oklch(0.99 0.005 60);
 $nav-accent-tint: oklch(0.68 0.19 28 / 0.12);
 $nav-accent-tint-strong: oklch(0.68 0.19 28 / 0.22);
 
+// Décision 74 — sidebar sticky, d'abord retirée (soupçonnée d'avoir cassé
+// toute la mise en page), remise ensuite : la vraie cause du "CSS pété"
+// était `admin/Dashboard`/`admin/BreadcrumbHome` absents de l'importMap
+// (composants introuvables, pas un conflit de mise en page). Sticky remis
+// sur cette base.
 .admin-nav {
+	position: sticky;
+	top: 0;
 	display: flex;
 	flex-direction: column;
-	height: 100%;
+	height: 100vh;
+	overflow-y: auto;
 	padding: 22px 14px 16px;
 	background: $background;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -60,9 +68,9 @@ $nav-accent-tint-strong: oklch(0.68 0.19 28 / 0.22);
 .admin-nav__group-header {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
 	width: 100%;
 	padding: 2px 8px;
+	text-align: left;
 	background: none;
 	border: none;
 	cursor: pointer;
@@ -72,7 +80,24 @@ $nav-accent-tint-strong: oklch(0.68 0.19 28 / 0.22);
 	letter-spacing: -0.005em;
 }
 
+// Décision 73 — "la flèche empiète sur le titre" : le libellé prenait toute
+// la largeur disponible avant de laisser la place au chevron (`justify-
+// content: space-between` sur un texte non contraint). Le libellé devient
+// flexible avec troncature propre (une ligne, jamais de retour à la ligne
+// qui pousse le chevron n'importe où) ; le chevron garde une largeur fixe
+// et un espace minimum garanti à sa gauche, toujours collé au bord droit.
+.admin-nav__group-label {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: left;
+}
+
 .admin-nav__group-chevron {
+	flex-shrink: 0;
+	margin-left: 10px;
 	transition: transform 0.15s ease;
 	color: $foreground-50;
 
@@ -99,9 +124,14 @@ $nav-accent-tint-strong: oklch(0.68 0.19 28 / 0.22);
 .admin-nav__subgroup-header {
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
 	width: 100%;
-	padding: 4px 10px;
+	// Même padding horizontal que `.admin-nav__group-header` (8px) — décalé de
+	// 2px avant (10px), repéré sur une capture d'écran réelle du client.
+	padding: 4px 8px;
+	// `<button>` centre son texte par défaut dans certains contextes — c'était
+	// la vraie cause du désalignement, pas le padding. Repéré et donné
+	// directement par le client via l'inspecteur du navigateur.
+	text-align: left;
 	background: none;
 	border: none;
 	cursor: pointer;
@@ -112,7 +142,21 @@ $nav-accent-tint-strong: oklch(0.68 0.19 28 / 0.22);
 	color: $terracotta;
 }
 
+// Même correctif que `.admin-nav__group-label` ci-dessus (décision 73),
+// utile en particulier ici : "En-tête & pied de page" est le libellé le
+// plus long de la sidebar.
+.admin-nav__subgroup-label {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: left;
+}
+
 .admin-nav__subgroup-chevron {
+	flex-shrink: 0;
+	margin-left: 10px;
 	transition: transform 0.15s ease;
 	color: $terracotta;
 	opacity: 0.7;
@@ -130,12 +174,15 @@ $nav-accent-tint-strong: oklch(0.68 0.19 28 / 0.22);
 }
 
 // "Item" — le lien lui-même. Texte noir franc (pas de gris), fond arrondi
-// et bien visible au survol/à l'actif.
+// et bien visible au survol/à l'actif. Padding horizontal aligné sur celui
+// des en-têtes de groupe/sous-groupe (8px) — était à 12px, décalait le
+// texte des liens de 4px vers la droite par rapport à "Mon site"/"Mes
+// pages" juste au-dessus, repéré sur une capture d'écran réelle du client.
 .admin-nav__link {
 	display: flex;
 	align-items: center;
 	gap: 11px;
-	padding: 9px 12px;
+	padding: 9px 8px;
 	border-radius: 12px;
 	font-size: 14px;
 	font-weight: 600;
@@ -199,6 +246,16 @@ $nav-accent-tint-strong: oklch(0.68 0.19 28 / 0.22);
 	color: $terracotta;
 	font-size: 12px;
 	font-weight: 800;
+	flex-shrink: 0;
+}
+
+// Décision 74 — photo utilisateur (Users.photo), même gabarit rond que
+// l'avatar-initiale qu'elle remplace quand elle est renseignée.
+.admin-nav__user-photo {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	object-fit: cover;
 	flex-shrink: 0;
 }
 

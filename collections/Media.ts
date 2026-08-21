@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload';
 import { isLoggedIn, isAdminOrAbove } from './access';
+import { withInfo } from './Pages';
 
 // Décision 25 — collection dédiée aux images (hero, cards, POI, aperçus...).
 // `alt` obligatoire : exigence RGAA déjà couverte par l'audit du site.
@@ -18,14 +19,14 @@ export const Media: CollectionConfig = {
 		read: () => true
 	},
 	fields: [
-		{
-			name: 'alt',
-			type: 'text',
-			required: true
-		},
-		{
-			name: 'credit',
-			type: 'text'
-		}
+		withInfo(
+			{
+				name: 'alt',
+				type: 'text',
+				required: true
+			},
+			"Ce que représente l'image, lu à voix haute par les lecteurs d'écran (accessibilité)."
+		),
+		withInfo({ name: 'credit', type: 'text' }, "Le nom du photographe ou la source de l'image (optionnel).")
 	]
 };
