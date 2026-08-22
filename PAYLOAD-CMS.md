@@ -879,12 +879,61 @@ Trois retours rapides sur le bouton remonté en décision 79 : aligné à droite
 
 La décision 79 déplaçait l'unique bouton natif de Payload en haut via `order` flex — mais le client voulait les deux : un en haut ET un en bas, pour ne jamais avoir à chercher selon l'endroit où on scrolle. Un `order` CSS ne peut pas dupliquer un élément interactif, donc retour en arrière sur ce point précis de la décision 79 (bloc `order` retiré de `global-overrides.scss`) au profit d'un vrai second bouton : `admin/ArrayAddRowBefore` (nouveau composant), posé en `admin.components.beforeInput` — le seul emplacement où Payload rend un composant personnalisé juste après le titre du champ `array`, avant les lignes (vérifié dans `@payloadcms/ui`, `fields/Array/index.js`). Réutilise `Button` et `useForm().addFieldRow` de `@payloadcms/ui` — les mêmes briques que le bouton natif — donc même rendu, mêmes classes CSS (`.array-field__add-row.btn`), donc même style automatiquement, sans dupliquer le moindre CSS. Appliqué via un nouveau helper `withAddRowTop` (dans `collections/Pages.ts`, à côté de `withInfo`) aux 8 listes qui avaient déjà un `RowLabel` sur-mesure (Annuaire, Démarches, Actualités, Documents, Budget/Projet, Agenda, Membres, Salles) — les listes les plus longues/les plus utilisées au quotidien ; les autres arrays (tarifs, notes, numéros utiles...) gardent le bouton natif seul. `importMap.js` régénéré (nouveau composant, piège déjà rencontré en décision 74).
 
+### 82. Histoire et La commune — dernière exception non éditable, comblée
+
+"Finis-moi absolument tous les imports de contribution manquants, fonce, je m'occupe des images." Audit : sur toutes les pages du site, seules Histoire et La commune n'appelaient encore aucune fonction `lib/payload.ts` — restées 100% en dur (Lorem ipsum pour Histoire, contenu réel non éditable pour La commune) depuis la décision 41, faute d'un schéma assez riche pour leur mise en page (bloc texte + triptyque d'images, section pleine largeur, 2 colonnes + chiffres clés) — le gabarit "editorial" n'avait alors que des blocs `texte`/`image` génériques.
+
+Schéma `editorial` étendu (`collections/Pages.ts`) : `eyebrowText`/`sousTitre` (identité de page) + 2 blocs ajoutés à `sections` à côté de texte/image — `colonnes` (2 richText côte à côte) et `statistiques` (array de chiffres clés, avec `RowLabel`). Choix : rester sur le principe modulaire déjà en place (blocs réutilisables par toute future page Éditorial) plutôt qu'un schéma figé propre à ces 2 pages.
+
+Rendu factorisé dans `shared/components/EditorialLayout/Sections.tsx` (nouveau) — un seul mappage bloc → JSX, réutilisé par la route générique (`[...slug]/page.tsx`, remplace le mappage inline qui y vivait) et par les 2 routes statiques. `features/histoire` et `features/commune` réécrits sur le même modèle que le reste du site (Server Component async, `getEditorialData(slug)` avec repli sur un `data.ts` — même contenu que l'ancien composant en dur, converti en richText Lexical via un petit constructeur partagé, `shared/lib/richText.ts`, formes vérifiées dans les `.d.ts` de `lexical`). Ancien SCSS sur-mesure (`features/histoire/style.scss`, `features/commune/style.scss`) supprimé, remplacé par des styles génériques ajoutés à `EditorialLayout/style.scss`.
+
+Contenu réellement migré dans Payload (script temporaire, supprimé après usage, même logique que la décision 62) — **sauf les images** : les 3 photos de chaque page n'existaient qu'en fichiers statiques dans `/public`, pas en documents `Media` Payload (`relationTo: 'media'` refuse une URL brute, testé — `ValidationError` à la première tentative). Laissées de côté sciemment, à ajouter par le client via l'admin (bloc "Image" du champ `sections`) — comme convenu. Le repli statique (`data.ts`), lui, référence encore ces 3 fichiers directement (affichage correct même sans Payload) ; seule la version poussée en base les omet.
+
+Vérifié par un serveur de dev éphémère (`curl` sur `/histoire`, `/vivre/la-commune` + quelques autres routes en non-régression) : 200 partout, contenu réel présent dans le HTML rendu — pas un rendu réel en navigateur, mais une confirmation que rien n'est cassé côté serveur avant de rendre la main.
+
+Conséquence assumée : perte du gabarit sur-mesure de ces 2 pages (carte "overlap" mobile, triptyque d'images en grille, typographie "eyebrow" à deux niveaux) au profit du rendu générique déjà en place pour toute nouvelle page Éditorial — cohérent avec l'objectif du chantier (tout doit être éditable) plutôt qu'avec la fidélité visuelle à l'ancien design figé.
+
+### 83. Audit complet + remplissage Contact, Horaires, Pied de page
+
+"Y a-t-il quelque chose à remplir encore ?" — audit direct en base (script temporaire) plutôt qu'en se fiant à la mémoire des sessions précédentes : 26 points vérifiés (les 9 listes, l'accueil, la carte, Histoire/La commune, identité, bouton d'en-tête...). Tout était rempli sauf 3 vrais trous — Contact (aucune coordonnée), Horaires (aucun jour renseigné), Pied de page (ni téléphone ni email) — plus un point sans impact visuel (19 catégories de démarches/actualités/documents/budget/agenda sans icône, jamais affichée pour ces types de cartes — vérifié dans leurs Layout respectifs, `couleur` seule est utilisée).
+
+"Toutes les données existent déjà" — exact : les 3 replis statiques (`features/contact/index.tsx`, `features/horaires/index.tsx`) contiennent le vrai contenu (téléphone, email, adresse, horaires, fermetures, 4 contacts pratiques) depuis le début, jamais poussé en base. Script temporaire (supprimé après usage) qui reprend ce contenu tel quel : `payload.update` sur les pages "contact"/"mairie/horaires", `payload.updateGlobal` sur "footer" (même téléphone/email que Contact, cohérent — `FOOTER_FALLBACK` dans `lib/payload.ts` n'a jamais eu de repli pour téléphone/email, contrairement à description/adresse/horaires qui s'affichaient déjà).
+
+Bug annexe trouvé en résolvant les icônes des contacts pratiques par nom lucide (`icone: 'Flame'` pour Pompiers) : l'icône était bien liée mais portait le nom français "Mémoire" au lieu de "Flamme" — erreur de mapping de la décision 57 (renommage en français des 37 icônes). Corrigée au passage (`Icones` collection).
+
+Vérifié par serveur de dev éphémère : `/contact`, `/mairie/horaires` et le pied de page (page d'accueil) affichent bien le nouveau contenu.
+
+### 84. Blocs Éditorial refaits fidèles au design d'origine (rejet de la décision 82)
+
+"Ça fait partie du template, il me faut le triptyque et la mise en page spéciale." La décision 82 (blocs génériques texte/image/colonnes/statistiques) est rejetée : la mise en page sur-mesure d'Histoire/La commune n'est pas un détail sacrifiable pour les rendre éditables, elle fait partie du produit vendu.
+
+Reconstruite comme 3 blocs au choix dans la liste déroulante "Ajouter un bloc" (`collections/Pages.ts`), fidèles pixel-pour-pixel au design d'origine — récupéré via `git show HEAD:features/histoire/style.scss` avant que la décision 82 ne le supprime (heureusement encore dans le dernier commit, jamais poussé) :
+- **Intro (triptyque + texte)** : carte de texte + 3 images (1 grande au-dessus, 2 carrées en dessous) ; `positionImages` (droite/gauche) rend les images inversables — demandé explicitement. Aide de champ précise sur le format attendu de chaque image (portrait ~4:5 pour la grande, carré pour les 2 petites) — le client avait demandé qu'on informe l'utilisateur du format photo à fournir.
+- **Texte centré (évolution)** : section pleine largeur, fond teinté, texte centré max 800px.
+- **Titre + 2 colonnes + tuiles** : en-tête + 2 colonnes de texte + jusqu'à 4 tuiles (`maxRows: 4`) en bas.
+
+`shared/components/EditorialLayout/Sections.tsx` et `style.scss` réécrits pour ces 3 blocs (classes génériques `.editorial__*`, réutilisables par toute future page Éditorial, pas seulement ces 2). Contenu re-migré (script temporaire) dans les mêmes conditions qu'en décision 82 : images toujours exclues (fichiers `/public`, pas des documents `Media`), à ajouter par le client. Vérifié par serveur de dev éphémère : les classes et le contenu attendus sont bien dans le HTML rendu des 2 pages.
+
+### 85. Champ "Nombre de filtres" retiré — jamais branché, jamais censé être un choix
+
+Le client signale que ce champ (gabarit Liste) ne devrait pas exister comme choix éditeur : le nombre de filtres est fixe, déterminé par `layoutType` (chaque `XxxLayout` est déjà un composant spécifique). Vérifié avant de toucher au schéma : `nombreFiltres` n'était référencé nulle part en dehors de `collections/Pages.ts` — un champ mort, jamais lu par `lib/payload.ts` ni par aucun `XxxLayout`. Le nombre réel de filtres est déjà fixe et correct par composant : 1 filtre (catégorie) pour Annuaire/Démarches/Actualités/Agenda ; 2 pour Document (type + année, l'année étant calculée automatiquement à partir des dates, jamais un choix) ; Budget/Projet a son propre filtre fixe (Budget/Projet/Tous), sans catégorie du tout (décision 24). Champ supprimé — rien à migrer, il ne pilotait aucun rendu.
+
+### 86-87. Éditorial : tuiles précisées optionnelles + 2 blocs supplémentaires (image pleine largeur, grille de 3 images)
+
+Proposition initiale d'un 4ᵉ bloc "texte 2 colonnes sans encart" abandonnée : le bloc "Titre + 2 colonnes + tuiles" avait déjà les tuiles optionnelles (rien ne s'affiche si le tableau reste vide) — juste pas assez clair dans l'aide de champ. Corrigé (`collections/Pages.ts`) : "Optionnel — [...] laissez vide pour un texte à 2 colonnes simple."
+
+2 nouveaux blocs ajoutés à la liste déroulante du gabarit Éditorial :
+- **Image pleine largeur** : 2 champs image (`imageDesktop`, `imageMobile`), pas un simple recadrage CSS d'une seule photo comme partout ailleurs sur le site — vraie art direction, une image différente par écran (l'une masquée par CSS selon le breakpoint, `next/image` ne permettant pas de vrai `<picture>` propre avec des sources différentes).
+- **Grille de 3 images** : 3 images portrait, espacées en flex sur desktop, empilées sur mobile.
+
+`shared/components/EditorialLayout/Sections.tsx`/`style.scss` étendus en conséquence. Vérifié par serveur de dev éphémère (admin + `/histoire`, 200 des deux côtés) — pas de contenu réel à migrer, ce sont de nouveaux choix de blocs, pas des données existantes à convertir.
+
 ## Catalogue des gabarits (état actuel)
 
 | Gabarit | Type | Pages actuelles | Notes |
 |---|---|---|---|
 | **Liste** | Multi-instances | Commerces, Vie associative, Enfance & jeunesse, Sports & loisirs, Mes démarches, Actualités, Documents & publications, Budget & projets, Agenda | Hero + filtre(s) + collection + CTA optionnel ; varie par `carte` (voir ci-dessus) |
-| **Éditorial** | Multi-instances | Histoire, La commune | Hero + suite de sections texte/image |
+| **Éditorial** | Multi-instances | Histoire, La commune | Hero + suite de sections modulaires (texte, image, 2 colonnes, chiffres clés) |
 | **Trombinoscope** | Multi-instances | Le maire & les élus | Bloc intro + membres groupés par délégation + infos réunion |
 | **Catalogue de lieux/prestations** | Multi-instances | Location de salles | N fiches détaillées (description, capacité, tarifs groupés par public) + CTA |
 | **Contact** | Multi-instances | Contact | Fiches coordonnées + formulaire |
@@ -924,7 +973,7 @@ Phase 2 terminée.
 Phase 3 terminée.
 
 **Phase 4 — Intégration front**
-11. ~~Brancher les composants React existants sur Payload~~ — fait, décision 33 (Header + 4 pages Annuaire) puis étendu à tout le reste en décisions 37 à 40 (les 12 gabarits/cartes). Éditorial (Histoire/La commune) reste une exception partielle : branché dans la route générique (décision 41) mais les 2 pages statiques existantes restent en dur, pas de contenu réel migré (toujours du Lorem ipsum)
+11. ~~Brancher les composants React existants sur Payload~~ — fait, décision 33 (Header + 4 pages Annuaire) puis étendu à tout le reste en décisions 37 à 40 (les 12 gabarits/cartes). Éditorial (Histoire/La commune) : branché dans la route générique dès décision 41, mais les 2 pages statiques existantes restaient en dur (Lorem ipsum pour Histoire) — dernière exception, comblée en décision 82 (`getEditorialData`, schéma enrichi, contenu migré)
 12. ~~Menu dynamique~~ — fait (décision 33). ~~Relations résolues au rendu~~ (`resolvePageHref`, décision 14) — fait, consommée par la plupart des fonctions `lib/payload.ts` (liens de documents, boutons Hero, cartes Découvrir, etc.)
 
 **Phase 5 — Routage dynamique** (identifiée en discutant)

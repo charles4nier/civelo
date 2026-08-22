@@ -2,6 +2,7 @@ import { getPayload } from 'payload';
 import config from '../payload.config';
 import type { AnnuaireCardData } from '@shared/components/AnnuaireLayout';
 import type { ContactItem, IconVariant } from '@shared/components/ContactCard';
+import type { EditorialSection } from '@shared/components/EditorialLayout/Sections';
 
 // Item 11/12 de la feuille de route — couche de récupération de données
 // Payload, utilisée par les Server Components (app/**/page.tsx,
@@ -484,6 +485,41 @@ export async function getTrombinoscopeData(slug: string) {
 		};
 	} catch (err) {
 		console.warn(`[payload] getTrombinoscopeData("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+// Décision 82 — gabarit Éditorial (Histoire, La commune), auparavant
+// entièrement en dur (décision 41). `sections` reprend telle quelle la forme
+// des blocs Payload (`EditorialSection`, `shared/components/EditorialLayout/
+// Sections.tsx`) — pas de retraitement ici, juste la lecture.
+type PayloadEditorial = {
+	eyebrowText?: string;
+	sousTitre?: string;
+	sections?: EditorialSection[];
+};
+
+export async function getEditorialData(slug: string) {
+	try {
+		const payload = await getPayloadClient();
+		const { docs } = await payload.find({
+			collection: 'pages',
+			where: { slug: { equals: slug } },
+			depth: 2,
+			limit: 1
+		});
+		const page = docs[0] as unknown as { title?: string; editorial?: PayloadEditorial } | undefined;
+		const sections = page?.editorial?.sections;
+		if (!sections || sections.length === 0) return null;
+
+		return {
+			title: page?.title,
+			eyebrowText: page?.editorial?.eyebrowText,
+			sousTitre: page?.editorial?.sousTitre,
+			sections
+		};
+	} catch (err) {
+		console.warn(`[payload] getEditorialData("${slug}") : base injoignable, repli sur les données statiques.`, err);
 		return null;
 	}
 }

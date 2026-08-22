@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import { FileText } from 'lucide-react';
 import { RichText } from '@payloadcms/richtext-lexical/react';
 import AnnuaireLayout from '@shared/components/AnnuaireLayout';
@@ -13,6 +12,7 @@ import CatalogueLieuxLayout from '@shared/components/CatalogueLieuxLayout';
 import ContactLayout from '@shared/components/ContactLayout';
 import NumerosUtilesLayout from '@shared/components/NumerosUtilesLayout';
 import EditorialLayout from '@shared/components/EditorialLayout';
+import EditorialSections from '@shared/components/EditorialLayout/Sections';
 import {
 	getPageBySlug,
 	getAnnuaireItems,
@@ -24,7 +24,8 @@ import {
 	getTrombinoscopeData,
 	getCatalogueLieuxItems,
 	getContactData,
-	getNumerosUtilesData
+	getNumerosUtilesData,
+	getEditorialData
 } from '../../../lib/payload';
 
 // Item 14 (phase 5) — route générique : sert les pages créées depuis l'admin
@@ -116,44 +117,17 @@ export default async function DynamicPage({ params }: Props) {
 	}
 
 	if (gabarit === 'editorial') {
-		const sections = (page.editorial as { sections?: Record<string, unknown>[] } | undefined)?.sections ?? [];
+		const data = await getEditorialData(slug);
 		return (
 			<EditorialLayout
 				heroGradient={DEFAULT_GRADIENT}
 				breadcrumbLabel={title}
 				eyebrowIcon={FileText}
-				eyebrowText="Mairie de Saint-Hilaire-Bonneval"
+				eyebrowText={data?.eyebrowText || 'Mairie de Saint-Hilaire-Bonneval'}
 				title={title}
-				subtitle=""
+				subtitle={data?.sousTitre ?? ''}
 			>
-				{sections.map((block, i) => {
-					if (block.blockType === 'texte') {
-						return (
-							<section key={i} className="editorial__section">
-								<div className="editorial__section-inner container">
-									{block.titre ? <h2>{String(block.titre)}</h2> : null}
-									{block.corps ? <RichText data={block.corps as never} /> : null}
-								</div>
-							</section>
-						);
-					}
-					if (block.blockType === 'image') {
-						const image = block.image as { url?: string } | string | undefined;
-						const url = typeof image === 'object' ? image?.url : undefined;
-						if (!url) return null;
-						return (
-							<section key={i} className="editorial__section">
-								<div className="editorial__section-inner container">
-									<div style={{ position: 'relative', width: '100%', aspectRatio: '16/9' }}>
-										<Image src={url} alt={String(block.legende ?? '')} fill sizes="100vw" />
-									</div>
-									{block.legende ? <p>{String(block.legende)}</p> : null}
-								</div>
-							</section>
-						);
-					}
-					return null;
-				})}
+				<EditorialSections sections={data?.sections ?? []} />
 			</EditorialLayout>
 		);
 	}

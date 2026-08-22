@@ -277,18 +277,6 @@ export const Pages: CollectionConfig = {
 					]
 				},
 				withInfo(
-					{
-						name: 'nombreFiltres',
-						type: 'select',
-						defaultValue: '1',
-						options: [
-							{ label: '1 filtre', value: '1' },
-							{ label: '2 filtres', value: '2' }
-						]
-					},
-					'Nombre de filtres de catégorie affichés au-dessus de la liste.'
-				),
-				withInfo(
 					{ name: 'ctaActif', type: 'checkbox', defaultValue: false },
 					"Affiche un encart d'appel à l'action à la fin de la liste."
 				),
@@ -528,6 +516,17 @@ export const Pages: CollectionConfig = {
 		},
 
 		// ---- Gabarit Éditorial ----
+		// Décision 82 — "Histoire" et "La commune" (les 2 seules pages
+		// existantes de ce gabarit) restaient entièrement en dur (Lorem ipsum
+		// pour Histoire) depuis la décision 41. Décision 84 — 1er essai
+		// (décision 82, blocs texte/image/colonnes/statistiques génériques)
+		// rejeté par le client : la mise en page sur-mesure d'origine (triptyque
+		// d'images + texte, section pleine largeur, 2 colonnes + tuiles) FAIT
+		// PARTIE du template, pas un détail sacrifiable pour la rendre
+		// éditable. Reconstruite comme 3 vrais blocs au choix (liste
+		// déroulante "Ajouter un bloc"), fidèles au design d'origine (voir
+		// l'ancien `features/histoire/style.scss`, récupéré via git avant
+		// suppression) — pas 4 blocs génériques recomposables à l'infini.
 		{
 			name: 'editorial',
 			type: 'group',
@@ -536,25 +535,122 @@ export const Pages: CollectionConfig = {
 				components: { Label: '/admin/HiddenLabel' }
 			},
 			fields: [
+				withInfo(
+					{ name: 'eyebrowText', type: 'text' },
+					'Le petit texte au-dessus du titre, en haut de page (ex. "Patrimoine & Mémoire").'
+				),
+				withInfo({ name: 'sousTitre', type: 'text' }, 'Le sous-titre affiché sous le titre (optionnel).'),
 				{
 					name: 'sections',
 					type: 'blocks',
+					labels: { singular: 'Bloc', plural: 'Blocs' },
 					blocks: [
 						{
-							slug: 'texte',
+							slug: 'intro',
+							labels: { singular: 'Intro (triptyque + texte)', plural: 'Intro (triptyque + texte)' },
 							fields: [
-								withInfo({ name: 'titre', type: 'text' }, 'Titre de cette section de texte (optionnel).'),
-								withInfo({ name: 'corps', type: 'richText', required: true }, 'Le texte de cette section.')
+								withInfo(
+									{
+										name: 'positionImages',
+										type: 'select',
+										defaultValue: 'droite',
+										options: [
+											{ label: 'Images à droite', value: 'droite' },
+											{ label: 'Images à gauche', value: 'gauche' }
+										]
+									},
+									'De quel côté placer les 3 images par rapport au texte.'
+								),
+								withInfo({ name: 'eyebrow', type: 'text' }, 'Petit texte au-dessus du titre (ex. "Aux origines", optionnel).'),
+								withInfo({ name: 'titre', type: 'text', required: true }, 'Le titre de ce bloc.'),
+								withInfo({ name: 'corps', type: 'richText', required: true }, 'Le texte de ce bloc.'),
+								withInfo(
+									{ name: 'imagePrincipale', type: 'upload', relationTo: 'media' },
+									'La grande image, au-dessus des 2 autres. Utilisez une photo au format portrait (un peu plus haute que large, ratio environ 4:5) — une photo au format paysage sera recadrée et perdra du contenu sur les côtés.'
+								),
+								withInfo(
+									{ name: 'imageSecondaire1', type: 'upload', relationTo: 'media' },
+									'Une des 2 petites images côte à côte, sous la grande. Utilisez une photo au format carré (largeur = hauteur).'
+								),
+								withInfo(
+									{ name: 'imageSecondaire2', type: 'upload', relationTo: 'media' },
+									'L\'autre petite image, à côté de la précédente. Utilisez une photo au format carré (largeur = hauteur).'
+								)
 							]
 						},
 						{
-							slug: 'image',
+							slug: 'texteCentre',
+							labels: { singular: 'Texte centré (évolution)', plural: 'Texte centré (évolution)' },
+							fields: [
+								withInfo({ name: 'eyebrow', type: 'text' }, 'Petit texte au-dessus du titre (ex. "Évolution", optionnel).'),
+								withInfo({ name: 'titre', type: 'text', required: true }, 'Le titre de ce bloc.'),
+								withInfo({ name: 'corps', type: 'richText', required: true }, 'Le texte de ce bloc, sur toute la largeur.')
+							]
+						},
+						{
+							slug: 'titreColonnesTuiles',
+							labels: { singular: 'Titre + 2 colonnes + tuiles', plural: 'Titre + 2 colonnes + tuiles' },
+							fields: [
+								withInfo({ name: 'eyebrow', type: 'text' }, 'Petit texte au-dessus du titre (ex. "Aujourd\'hui", optionnel).'),
+								withInfo({ name: 'titre', type: 'text', required: true }, 'Le titre de ce bloc.'),
+								withInfo({ name: 'colonneGauche', type: 'richText', required: true }, 'Le texte de la colonne de gauche.'),
+								withInfo({ name: 'colonneDroite', type: 'richText', required: true }, 'Le texte de la colonne de droite.'),
+								{
+									name: 'tuiles',
+									type: 'array',
+									labels: { singular: 'Tuile', plural: 'Tuiles' },
+									maxRows: 4,
+									admin: {
+										// Décision 86 — précisé "optionnel" explicitement : les
+										// tuiles ne sont pas obligatoires, un texte à 2 colonnes
+										// simple (sans rien en bas) est un usage normal de ce
+										// bloc, pas un bloc à part.
+										description:
+											'Optionnel — jusqu\'à 4 tuiles (ex. chiffres clés) affichées en bas du bloc. Laissez vide pour un texte à 2 colonnes simple, sans rien en dessous.',
+										components: {
+											Label: '/admin/DynamicArrayLabel',
+											RowLabel: { path: '/admin/RowLabel', clientProps: { prefix: 'Tuile', titleField: 'libelle' } }
+										}
+									},
+									fields: [
+										withInfo({ name: 'valeur', type: 'text', required: true }, 'Le chiffre ou texte affiché en grand (ex. "1 022").'),
+										withInfo({ name: 'suffixe', type: 'text' }, 'Un suffixe affiché en plus petit à côté (ex. "km²", optionnel).'),
+										withInfo({ name: 'libelle', type: 'text', required: true }, 'Ce que représente cette tuile (ex. "Habitants").')
+									]
+								}
+							]
+						},
+						{
+							slug: 'imagePleineLargeur',
+							labels: { singular: 'Image pleine largeur', plural: 'Images pleine largeur' },
 							fields: [
 								withInfo(
-									{ name: 'image', type: 'upload', relationTo: 'media', required: true },
-									'L\'image de cette section.'
+									{ name: 'imageDesktop', type: 'upload', relationTo: 'media', required: true },
+									'L\'image affichée sur ordinateur/tablette. Utilisez une photo au format paysage (plus large que haute) : elle remplit toute la largeur de la page.'
+								),
+								withInfo(
+									{ name: 'imageMobile', type: 'upload', relationTo: 'media', required: true },
+									'L\'image affichée sur mobile, à la place de la précédente. Utilisez une photo au format portrait (plus haute que large) — un cadrage différent, pas juste la même photo recadrée.'
 								),
 								withInfo({ name: 'legende', type: 'text' }, 'Une légende affichée sous l\'image (optionnel).')
+							]
+						},
+						{
+							slug: 'grilleImages',
+							labels: { singular: 'Grille de 3 images', plural: 'Grilles de 3 images' },
+							fields: [
+								withInfo(
+									{ name: 'image1', type: 'upload', relationTo: 'media', required: true },
+									'1ʳᵉ image. Utilisez une photo au format portrait (plus haute que large).'
+								),
+								withInfo(
+									{ name: 'image2', type: 'upload', relationTo: 'media', required: true },
+									'2ᵉ image. Utilisez une photo au format portrait (plus haute que large).'
+								),
+								withInfo(
+									{ name: 'image3', type: 'upload', relationTo: 'media', required: true },
+									'3ᵉ image. Utilisez une photo au format portrait (plus haute que large).'
+								)
 							]
 						}
 					]
