@@ -135,6 +135,10 @@ export const Pages: CollectionConfig = {
 	// `order` numérique manuel. Ajoute un champ interne `_order` (fractional
 	// indexing) et le définit comme tri par défaut des requêtes.
 	orderable: true,
+	// Étape 7 du plan multi-tenant — unicité du slug PAR commune, pas
+	// globale (voir le commentaire sur le champ `slug` ci-dessous). `tenant`
+	// est le nom par défaut du champ ajouté par le plugin multi-tenant.
+	indexes: [{ fields: ['tenant', 'slug'], unique: true }],
 	admin: {
 		useAsTitle: 'title',
 		defaultColumns: ['title', 'gabarit', 'menu']
@@ -173,10 +177,15 @@ export const Pages: CollectionConfig = {
 		),
 		withInfo(
 			{
+				// Étape 7 du plan multi-tenant — `unique: true` directement sur
+				// le champ créait un index unique sur TOUTE la collection, pas
+				// par tenant (bug confirmé, issue payloadcms/payload#14801) :
+				// deux communes n'auraient jamais pu avoir de page "contact" en
+				// même temps. Remplacé par un index composé `tenant`+`slug`
+				// tout en bas de cette collection.
 				name: 'slug',
 				type: 'text',
 				required: true,
-				unique: true,
 				access: { update: isSuperAdminField }
 			},
 			"L'adresse de la page dans le navigateur (ex. \"contact\" → mairie.fr/contact). Pas d'espace ni d'accent."
@@ -1096,14 +1105,27 @@ export const Pages: CollectionConfig = {
 		beforeValidate: [
 			async ({ data, req, originalDoc }) => {
 				// Décision 9 — un gabarit singleton ne peut exister qu'une fois.
+				// Étape 6 du plan multi-tenant — "qu'une fois" doit s'entendre
+				// PAR COMMUNE, pas sur toute la base : sans le filtre `tenant`
+				// ci-dessous, dès que la commune A crée son "Accueil", la
+				// commune B ne pourrait plus jamais créer le sien (toute la
+				// collection `pages` interrogée, tenants confondus).
 				const gabarit = data?.gabarit ?? originalDoc?.gabarit;
 				if (!gabarit || !GABARITS_SINGLETON.includes(gabarit)) return data;
+
+				const tenant = data?.tenant ?? originalDoc?.tenant;
+				const tenantId = typeof tenant === 'object' && tenant !== null ? (tenant as { id?: unknown }).id : tenant;
+				// Pas de tenant renseigné : on laisse la validation du champ
+				// `tenant` lui-même (ajouté par le plugin) gérer ce cas, pas ce
+				// hook.
+				if (!tenantId) return data;
 
 				const existing = await req.payload.find({
 					collection: 'pages',
 					where: {
 						and: [
 							{ gabarit: { equals: gabarit } },
+							{ tenant: { equals: tenantId } },
 							...(originalDoc?.id ? [{ id: { not_equals: originalDoc.id } }] : [])
 						]
 					},
@@ -1112,7 +1134,7 @@ export const Pages: CollectionConfig = {
 
 				if (existing.totalDocs > 0) {
 					throw new Error(
-						`Le gabarit "${gabarit}" est un singleton (décision 9) — une page de ce type existe déjà.`
+						`Le gabarit "${gabarit}" est un singleton — une page de ce type existe déjà pour cette commune.`
 					);
 				}
 

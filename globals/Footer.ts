@@ -1,4 +1,4 @@
-import type { GlobalConfig } from 'payload';
+import type { CollectionConfig } from 'payload';
 import { isLoggedIn } from '../collections/access';
 import { contactFields, withInfo } from '../collections/Pages';
 
@@ -6,9 +6,13 @@ import { contactFields, withInfo } from '../collections/Pages';
 // horaires, réseaux sociaux, texte de présentation). Réutilise
 // `contactFields` (adresse/téléphone/email, décision 48/49/50) pour rester
 // cohérent avec le reste du site — mêmes libellés, même comportement.
-export const Footer: GlobalConfig = {
+//
+// Étape 5 du plan multi-tenant — converti de `Global` (singleton en base)
+// en collection classique, `isGlobal: true` côté plugin. Voir `Identite.ts`
+// pour le détail du pourquoi.
+export const Footer: CollectionConfig = {
 	slug: 'footer',
-	label: 'Pied de page',
+	labels: { singular: 'Pied de page', plural: 'Pied de page' },
 	access: {
 		read: () => true,
 		update: isLoggedIn

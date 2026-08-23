@@ -1,0 +1,38 @@
+services:
+  # Étape 1 du plan multi-tenant — Postgres local, remplace le conteneur
+  # `style-edito-mongo` existant (conservé pour la bascule des données,
+  # étape 11, pas supprimé ici).
+  postgres:
+    image: postgres:16
+    container_name: style-edito-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: style_edito
+      POSTGRES_PASSWORD: style_edito
+      POSTGRES_DB: style_edito
+    volumes:
+      - style-edito-postgres-data:/var/lib/postgresql/data
+
+  # Étape 2 du plan multi-tenant — stockage S3 local pour développer/tester
+  # sans compte réel. En prod, un vrai fournisseur S3-compatible (Scaleway
+  # Object Storage, Cellar chez Clever Cloud...) prend la place de MinIO,
+  # même variables d'environnement, aucun changement de code.
+  minio:
+    image: minio/minio:latest
+    container_name: style-edito-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    ports:
+      - '9000:9000' # API S3
+      - '9001:9001' # Console web
+    environment:
+      MINIO_ROOT_USER: style_edito
+      MINIO_ROOT_PASSWORD: style_edito_secret
+    volumes:
+      - style-edito-minio-data:/data
+
+volumes:
+  style-edito-postgres-data:
+  style-edito-minio-data:

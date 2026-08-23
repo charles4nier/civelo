@@ -3,6 +3,7 @@ import config from '../payload.config';
 import type { AnnuaireCardData } from '@shared/components/AnnuaireLayout';
 import type { ContactItem, IconVariant } from '@shared/components/ContactCard';
 import type { EditorialSection } from '@shared/components/EditorialLayout/Sections';
+import { getCurrentTenant } from '@shared/lib/tenant';
 
 // Item 11/12 de la feuille de route — couche de récupération de données
 // Payload, utilisée par les Server Components (app/**/page.tsx,
@@ -41,6 +42,18 @@ export async function getPayloadClient() {
 	return cached;
 }
 
+// Étape 8 du plan multi-tenant — chaque fonction ci-dessous résout le
+// tenant courant (domaine de la requête) et l'ajoute à ses requêtes. Un
+// tenant non résolu lève une erreur volontairement : chaque fonction a déjà
+// un `try/catch` qui retombe sur son repli statique/`null` existant — pas
+// de nouveau chemin d'erreur à gérer, et surtout jamais de requête non
+// scopée qui pourrait renvoyer le contenu d'une autre commune par défaut.
+async function requireTenant(payload: Awaited<ReturnType<typeof getPayloadClient>>) {
+	const tenant = await getCurrentTenant(payload);
+	if (!tenant) throw new Error('Tenant introuvable pour ce domaine.');
+	return tenant;
+}
+
 // Menu figé, tel qu'il existait avant Payload — sert de filet de sécurité
 // (voir getNavLinks ci-dessous). Le site reste utilisable sans base
 // connectée : le brancher directement sur Payload sans repli aurait rendu
@@ -70,7 +83,11 @@ const DEFAULT_NAV_LINKS = [
 		]
 	},
 	{
-		label: 'Vivre à Saint-Hilaire',
+		// Étape 5 du plan multi-tenant — était "Vivre à Saint-Hilaire" (nom de
+		// commune en dur dans un repli censé s'appliquer à n'importe quelle
+		// commune une fois multi-tenant). Aligné sur le libellé générique de
+		// `MENU_SECTIONS` ci-dessus.
+		label: 'Ma commune',
 		href: '#',
 		children: [
 			{ label: 'La commune', href: '/vivre/la-commune' },
@@ -81,7 +98,7 @@ const DEFAULT_NAV_LINKS = [
 		]
 	},
 	{
-		label: 'Tourisme & découvertes',
+		label: 'Tourisme & découverte',
 		href: '#',
 		children: [
 			{ label: 'Histoire', href: '/histoire' },
@@ -98,8 +115,10 @@ const DEFAULT_NAV_LINKS = [
 export async function getNavLinks() {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			where: { tenant: { equals: tenant.id } },
 			limit: 0,
 			pagination: false,
 			select: { title: true, slug: true, menu: true }
@@ -127,9 +146,10 @@ export async function getNavLinks() {
 export async function getPageBySlug(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			limit: 1
 		});
 		return docs[0] ?? null;
@@ -193,9 +213,10 @@ function mapContactGroup(group: PayloadContactGroup | undefined): ContactItem[] 
 export async function getAnnuaireItems(slug: string): Promise<AnnuaireCardData[] | null> {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
 		});
@@ -237,9 +258,10 @@ type PayloadAgendaItem = {
 export async function getAgendaItems(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
 		});
@@ -281,9 +303,10 @@ type PayloadActualiteItem = {
 export async function getActualitesItems(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
 		});
@@ -323,9 +346,10 @@ type PayloadDocumentItem = {
 export async function getDocumentItems(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
 		});
@@ -371,9 +395,10 @@ const STATUT_LABELS: Record<NonNullable<PayloadBudgetProjetItem['statut']>, 'À 
 export async function getBudgetProjetItems(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
 		});
@@ -420,9 +445,10 @@ type PayloadDemarcheItem = {
 export async function getDemarchesItems(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
 		});
@@ -460,9 +486,10 @@ type PayloadTrombinoscopeMember = {
 export async function getTrombinoscopeData(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 1,
 			limit: 1
 		});
@@ -502,9 +529,10 @@ type PayloadEditorial = {
 export async function getEditorialData(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
 		});
@@ -540,9 +568,10 @@ type PayloadCatalogueSalle = {
 export async function getCatalogueLieuxItems(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			limit: 1
 		});
 		const page = docs[0] as unknown as { catalogueLieux?: { salles?: PayloadCatalogueSalle[] } } | undefined;
@@ -575,9 +604,10 @@ type PayloadContact = PayloadContactGroup & { description?: string; precision?: 
 export async function getContactData(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 1,
 			limit: 1
 		});
@@ -658,9 +688,10 @@ type PayloadContactLocal = { label: string; detail?: string; telephone?: string 
 export async function getNumerosUtilesData(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 1,
 			limit: 1
 		});
@@ -723,9 +754,10 @@ const CONTACT_VARIANTS: IconVariant[] = ['primary', 'leaf', 'muted', 'coral', 's
 export async function getHorairesData(slug: string) {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { slug: { equals: slug } },
+			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
 		});
@@ -783,9 +815,10 @@ type PayloadSentier = {
 export async function getCarteData() {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const [poisRes, sentiersRes] = await Promise.all([
-			payload.find({ collection: 'pois', limit: 0, pagination: false }),
-			payload.find({ collection: 'sentiers', limit: 0, pagination: false })
+			payload.find({ collection: 'pois', where: { tenant: { equals: tenant.id } }, limit: 0, pagination: false }),
+			payload.find({ collection: 'sentiers', where: { tenant: { equals: tenant.id } }, limit: 0, pagination: false })
 		]);
 		const poisDocs = poisRes.docs as unknown as PayloadPoi[];
 		const sentiersDocs = sentiersRes.docs as unknown as PayloadSentier[];
@@ -864,9 +897,10 @@ function uploadUrl(u: PayloadUpload | undefined, fallback: string): string {
 export async function getAccueilData() {
 	try {
 		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
-			where: { gabarit: { equals: 'accueil' } },
+			where: { and: [{ gabarit: { equals: 'accueil' } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
 		});
@@ -970,19 +1004,32 @@ export type IdentiteData = { titre: string; sousTitre?: string; logoUrl: string 
 export async function getIdentiteData(): Promise<IdentiteData> {
 	try {
 		const payload = await getPayloadClient();
-		const identite = (await payload.findGlobal({ slug: 'identite', depth: 1 })) as unknown as {
-			titre?: string;
-			sousTitre?: string;
-			logo?: PayloadUpload;
-		};
+		// Étape 5 du plan multi-tenant — `identite` était un `Global` Payload
+		// (singleton en base), converti en collection classique tenant-scopée
+		// (étape 8 : filtre `tenant` maintenant branché).
+		const tenant = await requireTenant(payload);
+		const { docs } = await payload.find({
+			collection: 'identite',
+			where: { tenant: { equals: tenant.id } },
+			depth: 1,
+			limit: 1
+		});
+		const identite = docs[0] as unknown as
+			| { titre?: string; sousTitre?: string; logo?: PayloadUpload }
+			| undefined;
+		if (!identite) throw new Error('Aucune identité en base pour ce tenant.');
 		return {
-			titre: identite.titre || 'Saint-Hilaire-Bonneval',
+			titre: identite.titre || 'Votre commune',
 			sousTitre: identite.sousTitre,
+			// Pas d'image de repli générique disponible dans `public/` pour
+			// l'instant (seule celle de Saint-Hilaire-Bonneval existe) — à
+			// remplacer par un vrai blason par défaut quand une commune n'a
+			// pas encore uploadé le sien.
 			logoUrl: uploadUrl(identite.logo, '/saint-hilaire-bonneval-logo.png')
 		};
 	} catch (err) {
-		console.warn('[payload] getIdentiteData() : base injoignable, repli sur les données statiques.', err);
-		return { titre: 'Saint-Hilaire-Bonneval', sousTitre: 'Haute-Vienne · 87260', logoUrl: '/saint-hilaire-bonneval-logo.png' };
+		console.warn('[payload] getIdentiteData() : base injoignable, repli sur les données par défaut.', err);
+		return { titre: 'Votre commune', sousTitre: undefined, logoUrl: '/saint-hilaire-bonneval-logo.png' };
 	}
 }
 
@@ -991,17 +1038,24 @@ export type BoutonEnteteData = { label: string; href: string };
 export async function getBoutonEnteteData(): Promise<BoutonEnteteData> {
 	try {
 		const payload = await getPayloadClient();
-		const bouton = (await payload.findGlobal({ slug: 'bouton-entete', depth: 1 })) as unknown as {
-			boutonLabel?: string;
-			boutonLien?: PayloadPageRelation;
-		};
+		// Même conversion Global → collection tenant-scopée que
+		// `getIdentiteData`.
+		const tenant = await requireTenant(payload);
+		const { docs } = await payload.find({
+			collection: 'bouton-entete',
+			where: { tenant: { equals: tenant.id } },
+			depth: 1,
+			limit: 1
+		});
+		const bouton = docs[0] as unknown as { boutonLabel?: string; boutonLien?: PayloadPageRelation } | undefined;
+		if (!bouton) throw new Error('Aucun bouton d\'en-tête en base pour ce tenant.');
 		return {
-			label: bouton.boutonLabel || 'Location de salles',
-			href: resolvePageHref(bouton.boutonLien) || '/location-salle'
+			label: bouton.boutonLabel || 'En savoir plus',
+			href: resolvePageHref(bouton.boutonLien) || '/'
 		};
 	} catch (err) {
-		console.warn('[payload] getBoutonEnteteData() : base injoignable, repli sur les données statiques.', err);
-		return { label: 'Location de salles', href: '/location-salle' };
+		console.warn('[payload] getBoutonEnteteData() : base injoignable, repli sur les données par défaut.', err);
+		return { label: 'En savoir plus', href: '/' };
 	}
 }
 
@@ -1017,18 +1071,30 @@ export type FooterData = {
 	instagram?: string;
 };
 
+// Étape 5 du plan multi-tenant — repli neutralisé (était spécifique à
+// Saint-Hilaire-Bonneval : une commune B fraîchement onboardée, dont le
+// document `footer` n'existe pas encore, aurait sinon montré l'adresse et
+// les horaires d'une autre commune à ses visiteurs).
 const FOOTER_FALLBACK: FooterData = {
-	description:
-		'Site officiel de la Mairie de Saint-Hilaire-Bonneval. Retrouvez ici toutes les informations relatives à la vie municipale, aux services publics et au territoire communal.',
-	adresse: 'Place de la Mairie, 87260 Saint-Hilaire-Bonneval',
-	joursOuverture: 'Lundi – Vendredi',
-	horaires: '9h–12h / 14h–17h'
+	description: 'Site officiel de la mairie. Retrouvez ici toutes les informations relatives à la vie municipale, aux services publics et au territoire communal.',
+	adresse: undefined,
+	joursOuverture: undefined,
+	horaires: undefined
 };
 
 export async function getFooterData(): Promise<FooterData> {
 	try {
 		const payload = await getPayloadClient();
-		const footer = (await payload.findGlobal({ slug: 'footer', depth: 0 })) as unknown as FooterData;
+		// Même conversion Global → collection tenant-scopée que
+		// `getIdentiteData`/`getBoutonEnteteData`.
+		const tenant = await requireTenant(payload);
+		const { docs } = await payload.find({
+			collection: 'footer',
+			where: { tenant: { equals: tenant.id } },
+			depth: 0,
+			limit: 1
+		});
+		const footer = (docs[0] as unknown as FooterData | undefined) ?? ({} as FooterData);
 		return {
 			description: footer.description || FOOTER_FALLBACK.description,
 			adresse: footer.adresse || FOOTER_FALLBACK.adresse,

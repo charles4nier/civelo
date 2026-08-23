@@ -48,8 +48,21 @@ export default async function Dashboard({ payload, user }: ServerProps) {
 	const contact = bySlug.get('contact');
 	const horaires = bySlug.get('mairie/horaires');
 
-	const identite = (await payload.findGlobal({ slug: 'identite', depth: 0 }).catch(() => null)) as any;
-	const footer = (await payload.findGlobal({ slug: 'footer', depth: 0 }).catch(() => null)) as any;
+	// Étape 5 du plan multi-tenant — `identite`/`footer` étaient des Globals
+	// Payload, convertis en collections tenant-scopées. `payload` vient ici
+	// de `ServerProps` (lié à la vraie requête admin authentifiée) — le
+	// filtrage par tenant du plugin (`useBaseFilter`) s'applique
+	// normalement à ce contexte, contrairement à un appel Local API "nu"
+	// hors requête (voir étape 10 du plan, à vérifier une fois la suite de
+	// tests d'isolation écrite).
+	const identite = (await payload
+		.find({ collection: 'identite', depth: 0, limit: 1 })
+		.then((r) => r.docs[0] ?? null)
+		.catch(() => null)) as any;
+	const footer = (await payload
+		.find({ collection: 'footer', depth: 0, limit: 1 })
+		.then((r) => r.docs[0] ?? null)
+		.catch(() => null)) as any;
 
 	const todos: TodoItem[] = [];
 

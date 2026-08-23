@@ -1,4 +1,4 @@
-import type { GlobalConfig } from 'payload';
+import type { CollectionConfig } from 'payload';
 import { isLoggedIn } from '../collections/access';
 import { boutonFields } from '../collections/Pages';
 
@@ -9,9 +9,13 @@ import { boutonFields } from '../collections/Pages';
 // page mettre en avant), pas une donnée de marque fixée une fois. Réutilise
 // exactement le même pattern que le bouton de la Section d'introduction
 // (décision 52) : texte + lien vers une page du site.
-export const BoutonEntete: GlobalConfig = {
+//
+// Étape 5 du plan multi-tenant — converti de `Global` (singleton en base)
+// en collection classique, `isGlobal: true` côté plugin. Voir `Identite.ts`
+// pour le détail du pourquoi.
+export const BoutonEntete: CollectionConfig = {
 	slug: 'bouton-entete',
-	label: "Bouton d'en-tête",
+	labels: { singular: "Bouton d'en-tête", plural: "Bouton d'en-tête" },
 	access: {
 		read: () => true,
 		// Éditeur normal, pas verrouillé super-admin — le client doit pouvoir
