@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import ElusPage from '@features/elus';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import ElusPage from '@themes/style-edito/features/elus';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Le maire & les élus',

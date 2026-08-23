@@ -21,7 +21,8 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@shared': path.resolve(__dirname, 'shared'),
-			'@features': path.resolve(__dirname, 'features'),
+			'@themes': path.resolve(__dirname, 'themes'),
+			'@lib': path.resolve(__dirname, 'lib'),
 			'@types': path.resolve(__dirname, 'types')
 		}
 	}

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import VieAssociativePage from '@features/vie-associative';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import VieAssociativePage from '@themes/style-edito/features/vie-associative';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Vie associative',

@@ -1,31 +1,20 @@
-import { Caveat, Cormorant } from 'next/font/google';
 import type { Metadata, Viewport } from 'next';
-import { defaultMetadata } from '@shared/config/seo';
+import { defaultMetadata } from '@themes/style-edito/config/seo';
+import StyleEditoRootLayout from '@themes/style-edito/RootLayout';
+import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import { getNavLinks, getIdentiteData, getBoutonEnteteData, getFooterData, getPayloadClient } from '../../lib/payload';
 
-import '@shared/styles/index.scss';
-
-import Header from '@shared/components/Header';
-import Footer from '@shared/components/Footer';
-import FloatingButtons from '@shared/components/FloatingButtons';
-import { getNavLinks, getIdentiteData, getBoutonEnteteData, getFooterData } from '../../lib/payload';
-
-const cormorant = Cormorant({
-	subsets: ['latin'],
-	weight: ['400', '500', '600', '700'],
-	style: ['normal', 'italic'],
-	variable: '--font-script',
-	display: 'swap',
-	preload: false
-});
-
-const caveat = Caveat({
-	subsets: ['latin'],
-	weight: ['500', '600', '700'],
-	variable: '--font-caveat',
-	display: 'swap',
-	preload: false
-});
-
+// Layout racine (`<html>`/`<body>`) — un seul existe dans l'app, il n'y a
+// pas de `app/layout.tsx` au-dessus. Ne contient plus lui-même de rendu
+// spécifique à un thème (polices, Header/Footer, import CSS global) : ça
+// vit désormais dans le `RootLayout` de chaque thème
+// (`themes/<theme>/RootLayout.tsx`), choisi ici via `pickTheme()` selon le
+// thème du tenant résolu par domaine.
+//
+// Métadonnées par défaut encore prises directement dans la config SEO de
+// style-edito (pas de dispatch par thème) — un SEO réellement multi-thème
+// nécessiterait un `generateMetadata` async résolvant le tenant, hors
+// périmètre de cette extraction.
 export const metadata: Metadata = defaultMetadata;
 
 export const viewport: Viewport = {
@@ -36,31 +25,22 @@ export const viewport: Viewport = {
 };
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-	const [navLinks, identite, boutonEntete, footer] = await Promise.all([
+	const payload = await getPayloadClient();
+	const [theme, navLinks, identite, boutonEntete, footer] = await Promise.all([
+		getCurrentTheme(payload),
 		getNavLinks(),
 		getIdentiteData(),
 		getBoutonEnteteData(),
 		getFooterData()
 	]);
 
+	const RootLayout = pickTheme(theme, {
+		'style-edito': StyleEditoRootLayout
+	});
+
 	return (
-		<html lang="fr" className={`${cormorant.variable} ${caveat.variable}`}>
-			<body>
-				<nav className="skip-links" aria-label="Liens d'évitement">
-					<a href="#contenu" className="skip-link">
-						Aller au contenu principal
-					</a>
-					<a href="#actions-rapides" className="skip-link">
-						Accéder aux actions rapides
-					</a>
-				</nav>
-				<Header navLinks={navLinks} identite={identite} bouton={boutonEntete} />
-				<main id="contenu" tabIndex={-1}>
-					{children}
-				</main>
-				<Footer identite={identite} data={footer} />
-				<FloatingButtons />
-			</body>
-		</html>
+		<RootLayout navLinks={navLinks} identite={identite} boutonEntete={boutonEntete} footer={footer}>
+			{children}
+		</RootLayout>
 	);
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import LocationSallePage from '@features/location-salle';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import LocationSallePage from '@themes/style-edito/features/location-salle';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Location de salles',

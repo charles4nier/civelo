@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import DemarchesPage from '@features/demarches';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import DemarchesPage from '@themes/style-edito/features/demarches';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Mes démarches',

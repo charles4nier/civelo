@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import DocumentsPage from '@features/documents';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import DocumentsPage from '@themes/style-edito/features/documents';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Documents & publications',

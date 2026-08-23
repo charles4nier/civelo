@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import BudgetProjetsPage from '@features/budget-projets';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import BudgetProjetsPage from '@themes/style-edito/features/budget-projets';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Budget & projets',

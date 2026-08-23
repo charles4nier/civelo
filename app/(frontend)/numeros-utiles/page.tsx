@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import NumerosUtilesPage from '@features/numeros-utiles';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import NumerosUtilesPage from '@themes/style-edito/features/numeros-utiles';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Numéros utiles',

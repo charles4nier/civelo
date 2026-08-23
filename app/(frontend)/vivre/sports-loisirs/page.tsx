@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import SportsLoisirsPage from '@features/sports-loisirs';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import SportsLoisirsPage from '@themes/style-edito/features/sports-loisirs';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Sports & loisirs',

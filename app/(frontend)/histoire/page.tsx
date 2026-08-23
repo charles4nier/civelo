@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import HistoirePage from '@features/histoire';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import HistoirePage from '@themes/style-edito/features/histoire';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Histoire de Saint-Hilaire-Bonneval',

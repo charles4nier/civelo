@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import CarteInteractive from '@features/carte';
-import { pois as fallbackPois, sentiers as fallbackSentiers } from '@features/carte/data';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import CarteInteractive from '@themes/style-edito/features/carte';
+import { pois as fallbackPois, sentiers as fallbackSentiers } from '@themes/style-edito/features/carte/data';
 import { getCarteData } from '../../../../lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({

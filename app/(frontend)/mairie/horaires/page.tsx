@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import HorairesPage from '@features/horaires';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import HorairesPage from '@themes/style-edito/features/horaires';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Horaires & informations',

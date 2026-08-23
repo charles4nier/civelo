@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import AgendaPage from '@features/agenda';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import AgendaPage from '@themes/style-edito/features/agenda';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Agenda',

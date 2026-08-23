@@ -16,7 +16,7 @@ import type { Payload } from 'payload';
 //
 // `cache()` (React) déduplique les appels sur une même requête — le layout
 // à lui seul fait déjà 4 lectures qui en dépendront toutes.
-export type CurrentTenant = { id: string | number; domaine: string };
+export type CurrentTenant = { id: string | number; domaine: string; theme: string };
 
 export const getCurrentTenant = cache(async (payload: Payload): Promise<CurrentTenant | null> => {
 	try {
@@ -36,10 +36,10 @@ export const getCurrentTenant = cache(async (payload: Payload): Promise<CurrentT
 			limit: 1
 		});
 
-		const tenant = docs[0] as { id?: string | number; domaine?: string } | undefined;
-		if (!tenant?.id || !tenant.domaine) return null;
+		const tenant = docs[0] as { id?: string | number; domaine?: string; theme?: string } | undefined;
+		if (!tenant?.id || !tenant.domaine || !tenant.theme) return null;
 
-		return { id: tenant.id, domaine: tenant.domaine };
+		return { id: tenant.id, domaine: tenant.domaine, theme: tenant.theme };
 	} catch (err) {
 		console.warn('[tenant] getCurrentTenant() : résolution impossible.', err);
 		return null;

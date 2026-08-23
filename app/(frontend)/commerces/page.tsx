@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import CommercesPage from '@features/commerces';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import CommercesPage from '@themes/style-edito/features/commerces';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Services & vie pratique',

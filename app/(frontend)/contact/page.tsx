@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import ContactPage from '@features/contact';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import ContactPage from '@themes/style-edito/features/contact';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Contact',

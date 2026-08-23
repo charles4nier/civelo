@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import CommunePage from '@features/commune';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import CommunePage from '@themes/style-edito/features/commune';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'La commune',

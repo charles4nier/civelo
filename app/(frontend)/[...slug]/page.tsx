@@ -1,18 +1,18 @@
 import { notFound } from 'next/navigation';
 import { FileText } from 'lucide-react';
 import { RichText } from '@payloadcms/richtext-lexical/react';
-import AnnuaireLayout from '@shared/components/AnnuaireLayout';
-import DemarchesLayout from '@shared/components/DemarchesLayout';
-import AgendaLayout from '@shared/components/AgendaLayout';
-import ActualitesLayout from '@shared/components/ActualitesLayout';
-import DocumentLayout from '@shared/components/DocumentLayout';
-import BudgetProjetLayout from '@shared/components/BudgetProjetLayout';
-import TrombinoscopeLayout from '@shared/components/TrombinoscopeLayout';
-import CatalogueLieuxLayout from '@shared/components/CatalogueLieuxLayout';
-import ContactLayout from '@shared/components/ContactLayout';
-import NumerosUtilesLayout from '@shared/components/NumerosUtilesLayout';
-import EditorialLayout from '@shared/components/EditorialLayout';
-import EditorialSections from '@shared/components/EditorialLayout/Sections';
+import AnnuaireLayout from '@themes/style-edito/components/AnnuaireLayout';
+import DemarchesLayout from '@themes/style-edito/components/DemarchesLayout';
+import AgendaLayout from '@themes/style-edito/components/AgendaLayout';
+import ActualitesLayout from '@themes/style-edito/components/ActualitesLayout';
+import DocumentLayout from '@themes/style-edito/components/DocumentLayout';
+import BudgetProjetLayout from '@themes/style-edito/components/BudgetProjetLayout';
+import TrombinoscopeLayout from '@themes/style-edito/components/TrombinoscopeLayout';
+import CatalogueLieuxLayout from '@themes/style-edito/components/CatalogueLieuxLayout';
+import ContactLayout from '@themes/style-edito/components/ContactLayout';
+import NumerosUtilesLayout from '@themes/style-edito/components/NumerosUtilesLayout';
+import EditorialLayout from '@themes/style-edito/components/EditorialLayout';
+import EditorialSections from '@themes/style-edito/components/EditorialLayout/Sections';
 import {
 	getPageBySlug,
 	getAnnuaireItems,

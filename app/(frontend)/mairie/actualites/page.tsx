@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@shared/config/seo';
-import ActualitesPage from '@features/actualites';
+import { generatePageMetadata } from '@themes/style-edito/config/seo';
+import ActualitesPage from '@themes/style-edito/features/actualites';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Actualités',
