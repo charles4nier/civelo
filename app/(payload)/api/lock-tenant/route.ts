@@ -23,8 +23,13 @@ export async function GET(request: NextRequest) {
 	const origin = forwardedProto ? `${forwardedProto}://${host}` : request.nextUrl.origin;
 	const redirectUrl = new URL(nextPath, origin);
 	const response = NextResponse.redirect(redirectUrl);
-	response.cookies.set('tenant-locked-host', host, { path: '/', sameSite: 'lax' });
 
+	// Le marqueur encode `<host>::<tenantId>` (ou `::none`) — pas juste le
+	// host — pour que `middleware.ts` puisse réimposer ce tenant précis à
+	// chaque requête suivante sans nouvel appel base. Voir le commentaire de
+	// `middleware.ts` pour la raison (le cookie `payload-tenant` reste
+	// modifiable côté client à tout moment).
+	let tenantId: string | number | undefined;
 	try {
 		const payload = await getPayloadClient();
 		const { docs } = await payload.find({
@@ -35,11 +40,17 @@ export async function GET(request: NextRequest) {
 			limit: 1
 		});
 		const tenant = docs[0] as { id?: string | number } | undefined;
-		if (tenant?.id) {
-			response.cookies.set('payload-tenant', String(tenant.id), { path: '/', sameSite: 'lax' });
-		}
+		tenantId = tenant?.id;
 	} catch (err) {
 		console.warn('[lock-tenant] Résolution du tenant impossible.', err);
+	}
+
+	response.cookies.set('tenant-locked-host', `${host}::${tenantId ?? 'none'}`, {
+		path: '/',
+		sameSite: 'lax'
+	});
+	if (tenantId !== undefined) {
+		response.cookies.set('payload-tenant', String(tenantId), { path: '/', sameSite: 'lax' });
 	}
 
 	return response;
