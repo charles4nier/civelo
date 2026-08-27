@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'enfance';
 
 /* ========================
@@ -293,5 +294,6 @@ $b: 'enfance';
 
 	@media (min-width: $breakpoint-sm) { grid-template-columns: 1fr 1fr; }
 	@media (min-width: $breakpoint-md) { grid-template-columns: repeat(3, 1fr); }
+}
 }
 

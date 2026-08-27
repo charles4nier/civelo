@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'annuaire';
 
 .#{$b}__section {
@@ -40,5 +41,6 @@ $b: 'annuaire';
 
 	@media (min-width: $breakpoint-sm) { grid-template-columns: 1fr 1fr; }
 	@media (min-width: $breakpoint-md) { grid-template-columns: repeat(3, 1fr); }
+}
 }
 

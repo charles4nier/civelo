@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .mayor-word {
 	padding: $section-padding-y-desktop 0;
 
@@ -129,3 +131,5 @@
 		color: $muted-foreground;
 	}
 }
+}
+

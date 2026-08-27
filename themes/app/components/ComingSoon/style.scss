@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .coming-soon {
 	position: relative;
 	min-height: 70svh;
@@ -79,3 +81,5 @@
 		margin-top: $spacing-2xl;
 	}
 }
+}
+

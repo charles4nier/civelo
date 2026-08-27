@@ -1,4 +1,6 @@
 @import '@themes/accueillant/styles/variables';
+
+.theme-accueillant {
 .news {
 	background-color: $secondary;
 	padding: $spacing-6xl 0;
@@ -235,3 +237,5 @@
 		}
 	}
 }
+}
+

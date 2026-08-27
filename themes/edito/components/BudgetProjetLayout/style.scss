@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'budget-projets';
 
 /* ========================
@@ -271,3 +272,5 @@ $b: 'budget-projets';
 	color: $muted-foreground;
 	font-size: $small-size-desktop;
 }
+}
+

@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'horaires';
 
 /* ========================
@@ -248,3 +249,5 @@ $b: 'horaires';
 		grid-template-columns: repeat(4, 1fr);
 	}
 }
+}
+

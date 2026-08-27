@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .news {
 	background: $card;
 	padding: $section-padding-y-desktop 0;
@@ -112,3 +114,5 @@
 		}
 	}
 }
+}
+

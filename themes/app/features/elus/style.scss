@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'elus';
 
 /* ========================
@@ -389,3 +390,5 @@ $b: 'elus';
 	color: $foreground-80;
 	line-height: $line-height-relaxed;
 }
+}
+

@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 .breadcrumb {
 	display: inline-flex;
 	align-items: center;
@@ -29,3 +30,5 @@
 
 	span { opacity: 0.9; }
 }
+}
+

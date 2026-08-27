@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $header-h: 80px;
 
 /* ========================
@@ -444,3 +445,5 @@ $header-h: 80px;
 		}
 	}
 }
+}
+

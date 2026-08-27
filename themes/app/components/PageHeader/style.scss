@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $e: 'page-header';
 
 .#{$e} {
@@ -93,3 +94,5 @@ $e: 'page-header';
 
 	svg { display: block; }
 }
+}
+

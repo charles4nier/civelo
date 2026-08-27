@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'associations';
 
 /* ========================
@@ -349,3 +350,5 @@ $b: 'associations';
 
 	&:hover { background-color: oklch(0.54 0.16 150); }
 }
+}
+

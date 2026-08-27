@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'actualites';
 
 /* ========================
@@ -255,3 +256,5 @@ $b: 'actualites';
 		gap: $spacing-md;
 	}
 }
+}
+

@@ -25,7 +25,7 @@ const interTight = Inter_Tight({
 
 export default function RootLayout({ children }: RootLayoutProps) {
 	return (
-		<html lang="fr" className={`${ebGaramond.variable} ${interTight.variable}`}>
+		<html lang="fr" className={`theme-accueillant ${ebGaramond.variable} ${interTight.variable}`}>
 			<body>
 				<Header />
 				<main>{children}</main>

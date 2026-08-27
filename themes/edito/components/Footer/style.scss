@@ -1,4 +1,6 @@
 @import '@themes/edito/styles/variables';
+
+.theme-edito {
 .footer {
 	background-color: $foreground;
 	color: $background;
@@ -205,3 +207,5 @@
 	}
 
 }
+}
+

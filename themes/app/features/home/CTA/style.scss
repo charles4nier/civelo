@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'cta';
 
 .#{$b} {
@@ -161,3 +162,5 @@ $b: 'cta';
 	color: $cream;
 	font-size: $small-size-desktop;
 }
+}
+

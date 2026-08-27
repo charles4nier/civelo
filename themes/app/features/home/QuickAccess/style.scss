@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .quick-access {
 	padding: $section-padding-y-desktop 0;
 
@@ -110,3 +112,5 @@
 		transition: transform 0.2s ease;
 	}
 }
+}
+

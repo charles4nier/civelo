@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'commerces';
 
 /* ========================
@@ -369,3 +370,5 @@ $b: 'commerces';
 		background-color: oklch(0.54 0.16 150);
 	}
 }
+}
+

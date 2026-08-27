@@ -1,4 +1,6 @@
 @import '@themes/accueillant/styles/variables';
+
+.theme-accueillant {
 .discover {
 	background-color: $secondary;
 	padding: $spacing-6xl 0;
@@ -97,3 +99,5 @@
 		transform: translateX(4px);
 	}
 }
+}
+

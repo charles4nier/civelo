@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'cta-banner';
 
 .#{$b} {
@@ -65,3 +66,5 @@ $b: 'cta-banner';
 	@media (min-width: $breakpoint-sm) { align-self: center; }
 	&:hover { background-color: oklch(0.70 0.17 55); color: $primary; }
 }
+}
+

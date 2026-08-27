@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .mega-menu {
 	position: relative;
 
@@ -268,5 +270,6 @@
 		transition: transform 0.15s, color 0.15s;
 	}
 
+}
 }
 

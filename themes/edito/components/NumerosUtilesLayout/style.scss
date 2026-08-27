@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'numeros';
 
 /* ========================
@@ -294,3 +295,5 @@ $b: 'numeros';
 		color: $primary;
 	}
 }
+}
+

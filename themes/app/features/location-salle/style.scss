@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'location';
 
 /* ========================
@@ -166,5 +167,6 @@ $b: 'location';
 	font-size: 11px;
 	color: $muted-foreground;
 	white-space: nowrap;
+}
 }
 

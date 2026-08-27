@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'annuaire';
 
 /* ========================
@@ -185,3 +186,5 @@ $b: 'annuaire';
 	@media (min-width: $breakpoint-sm) { align-self: center; }
 	&:hover { background-color: oklch(0.54 0.16 150); }
 }
+}
+

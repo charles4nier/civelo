@@ -1,4 +1,6 @@
 @import '@themes/accueillant/styles/variables';
+
+.theme-accueillant {
 .coming-soon {
 	&__hero {
 		position: relative;
@@ -133,3 +135,5 @@
 		}
 	}
 }
+}
+

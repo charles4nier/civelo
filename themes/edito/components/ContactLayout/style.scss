@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'contact';
 
 /* ========================
@@ -258,3 +259,5 @@ $b: 'contact';
 		background: $primary-glow;
 	}
 }
+}
+

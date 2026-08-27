@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'floating';
 
 @keyframes backdrop-in {
@@ -423,3 +424,5 @@ $b: 'floating';
 		background: $primary;
 	}
 }
+}
+

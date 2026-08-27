@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'numeros';
 
 /* ========================
@@ -294,3 +295,5 @@ $b: 'numeros';
 		color: $primary;
 	}
 }
+}
+

@@ -25,7 +25,7 @@ const caveat = Caveat({
 
 export default function RootLayout({ navLinks, identite, boutonEntete, footer, children }: RootLayoutProps) {
 	return (
-		<html lang="fr" className={`${cormorant.variable} ${caveat.variable}`}>
+		<html lang="fr" className={`theme-edito ${cormorant.variable} ${caveat.variable}`}>
 			<body>
 				<nav className="skip-links" aria-label="Liens d'évitement">
 					<a href="#contenu" className="skip-link">

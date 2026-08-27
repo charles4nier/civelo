@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .hero {
 	background: $background;
 	overflow: hidden;
@@ -232,3 +234,5 @@
 	0%, 100% { transform: translateY(0); }
 	50%       { transform: translateY(4px); }
 }
+}
+

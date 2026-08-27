@@ -1,4 +1,6 @@
 @import '@themes/edito/styles/variables';
+
+.theme-edito {
 .header {
 	position: fixed;
 	top: 0;
@@ -473,3 +475,5 @@
 		transition: $transition-smooth;
 	}
 }
+}
+

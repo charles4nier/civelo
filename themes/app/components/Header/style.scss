@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .header {
 	position: sticky;
 	top: 0;
@@ -340,3 +342,5 @@
 		&:hover { opacity: 0.88; }
 	}
 }
+}
+

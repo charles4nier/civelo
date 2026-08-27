@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'agenda';
 
 /* ========================
@@ -273,3 +274,5 @@ $b: 'agenda';
 	color: $muted-foreground;
 	font-size: $small-size-desktop;
 }
+}
+

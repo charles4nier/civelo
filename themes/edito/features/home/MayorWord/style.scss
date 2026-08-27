@@ -1,4 +1,6 @@
 @import '@themes/edito/styles/variables';
+
+.theme-edito {
 .mayor-word {
 	padding: $section-padding-y-desktop 0;
 
@@ -144,3 +146,5 @@
 		padding: $section-padding-y-mobile 0;
 	}
 }
+}
+

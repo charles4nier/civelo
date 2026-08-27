@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'contact-card';
 
 .#{$b} {
@@ -102,3 +103,5 @@ $b: 'contact-card';
 		color: $coral;
 	}
 }
+}
+

@@ -1,4 +1,6 @@
 @import '@themes/accueillant/styles/variables';
+
+.theme-accueillant {
 .header {
 	position: sticky;
 	top: 0;
@@ -357,3 +359,5 @@
 		font-weight: $font-weight-semibold;
 	}
 }
+}
+

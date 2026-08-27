@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .floating {
 	&__backdrop {
 		position: fixed;
@@ -243,3 +245,5 @@
 @keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
 @keyframes slide-up   { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes slide-down { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(16px); } }
+}
+

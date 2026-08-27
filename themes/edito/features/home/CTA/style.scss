@@ -1,4 +1,6 @@
 @import '@themes/edito/styles/variables';
+
+.theme-edito {
 .cta {
 	padding-top: $section-padding-y-desktop;
 	padding-bottom: $section-padding-y-desktop;
@@ -166,3 +168,5 @@
 		}
 	}
 }
+}
+

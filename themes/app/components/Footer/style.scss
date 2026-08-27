@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .footer {
 	background: $primary;
 	color: $cream;
@@ -191,3 +193,5 @@
 		}
 	}
 }
+}
+

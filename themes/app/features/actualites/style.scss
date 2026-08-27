@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'actualites';
 
 .#{$b}__section {
@@ -140,3 +141,5 @@ $b: 'actualites';
 
 	&:hover { gap: $spacing-md; }
 }
+}
+

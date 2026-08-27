@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'documents';
 
 .#{$b}__section {
@@ -298,3 +299,5 @@ $b: 'documents';
 	text-align: center;
 	color: $muted-foreground;
 }
+}
+

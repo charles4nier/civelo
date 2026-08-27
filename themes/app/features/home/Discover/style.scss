@@ -1,4 +1,6 @@
 @import '@themes/app/styles/variables';
+
+.theme-app {
 .discover {
 	position: relative;
 	background: $primary;
@@ -169,3 +171,5 @@
 		color: $accent;
 	}
 }
+}
+

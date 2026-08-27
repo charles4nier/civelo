@@ -1,5 +1,11 @@
 @import './variables.scss';
 
+@keyframes fade-up-app {
+	from { opacity: 0; transform: translateY(20px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+.theme-app {
 html {
 	box-sizing: border-box;
 	-webkit-text-size-adjust: 100%;
@@ -252,13 +258,10 @@ em { font-style: italic; }
    ✨ Animations
    ========================= */
 
-@keyframes fade-up {
-	from { opacity: 0; transform: translateY(20px); }
-	to   { opacity: 1; transform: translateY(0); }
-}
+
 
 .animate-fade-up {
-	animation: fade-up 0.8s $ease-smooth both;
+	animation: fade-up-app 0.8s $ease-smooth both;
 }
 
 /* =========================
@@ -272,3 +275,5 @@ em { font-style: italic; }
 		$primary-10 14px 16px
 	);
 }
+}
+

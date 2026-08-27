@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'filter-bar';
 
 .#{$b} {
@@ -163,3 +164,5 @@ $b: 'filter-bar';
 	font-weight: $font-weight-semibold;
 	color: $muted-foreground;
 }
+}
+

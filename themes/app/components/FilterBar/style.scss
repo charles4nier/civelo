@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'filter-bar';
 
 .#{$b} {
@@ -174,3 +175,5 @@ $b: 'filter-bar';
 		&:hover { background: $accent-20; border-color: $accent; }
 	}
 }
+}
+

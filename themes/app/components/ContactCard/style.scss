@@ -1,5 +1,6 @@
 @import '@themes/app/styles/variables';
 
+.theme-app {
 $b: 'contact-card';
 
 /* ========================
@@ -137,3 +138,5 @@ $b: 'contact-card';
 
 	&:hover { color: $primary; }
 }
+}
+

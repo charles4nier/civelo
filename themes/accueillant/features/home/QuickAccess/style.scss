@@ -1,4 +1,6 @@
 @import '@themes/accueillant/styles/variables';
+
+.theme-accueillant {
 .quick-access {
 	padding: $spacing-6xl 0;
 
@@ -88,3 +90,5 @@
 		transform: translateX(4px);
 	}
 }
+}
+

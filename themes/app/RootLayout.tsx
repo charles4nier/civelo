@@ -30,7 +30,7 @@ const inter = Inter({
 
 export default function RootLayout({ children }: RootLayoutProps) {
 	return (
-		<html lang="fr" className={`${cormorant.variable} ${inter.variable}`}>
+		<html lang="fr" className={`theme-app ${cormorant.variable} ${inter.variable}`}>
 			<body>
 				<Header />
 				<main>{children}</main>

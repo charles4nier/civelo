@@ -1,5 +1,6 @@
 @import '@themes/edito/styles/variables';
 
+.theme-edito {
 $b: 'documents';
 
 /* ========================
@@ -244,3 +245,5 @@ $b: 'documents';
 	color: $muted-foreground;
 	font-size: $small-size-desktop;
 }
+}
+
