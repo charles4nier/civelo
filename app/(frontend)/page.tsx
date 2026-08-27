@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import HomePage from '@themes/style-edito/features/home';
+import StyleEditoHomePage from '@themes/style-edito/features/home';
+import AppHomePage from '@themes/app/features/home';
+import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Accueil',
@@ -9,6 +12,9 @@ export const metadata: Metadata = generatePageMetadata({
 	path: '/'
 });
 
-export default function Page() {
-	return <HomePage />;
+export default async function Page() {
+	const payload = await getPayloadClient();
+	const theme = await getCurrentTheme(payload);
+	const Component = pickTheme(theme, { 'style-edito': StyleEditoHomePage, app: AppHomePage });
+	return <Component />;
 }

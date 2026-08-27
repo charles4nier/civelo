@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import ElusPage from '@themes/style-edito/features/elus';
+import StyleEditoElusPage from '@themes/style-edito/features/elus';
+import AppElusPage from '@themes/app/features/elus';
+import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Le maire & les élus',
@@ -8,6 +11,9 @@ export const metadata: Metadata = generatePageMetadata({
 	path: '/mairie/maire-elus'
 });
 
-export default function Page() {
-	return <ElusPage />;
+export default async function Page() {
+	const payload = await getPayloadClient();
+	const theme = await getCurrentTheme(payload);
+	const Component = pickTheme(theme, { 'style-edito': StyleEditoElusPage, app: AppElusPage });
+	return <Component />;
 }

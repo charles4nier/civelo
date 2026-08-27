@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { defaultMetadata } from '@themes/style-edito/config/seo';
 import StyleEditoRootLayout from '@themes/style-edito/RootLayout';
+import AppRootLayout from '@themes/app/RootLayout';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getNavLinks, getIdentiteData, getBoutonEnteteData, getFooterData, getPayloadClient } from '../../lib/payload';
 
@@ -35,7 +36,8 @@ export default async function Layout({ children }: { children: React.ReactNode }
 	]);
 
 	const RootLayout = pickTheme(theme, {
-		'style-edito': StyleEditoRootLayout
+		'style-edito': StyleEditoRootLayout,
+		app: AppRootLayout
 	});
 
 	return (

@@ -1,0 +1,234 @@
+@import '@themes/app/styles/variables';
+.hero {
+	background: $background;
+	overflow: hidden;
+
+	&__wrapper {
+		padding-top: 40px; /* pt-10 */
+
+		@media (min-width: $breakpoint-sm) {
+			padding-top: 64px; /* md:pt-16 */
+		}
+	}
+
+	// ─── Wrapper relatif (contient frame + vagues, pas d'overflow) ─
+	&__frame-wrapper {
+		position: relative;
+	}
+
+	// ─── Image encadrée ────────────────────────────────────────────
+	&__frame {
+		position: relative;
+		overflow: hidden;
+		border-radius: 2rem; /* rounded-[2rem] */
+		box-shadow: 0 25px 50px -12px $primary-20;
+
+		@media (min-width: $breakpoint-sm) {
+			border-radius: 3rem; /* md:rounded-[3rem] */
+		}
+
+		img.hero__image {
+			position: absolute !important;
+			inset: 0;
+			width: 100% !important;
+			height: 100% !important;
+			object-fit: cover;
+		}
+
+		// ratio de l'image
+		aspect-ratio: unset;
+		height: 55svh;
+
+		@media (min-width: $breakpoint-sm) {
+			height: 70svh;
+		}
+	}
+
+	&__overlay {
+		position: absolute;
+		inset: 0;
+		background: $gradient-hero;
+		pointer-events: none;
+	}
+
+	// ─── Contenu sur l'image ───────────────────────────────────────
+	&__content {
+		position: absolute;
+		inset-inline: 0;
+		bottom: 0;
+		padding: $spacing-lg $spacing-xl;
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-xl;
+
+		@media (min-width: $breakpoint-sm) {
+			flex-direction: row;
+			align-items: flex-end;
+			justify-content: space-between;
+			padding: $spacing-3xl $spacing-3xl;
+		}
+	}
+
+	&__body {
+		max-width: 520px;
+	}
+
+	&__badge {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-sm;
+		border: 1px solid $cream-30;
+		background: $primary-20;
+		backdrop-filter: blur(8px);
+		padding: 4px 12px;
+		border-radius: 9999px;
+		font-family: $font-body;
+		font-size: 11px; /* text-[11px] */
+		font-weight: $font-weight-medium;
+		text-transform: uppercase;
+		letter-spacing: 0.25em;
+		color: $cream;
+	}
+
+	&__badge-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: $accent;
+		flex-shrink: 0;
+	}
+
+	&__title {
+		margin-top: $spacing-md;
+		font-family: $font-display;
+		font-size: 24px;  /* text-2xl */
+		font-weight: $font-weight-medium;
+		color: $cream;
+		line-height: $line-height-snug;
+		filter: drop-shadow(0 1px 3px oklch(0 0 0 / 0.5));
+
+		@media (min-width: $breakpoint-sm) {
+			font-size: 30px;  /* md:text-3xl */
+		}
+
+		em {
+			font-style: italic;
+			font-weight: $font-weight-regular;
+		}
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: $spacing-sm;
+	}
+
+	&__cta-dark {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-sm;
+		padding: 12px $spacing-xl;
+		border-radius: 9999px;
+		background: $primary;
+		color: $cream;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
+		transition: $transition-smooth;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+
+		&:hover {
+			background: oklch(0.32 0.065 195);
+		}
+	}
+
+	&__cta-ghost {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-sm;
+		padding: 12px $spacing-xl;
+		border-radius: 9999px;
+		background: rgba(255,255,255,0.9);
+		color: $primary;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
+		backdrop-filter: blur(8px);
+		transition: $transition-smooth;
+
+		&:hover {
+			background: #fff;
+		}
+	}
+
+	// ─── Décoration vagues ─────────────────────────────────────────
+	&__waves {
+		display: none;
+		position: absolute;
+		left: -24px;
+		bottom: -40px;
+		width: 160px;
+		color: $accent-70; /* text-accent/70 */
+
+		@media (min-width: $breakpoint-sm) {
+			display: block;
+		}
+	}
+
+	// ─── Sous-ligne ────────────────────────────────────────────────
+	&__sub {
+		margin-top: 40px; /* mt-10 */
+		padding-bottom: 64px; /* pb-16 */
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-xl;
+
+		@media (min-width: $breakpoint-sm) {
+			margin-top: 56px; /* md:mt-14 */
+			flex-direction: row;
+			align-items: flex-end;
+			justify-content: space-between;
+		}
+	}
+
+	&__sub-text {
+		max-width: 520px;
+		font-size: 16px; /* text-base */
+		color: $primary-80; /* text-forest-deep/80 */
+		line-height: $line-height-relaxed;
+
+		@media (min-width: $breakpoint-sm) {
+			font-size: 18px; /* md:text-lg */
+		}
+	}
+
+	&__scroll-hint {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+		font-family: $font-body;
+		font-size: $xs-size-desktop;
+		text-transform: uppercase;
+		letter-spacing: 0.3em;
+		color: $forest-60; /* text-forest/60 */
+		flex-shrink: 0;
+		white-space: nowrap;
+	}
+
+	&__scroll-line {
+		display: block;
+		width: 48px;
+		height: 1px;
+		background: $forest;
+		opacity: 0.4; /* bg-forest/40 */
+	}
+
+	&__scroll-icon {
+		animation: bounce-y 1.5s ease-in-out infinite;
+	}
+}
+
+@keyframes bounce-y {
+	0%, 100% { transform: translateY(0); }
+	50%       { transform: translateY(4px); }
+}

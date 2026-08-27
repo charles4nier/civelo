@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import ContactPage from '@themes/style-edito/features/contact';
+import StyleEditoContactPage from '@themes/style-edito/features/contact';
+import AppContactPage from '@themes/app/features/contact';
+import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Contact',
@@ -8,6 +11,9 @@ export const metadata: Metadata = generatePageMetadata({
 	path: '/contact'
 });
 
-export default function Page() {
-	return <ContactPage />;
+export default async function Page() {
+	const payload = await getPayloadClient();
+	const theme = await getCurrentTheme(payload);
+	const Component = pickTheme(theme, { 'style-edito': StyleEditoContactPage, app: AppContactPage });
+	return <Component />;
 }

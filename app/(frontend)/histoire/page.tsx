@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import HistoirePage from '@themes/style-edito/features/histoire';
+import StyleEditoHistoirePage from '@themes/style-edito/features/histoire';
+import AppHistoirePage from '@themes/app/features/histoire';
+import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Histoire de Saint-Hilaire-Bonneval',
@@ -9,6 +12,9 @@ export const metadata: Metadata = generatePageMetadata({
 	path: '/histoire'
 });
 
-export default function Page() {
-	return <HistoirePage />;
+export default async function Page() {
+	const payload = await getPayloadClient();
+	const theme = await getCurrentTheme(payload);
+	const Component = pickTheme(theme, { 'style-edito': StyleEditoHistoirePage, app: AppHistoirePage });
+	return <Component />;
 }

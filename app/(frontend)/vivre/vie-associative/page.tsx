@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import VieAssociativePage from '@themes/style-edito/features/vie-associative';
+import StyleEditoVieAssociativePage from '@themes/style-edito/features/vie-associative';
+import AppVieAssociativePage from '@themes/app/features/vie-associative';
+import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Vie associative',
@@ -8,6 +11,9 @@ export const metadata: Metadata = generatePageMetadata({
 	path: '/vivre/vie-associative'
 });
 
-export default function Page() {
-	return <VieAssociativePage />;
+export default async function Page() {
+	const payload = await getPayloadClient();
+	const theme = await getCurrentTheme(payload);
+	const Component = pickTheme(theme, { 'style-edito': StyleEditoVieAssociativePage, app: AppVieAssociativePage });
+	return <Component />;
 }

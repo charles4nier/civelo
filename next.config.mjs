@@ -22,15 +22,6 @@ const nextConfig = {
 		deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
 		imageSizes: [16, 32, 48, 64, 96, 128, 256, 384]
 	},
-	// Injection auto d'un seul jeu de variables SCSS, valable tant qu'un
-	// seul thème (style-edito) existe. À revoir dès l'arrivée d'un 2e thème :
-	// des variables.scss différents par thème avec les mêmes noms mais des
-	// valeurs différentes rendront ce mécanisme global ambigu — il faudra
-	// alors passer à des imports relatifs explicites par thème.
-	sassOptions: {
-		includePaths: [path.join(__dirname, 'themes/style-edito/styles')],
-		prependData: `@import "variables.scss";`
-	},
 	compress: true,
 	eslint: {
 		ignoreDuringBuilds: true

@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import CarteInteractive from '@themes/style-edito/features/carte';
+import StyleEditoCarteInteractive from '@themes/style-edito/features/carte';
 import { pois as fallbackPois, sentiers as fallbackSentiers } from '@themes/style-edito/features/carte/data';
-import { getCarteData } from '../../../../lib/payload';
+import AppCarteInteractive from '@themes/app/features/carte';
+import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import { getCarteData, getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Carte interactive',
 	description: 'Explorez Saint-Hilaire-Bonneval grâce à notre carte interactive.',
-	path: '/tourisme/carte-interactive',
+	path: '/tourisme/carte-interactive'
 });
 
 type PageProps = {
@@ -16,13 +18,12 @@ type PageProps = {
 
 export default async function Page({ searchParams }: PageProps) {
 	const { id } = await searchParams;
-	const data = await getCarteData();
+	const payload = await getPayloadClient();
+	const [theme, data] = await Promise.all([getCurrentTheme(payload), getCarteData()]);
 
-	return (
-		<CarteInteractive
-			initialId={id}
-			pois={data?.pois ?? fallbackPois}
-			sentiers={data?.sentiers ?? fallbackSentiers}
-		/>
-	);
+	if (theme === 'app') {
+		return <AppCarteInteractive initialId={id} />;
+	}
+
+	return <StyleEditoCarteInteractive initialId={id} pois={data?.pois ?? fallbackPois} sentiers={data?.sentiers ?? fallbackSentiers} />;
 }

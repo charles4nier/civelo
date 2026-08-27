@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import SportsLoisirsPage from '@themes/style-edito/features/sports-loisirs';
+import StyleEditoSportsLoisirsPage from '@themes/style-edito/features/sports-loisirs';
+import AppSportsLoisirsPage from '@themes/app/features/sports-loisirs';
+import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Sports & loisirs',
@@ -8,6 +11,9 @@ export const metadata: Metadata = generatePageMetadata({
 	path: '/vivre/sports-loisirs'
 });
 
-export default function Page() {
-	return <SportsLoisirsPage />;
+export default async function Page() {
+	const payload = await getPayloadClient();
+	const theme = await getCurrentTheme(payload);
+	const Component = pickTheme(theme, { 'style-edito': StyleEditoSportsLoisirsPage, app: AppSportsLoisirsPage });
+	return <Component />;
 }

@@ -1,0 +1,165 @@
+/* =========================
+   🎨 Palette Prestige
+   ========================= */
+
+$background:          oklch(1 0 0);
+$foreground:          oklch(0.28 0.04 200);
+$card:                oklch(1 0 0);
+$card-foreground:     oklch(0.28 0.04 200);
+$secondary:           oklch(0.97 0.01 95);
+$secondary-foreground: oklch(0.28 0.04 200);
+$muted:               oklch(0.97 0.01 95);
+$muted-foreground:    oklch(0.50 0.03 200);
+$border:              oklch(0.90 0.02 95);
+$input:               oklch(0.90 0.02 95);
+
+/* Couleurs de marque */
+$primary:             oklch(0.36 0.07 195);   /* forest-deep — teal foncé */
+$primary-foreground:  oklch(0.985 0.012 95);  /* cream */
+$primary-light:       oklch(0.55 0.09 195);   /* teal clair */
+$accent:              oklch(0.74 0.16 55);    /* tangerine chaud */
+$accent-foreground:   oklch(0.25 0.05 30);
+$forest:              oklch(0.58 0.14 140);   /* vert prairie */
+$cream:               oklch(0.985 0.012 95);  /* blanc cassé chaud */
+$ochre:               oklch(0.82 0.15 80);    /* tournesol */
+
+$error:               oklch(0.62 0.24 25);
+
+/* --- Variantes alpha --- */
+$primary-05:          oklch(0.36 0.07 195 / 0.05);
+$primary-10:          oklch(0.36 0.07 195 / 0.10);
+$primary-20:          oklch(0.36 0.07 195 / 0.20);
+$primary-30:          oklch(0.36 0.07 195 / 0.30);
+$primary-40:          oklch(0.36 0.07 195 / 0.40);
+$primary-50:          oklch(0.36 0.07 195 / 0.50);
+$primary-60:          oklch(0.36 0.07 195 / 0.60);
+$primary-60:          oklch(0.36 0.07 195 / 0.60);
+$primary-70:          oklch(0.36 0.07 195 / 0.70);
+$accent-15:           oklch(0.74 0.16 55 / 0.15);
+$accent-20:           oklch(0.74 0.16 55 / 0.20);
+$accent-30:           oklch(0.74 0.16 55 / 0.30);
+$forest-10:           oklch(0.58 0.14 140 / 0.10);
+$forest-15:           oklch(0.58 0.14 140 / 0.15);
+$forest-40:           oklch(0.58 0.14 140 / 0.40);
+$forest-60:           oklch(0.58 0.14 140 / 0.60);
+$forest-70:           oklch(0.58 0.14 140 / 0.70);
+$accent-70:           oklch(0.74 0.16 55 / 0.70);
+$primary-80:          oklch(0.36 0.07 195 / 0.80);
+$cream-06:            oklch(0.985 0.012 95 / 0.06);
+$cream-10:            oklch(0.985 0.012 95 / 0.10);
+$cream-20:            oklch(0.985 0.012 95 / 0.20);
+$cream-15:            oklch(0.985 0.012 95 / 0.15);
+$cream-30:            oklch(0.985 0.012 95 / 0.30);
+$cream-35:            oklch(0.985 0.012 95 / 0.35);
+$cream-50:            oklch(0.985 0.012 95 / 0.50);
+$cream-60:            oklch(0.985 0.012 95 / 0.60);
+$cream-70:            oklch(0.985 0.012 95 / 0.70);
+$cream-75:            oklch(0.985 0.012 95 / 0.75);
+$cream-80:            oklch(0.985 0.012 95 / 0.80);
+$foreground-20:       oklch(0.28 0.04 200 / 0.20);
+$foreground-50:       oklch(0.28 0.04 200 / 0.50);
+$foreground-80:       oklch(0.28 0.04 200 / 0.80);
+$muted-foreground-50: oklch(0.50 0.03 200 / 0.50);
+$background-15:       oklch(1 0 0 / 0.15);
+$background-95:       oklch(1 0 0 / 0.95);
+
+/* --- Dégradés --- */
+$gradient-hero:    linear-gradient(180deg, transparent 0%, oklch(0.36 0.07 195 / 0.2) 50%, oklch(0.36 0.07 195 / 0.7) 100%);
+$gradient-primary: linear-gradient(135deg, oklch(0.36 0.07 195), oklch(0.28 0.06 195));
+$gradient-warm:    linear-gradient(135deg, oklch(0.74 0.16 55), oklch(0.82 0.15 80));
+$gradient-forest:  linear-gradient(135deg, oklch(0.58 0.14 140), oklch(0.45 0.10 155));
+
+/* --- Ombres --- */
+$shadow-soft:    0 10px 40px -12px oklch(0.28 0.04 200 / 0.15);
+$shadow-elegant: 0 20px 60px -20px oklch(0.36 0.07 195 / 0.30);
+$shadow-warm:    0 14px 40px -12px oklch(0.74 0.16 55 / 0.30);
+
+/* --- Transition --- */
+$ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+$transition-smooth: all 0.4s $ease-smooth;
+
+/* =========================
+   📱 Breakpoints
+   ========================= */
+
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1600px;
+
+/* =========================
+   📏 Spacing (scale 8px)
+   ========================= */
+
+$spacing-xs:  4px;
+$spacing-sm:  8px;
+$spacing-md:  16px;
+$spacing-lg:  24px;
+$spacing-xl:  32px;
+$spacing-2xl: 40px;
+$spacing-3xl: 48px;
+$spacing-4xl: 64px;
+$spacing-5xl: 80px;
+$spacing-6xl: 96px;
+$spacing-7xl: 112px;
+
+$section-padding-y-desktop: 128px;  /* py-32 */
+$section-padding-y-tablet:  96px;   /* py-24 */
+$section-padding-y-mobile:  96px;   /* py-24 */
+
+/* =========================
+   📐 Container
+   ========================= */
+
+$container-max-width:          1280px;  /* max-w-7xl */
+$container-padding-x-desktop:  24px;   /* px-6 */
+$container-padding-x-tablet:   24px;
+$container-padding-x-mobile:   24px;
+
+/* =========================
+   📝 Typographie
+   ========================= */
+
+$font-display: var(--font-display), 'Cormorant Garamond', Georgia, serif;
+$font-body:    var(--font-body), 'Inter', system-ui, sans-serif;
+
+$font-weight-regular:  400;
+$font-weight-medium:   500;
+$font-weight-semibold: 600;
+$font-weight-bold:     600;
+
+$line-height-tight:   1.05;
+$line-height-snug:    1.25;
+$line-height-normal:  1.5;
+$line-height-relaxed: 1.65;
+$line-height-loose:   1.75;
+
+$h1-size-desktop: clamp(44px, 5vw, 64px);
+$h2-size-desktop: 60px;  /* text-6xl */
+$h3-size-desktop: clamp(20px, 2vw, 26px);
+$body-size-desktop: 16px;
+$small-size-desktop: 14px;
+$xs-size-desktop: 12px;  /* text-xs = 0.75rem */
+
+$h1-size-md: clamp(36px, 5vw, 48px);
+$h2-size-md: 60px;
+$h3-size-md: clamp(18px, 2.5vw, 22px);
+$body-size-md: 15px;
+
+$h1-size-sm: clamp(32px, 8vw, 40px);
+$h2-size-sm: 36px;  /* text-4xl */
+$h3-size-sm: clamp(17px, 3.5vw, 20px);
+$body-size-sm: 15px;
+
+$title-margin-bottom-desktop: $spacing-md;
+$title-margin-bottom-mobile:  $spacing-sm;
+
+/* Aliases pour compatibilité features portées */
+$coral:       oklch(0.60 0.22 25);
+$coral-15:    oklch(0.60 0.22 25 / 0.15);
+$leaf:        $forest;
+$leaf-15:     $forest-15;
+$sunshine:    $ochre;
+$sunshine-25: oklch(0.82 0.15 80 / 0.25);
+$terracotta:  oklch(0.55 0.19 40);

@@ -1,14 +1,20 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import ActualitesPage from '@themes/style-edito/features/actualites';
+import StyleEditoActualitesPage from '@themes/style-edito/features/actualites';
+import AppActualitesPage from '@themes/app/features/actualites';
+import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Actualités',
 	description:
 		'Toutes les actualités de Saint-Hilaire-Bonneval : comptes-rendus du conseil municipal, vie locale, travaux et événements.',
-	path: '/mairie/actualites',
+	path: '/mairie/actualites'
 });
 
-export default function Page() {
-	return <ActualitesPage />;
+export default async function Page() {
+	const payload = await getPayloadClient();
+	const theme = await getCurrentTheme(payload);
+	const Component = pickTheme(theme, { 'style-edito': StyleEditoActualitesPage, app: AppActualitesPage });
+	return <Component />;
 }

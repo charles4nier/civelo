@@ -1,0 +1,95 @@
+@import '@themes/app/styles/variables';
+
+$e: 'page-header';
+
+.#{$e} {
+	position: relative;
+	background: $primary;
+	color: $cream;
+	overflow: hidden;
+}
+
+.#{$e}__inner {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 160px $spacing-lg $spacing-6xl;
+	text-align: center;
+
+	@media (min-width: $breakpoint-md) {
+		padding-left: $spacing-5xl;
+		padding-right: $spacing-5xl;
+	}
+}
+
+.#{$e}__breadcrumb {
+	display: inline-flex;
+	align-items: center;
+	gap: $spacing-sm;
+	padding: 6px 16px;
+	border-radius: 9999px;
+	background: $cream-10;
+	backdrop-filter: blur(4px);
+	border: 1px solid $cream-20;
+	font-family: $font-body;
+	font-size: $xs-size-desktop;
+	color: $cream-80;
+
+	a:hover { color: $cream; }
+	svg { color: $cream-60; }
+	span { color: $accent; }
+}
+
+.#{$e}__eyebrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	margin-top: $spacing-3xl;
+	font-family: $font-body;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-medium;
+	text-transform: uppercase;
+	letter-spacing: 0.3em;
+	color: $accent;
+}
+
+.#{$e}__title {
+	margin-top: $spacing-lg;
+	font-family: $font-display;
+	font-size: clamp(40px, 6vw, 72px);
+	font-weight: $font-weight-medium;
+	line-height: $line-height-tight;
+	color: $cream;
+}
+
+.#{$e}__divider {
+	width: 80px;
+	height: 3px;
+	background: $accent;
+	margin: $spacing-3xl auto 0;
+	border-radius: 9999px;
+}
+
+.#{$e}__subtitle {
+	margin-top: $spacing-3xl;
+	font-family: $font-body;
+	font-size: $body-size-desktop;
+	color: $cream-80;
+	line-height: $line-height-relaxed;
+}
+
+.#{$e}__tagline {
+	margin-top: $spacing-sm;
+	font-family: $font-display;
+	font-style: italic;
+	font-size: clamp(22px, 2.5vw, 30px);
+	color: $cream-80;
+}
+
+.#{$e}__wave {
+	color: $background;
+	line-height: 0;
+	margin-bottom: -2px;
+
+	svg { display: block; }
+}
