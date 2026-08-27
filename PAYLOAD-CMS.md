@@ -1034,6 +1034,14 @@ Cohérence de nommage entre les 3 thèmes : `style-edito` → `edito` (dossier `
 
 **Conséquence à traiter tôt ou tard** : tant qu'un vrai processus `payload migrate` (prévu dès le plan initial, jamais mis en place) n'existe pas, **chaque futur changement de schéma nécessitera cette même manipulation manuelle** (tunnel + SQL) avant ou après chaque déploiement qui en introduit un. Pas bloquant à l'échelle actuelle (une poignée de tenants de test), mais deviendra un vrai risque opérationnel à mesure que de vraies communes clientes dépendront de la continuité du service.
 
+### 96. Portage du 3ᵉ thème — "Accueillant" (ex-style-ludique)
+
+Chantier plus léger que prévu : l'audit confirme que style-ludique n'avait **que sa page d'accueil réellement construite** — les 16 autres pages canoniques étaient déjà des placeholders génériques "Coming Soon" (avec son propre composant `ComingSoon`, jamais branché sur rien), et `/agenda`/`/contact` n'existaient même pas comme routes. Portage donc surtout mécanique : accueil copié tel quel, les 17 autres pages construites comme repli honnête `ComingSoon`, en appliquant directement les leçons de la décision 94 plutôt que de les redécouvrir (composants async dès le départ, imports `@themes/accueillant/styles/variables` explicites dès le départ, pas de dépendance au mécanisme global supprimé). `ThemeName` élargi à 3 valeurs, les 18 routes + layout racine dispatchent maintenant sur les 3 thèmes.
+
+Vérifié avant même de pousser : un vrai `next build` (pas seulement `next dev`) en local, cette fois sans mauvaise surprise puisque le bug de la décision 95 (SCSS admin) a été anticipé. Après déploiement, immédiatement corrigé le schéma de prod (enum `accueillant` manquant) via `scalingo db-tunnel` — cette fois en une seule passe, sans redécouvrir le problème, la leçon de la décision 95 appliquée directement plutôt que reconstatée à la dure.
+
+Les 3 thèmes sont maintenant tous les trois réellement sélectionnables et fonctionnels en production : `edito` (complet, branché Payload), `app` et `accueillant` (mécaniquement en place, contenu réel encore à construire pour la plupart des pages, aucun des deux encore branché sur Payload).
+
 ## Catalogue des gabarits (état actuel)
 
 | Gabarit | Type | Pages actuelles | Notes |
