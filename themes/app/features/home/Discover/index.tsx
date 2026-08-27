@@ -6,31 +6,20 @@ import './style.scss';
 
 const CLASS_NAME = 'discover';
 
-const cards = [
-	{
-		img:  '/lake.jpg',
-		tag:  'Nature',
-		title: "Nos étangs et plans d'eau",
-		text:  "Pêche, baignade et balades au fil de l'eau dans un cadre préservé.",
-		href: '/tourisme/carte-interactive?category=nature',
-	},
-	{
-		img:  '/forest.jpg',
-		tag:  'Randonnée',
-		title: 'Sentiers du Limousin',
-		text:  'Plus de 40 km de chemins balisés à travers forêts et bocages.',
-		href: '/tourisme/carte-interactive?category=randonnee',
-	},
-	{
-		img:  '/village.jpg',
-		tag:  'Patrimoine',
-		title: "L'âme du village",
-		text:  'Église, lavoirs, croix de chemin : un héritage qui se raconte.',
-		href: '/tourisme/carte-interactive?category=patrimoine',
-	},
-];
+export type DiscoverCardData = {
+	key: string;
+	image?: string;
+	etiquette?: string;
+	titre: string;
+	description?: string;
+	href: string;
+};
 
-export default function Discover() {
+type Props = { cards: DiscoverCardData[] };
+
+const FALLBACK_IMAGES = ['/lake.jpg', '/forest.jpg', '/village.jpg'];
+
+export default function Discover({ cards }: Props) {
 	return (
 		<section id="tourisme" className={CLASS_NAME}>
 			{/* Vague haut — absolue, rotée, couleur background (blanc) */}
@@ -49,21 +38,27 @@ export default function Discover() {
 						<em>au rythme de la nature</em>
 					</h2>
 					<p className={`${CLASS_NAME}__subtitle`}>
-						Entre Limoges et Brive, Saint-Hilaire-Bonneval vous invite à ralentir.
-						Découvrez ses paysages, son patrimoine bâti et la richesse d'un village où il fait bon vivre.
+						La commune vous invite à ralentir. Découvrez ses paysages, son patrimoine bâti et la richesse d'un lieu où il
+						fait bon vivre.
 					</p>
 				</div>
 
 				<div className={`${CLASS_NAME}__grid`}>
-					{cards.map((c) => (
-						<Link key={c.title} href={c.href} className={`${CLASS_NAME}__card`}>
+					{cards.map((c, i) => (
+						<Link key={c.key} href={c.href} className={`${CLASS_NAME}__card`}>
 							<div className={`${CLASS_NAME}__card-img`}>
-								<Image src={c.img} alt={c.title} fill sizes="(max-width: 768px) 100vw, 33vw" loading="lazy" />
+								<Image
+									src={c.image ?? FALLBACK_IMAGES[i % FALLBACK_IMAGES.length]}
+									alt={c.titre}
+									fill
+									sizes="(max-width: 768px) 100vw, 33vw"
+									loading="lazy"
+								/>
 								<div className={`${CLASS_NAME}__card-overlay`} />
-								<span className={`${CLASS_NAME}__card-tag`}>{c.tag}</span>
+								{c.etiquette && <span className={`${CLASS_NAME}__card-tag`}>{c.etiquette}</span>}
 								<div className={`${CLASS_NAME}__card-body`}>
-									<h3 className={`${CLASS_NAME}__card-title`}>{c.title}</h3>
-									<p className={`${CLASS_NAME}__card-text`}>{c.text}</p>
+									<h3 className={`${CLASS_NAME}__card-title`}>{c.titre}</h3>
+									{c.description && <p className={`${CLASS_NAME}__card-text`}>{c.description}</p>}
 									<span className={`${CLASS_NAME}__card-link`}>
 										Voir sur la carte <ArrowRight size={12} />
 									</span>

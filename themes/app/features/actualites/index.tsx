@@ -1,12 +1,5 @@
-'use client';
-
-import { useState, useMemo, useEffect, useRef } from 'react';
-import { Calendar, Newspaper, ArrowRight } from 'lucide-react';
-import PageHeader from '@themes/app/components/PageHeader';
-import FilterBar from '@themes/app/components/FilterBar';
-import './style.scss';
-
-const B = 'actualites';
+import ActualitesLayout, { type ActualiteItemData } from '@themes/app/components/ActualitesLayout';
+import { getActualitesItems } from '@lib/payload';
 
 type Category = 'Mairie' | 'Vie locale' | 'Travaux' | 'Événements';
 type Article = { date: string; cat: Category; title: string; excerpt: string };
@@ -22,92 +15,18 @@ const articles: Article[] = [
 	{ date: '2026-03-25', cat: 'Événements',  title: 'Vide-grenier de printemps', excerpt: 'Le comité des fêtes organise son vide-grenier annuel sur la place du bourg. Inscriptions ouvertes auprès du secrétariat de mairie.' },
 ];
 
-const filters: ('Tous' | Category)[] = ['Tous', 'Mairie', 'Vie locale', 'Travaux', 'Événements'];
+const fallbackItems: ActualiteItemData[] = articles.map((a, i) => ({
+	key: String(i),
+	title: a.title,
+	category: a.cat,
+	date: a.date,
+	excerpt: a.excerpt
+}));
 
-function formatDate(iso: string) {
-	return new Date(iso).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-}
+const filters = ['Tous', 'Mairie', 'Vie locale', 'Travaux', 'Événements'];
 
 export default async function ActualitesPage() {
-	const [active, setActive]           = useState<'Tous' | Category>('Tous');
-	const [stuck, setStuck]             = useState(false);
-	const [filtersOpen, setFiltersOpen] = useState(false);
-	const sentinelRef                   = useRef<HTMLDivElement>(null);
+	const items = (await getActualitesItems('mairie/actualites')) ?? fallbackItems;
 
-	useEffect(() => {
-		const sentinel = sentinelRef.current;
-		if (!sentinel) return;
-		const observer = new IntersectionObserver(
-			([entry]) => setStuck(!entry.isIntersecting),
-			{ rootMargin: '-80px 0px 0px 0px', threshold: 0 },
-		);
-		observer.observe(sentinel);
-		return () => observer.disconnect();
-	}, []);
-
-	const filtered = useMemo(
-		() => (active === 'Tous' ? articles : articles.filter((a) => a.cat === active)).sort((a, b) => b.date.localeCompare(a.date)),
-		[active],
-	);
-
-	const counts = useMemo(() => {
-		const map: Partial<Record<'Tous' | Category, number>> = { Tous: articles.length };
-		for (const a of articles) map[a.cat] = (map[a.cat] ?? 0) + 1;
-		return map;
-	}, []);
-
-	return (
-		<>
-			<PageHeader
-				breadcrumb="Actualités"
-				eyebrowIcon={Newspaper}
-				eyebrow="Votre mairie"
-				title="Actualités"
-				subtitle={<>Conseil municipal, vie locale, travaux et événements :<br />toutes les nouvelles de la commune.</>}
-			/>
-
-			<section className={`${B}__section`}>
-				<div className={`${B}__head container`}>
-					<p className={`${B}__head-eyebrow`}>Fil d'actualité</p>
-					<h2 className={`${B}__head-title`}>
-						<span className={`${B}__head-num`}>{filtered.length}</span>{' '}
-						{filtered.length > 1 ? 'articles' : 'article'}
-					</h2>
-				</div>
-
-				<div ref={sentinelRef} style={{ height: 1 }} />
-
-				<FilterBar
-					filters={filters}
-					active={active}
-					counts={counts as Record<string, number>}
-					onSelect={(f) => { setActive(f as 'Tous' | Category); setFiltersOpen(false); }}
-					stuck={stuck}
-					filtersOpen={filtersOpen}
-					onToggle={() => setFiltersOpen((o) => !o)}
-				/>
-
-				<div className={`${B}__body container`}>
-					<div className={`${B}__grid`}>
-						{filtered.map((article) => (
-							<article key={article.title} className={`${B}__card`}>
-								<div className={`${B}__card-top`}>
-									<span className={`${B}__card-badge`}>{article.cat}</span>
-									<span className={`${B}__card-date`}>
-										<Calendar size={12} />
-										{formatDate(article.date)}
-									</span>
-								</div>
-								<h2 className={`${B}__card-title`}>{article.title}</h2>
-								<p className={`${B}__card-excerpt`}>{article.excerpt}</p>
-								<div className={`${B}__card-link`}>
-									Lire la suite <ArrowRight size={14} />
-								</div>
-							</article>
-						))}
-					</div>
-				</div>
-			</section>
-		</>
-	);
+	return <ActualitesLayout filters={filters} items={items} />;
 }

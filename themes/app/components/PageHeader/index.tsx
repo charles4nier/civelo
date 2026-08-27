@@ -1,12 +1,16 @@
+import type { ComponentType } from 'react';
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 import WaveSVG from '@themes/app/components/WaveSVG';
 import './style.scss';
 
 type Props = {
 	breadcrumb: string;
-	eyebrowIcon?: LucideIcon;
+	// `ComponentType` plutôt que `LucideIcon` (qui exige un vrai
+	// `ForwardRefExoticComponent`) — accepte aussi bien une icône lucide-react
+	// directe qu'un petit composant enveloppe (ex. résolution par nom via
+	// `LucideIconByName`, utilisée par `AnnuaireLayout`).
+	eyebrowIcon?: ComponentType<{ size?: number }>;
 	eyebrow: string;
 	title: React.ReactNode;
 	subtitle: React.ReactNode;

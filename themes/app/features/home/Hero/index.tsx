@@ -5,7 +5,17 @@ import './style.scss';
 
 const CLASS_NAME = 'hero';
 
-export default function Hero() {
+export type HeroData = {
+	image?: string;
+	titre: string;
+	description?: string;
+	boutonPrincipal?: { label: string; href?: string };
+	boutonSecondaire?: { label: string; href?: string };
+};
+
+type Props = { data: HeroData };
+
+export default function Hero({ data }: Props) {
 	return (
 		<section className={CLASS_NAME}>
 			<div className={`${CLASS_NAME}__wrapper container`}>
@@ -14,8 +24,8 @@ export default function Hero() {
 				<div className={`${CLASS_NAME}__frame-wrapper`}>
 					<div className={`${CLASS_NAME}__frame`}>
 						<Image
-							src="/hero.jpg"
-							alt="Vue de Saint-Hilaire-Bonneval et son église"
+							src={data.image ?? '/hero.jpg'}
+							alt="Vue de la commune"
 							fill
 							priority
 							sizes="100vw"
@@ -28,20 +38,21 @@ export default function Hero() {
 							<div className={`${CLASS_NAME}__body`}>
 								<span className={`${CLASS_NAME}__badge`}>
 									<span className={`${CLASS_NAME}__badge-dot`} />
-									Commune du Limousin
+									Site officiel
 								</span>
-								<p className={`${CLASS_NAME}__title`}>
-									Bienvenue à <em>Saint-Hilaire-Bonneval</em>,
-									<br />au cœur de la Haute-Vienne.
-								</p>
+								<p className={`${CLASS_NAME}__title`}>{data.titre}</p>
 							</div>
 							<div className={`${CLASS_NAME}__actions`}>
-								<a href="#demarches" className={`${CLASS_NAME}__cta-dark`}>
-									Mes démarches <ArrowRight size={16} />
-								</a>
-								<Link href="/vivre/la-commune" className={`${CLASS_NAME}__cta-ghost`}>
-									Découvrir
-								</Link>
+								{data.boutonPrincipal && (
+									<a href={data.boutonPrincipal.href ?? '#'} className={`${CLASS_NAME}__cta-dark`}>
+										{data.boutonPrincipal.label} <ArrowRight size={16} />
+									</a>
+								)}
+								{data.boutonSecondaire && (
+									<Link href={data.boutonSecondaire.href ?? '#'} className={`${CLASS_NAME}__cta-ghost`}>
+										{data.boutonSecondaire.label}
+									</Link>
+								)}
 							</div>
 						</div>
 					</div>
@@ -62,18 +73,16 @@ export default function Hero() {
 				</div>
 
 				{/* Sous-ligne */}
-				<div className={`${CLASS_NAME}__sub`}>
-					<p className={`${CLASS_NAME}__sub-text`}>
-						Entre rivières, forêts et patrimoine vivant, la commune vous accueille.
-						Retrouvez ici vos démarches, l'actualité municipale et toutes les informations
-						utiles à la vie locale.
-					</p>
-					<div className={`${CLASS_NAME}__scroll-hint`}>
-						<span className={`${CLASS_NAME}__scroll-line`} />
-						Découvrir
-						<ChevronDown size={14} className={`${CLASS_NAME}__scroll-icon`} />
+				{data.description && (
+					<div className={`${CLASS_NAME}__sub`}>
+						<p className={`${CLASS_NAME}__sub-text`}>{data.description}</p>
+						<div className={`${CLASS_NAME}__scroll-hint`}>
+							<span className={`${CLASS_NAME}__scroll-line`} />
+							Découvrir
+							<ChevronDown size={14} className={`${CLASS_NAME}__scroll-icon`} />
+						</div>
 					</div>
-				</div>
+				)}
 			</div>
 		</section>
 	);

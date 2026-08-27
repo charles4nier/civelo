@@ -1,18 +1,16 @@
-'use client';
-
-import { Users, GraduationCap, Trophy, Leaf, Flag, type LucideIcon } from 'lucide-react';
 import AnnuaireLayout, { type AnnuaireCardData } from '@themes/app/components/AnnuaireLayout';
 import type { IconVariant } from '@themes/app/components/ContactCard';
+import { getAnnuaireItems } from '@lib/payload';
 import { associations, type Category } from './data';
 
-const categoryMeta: Record<Category, { icon: LucideIcon; iconVariant: IconVariant }> = {
-	'Éducation & famille':  { icon: GraduationCap, iconVariant: 'primary' },
-	'Sports':               { icon: Trophy,        iconVariant: 'coral' },
-	'Culture & patrimoine': { icon: Leaf,          iconVariant: 'leaf' },
-	'Citoyenneté':          { icon: Flag,          iconVariant: 'muted' },
+const categoryMeta: Record<Category, { icon: string; iconVariant: IconVariant }> = {
+	'Éducation & famille':  { icon: 'GraduationCap', iconVariant: 'primary' },
+	'Sports':               { icon: 'Trophy',        iconVariant: 'coral' },
+	'Culture & patrimoine': { icon: 'Leaf',          iconVariant: 'leaf' },
+	'Citoyenneté':          { icon: 'Flag',          iconVariant: 'muted' },
 };
 
-const cards: AnnuaireCardData[] = associations.map((a) => ({
+const fallbackCards: AnnuaireCardData[] = associations.map((a) => ({
 	key: a.name,
 	icon: categoryMeta[a.category].icon,
 	iconVariant: categoryMeta[a.category].iconVariant,
@@ -26,13 +24,15 @@ const cards: AnnuaireCardData[] = associations.map((a) => ({
 const filters = ['Tous', 'Éducation & famille', 'Sports', 'Culture & patrimoine', 'Citoyenneté'];
 
 export default async function VieAssociativePage() {
+	const cards = (await getAnnuaireItems('vivre/vie-associative')) ?? fallbackCards;
+
 	return (
 		<AnnuaireLayout
 			breadcrumbLabel="Vie associative"
-			eyebrowIcon={Users}
+			eyebrowIcon="Users"
 			eyebrowText="Vivre à la commune"
 			title="Vie associative"
-			subtitle={<>Sport, culture, éducation et citoyenneté :<br />{associations.length} associations animent la commune.</>}
+			subtitle={<>Sport, culture, éducation et citoyenneté :<br />{cards.length} associations animent la commune.</>}
 			sectionEyebrow="Annuaire associatif"
 			countSingular="association"
 			countPlural="associations"

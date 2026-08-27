@@ -1,18 +1,20 @@
 'use client';
 
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { type LucideIcon } from 'lucide-react';
 import ContactCard, { type ContactItem, type IconVariant } from '@themes/app/components/ContactCard';
 import FilterBar from '@themes/app/components/FilterBar';
 import PageHeader from '@themes/app/components/PageHeader';
 import CtaBanner from '@themes/app/components/CtaBanner';
+import { LucideIconByName } from '@shared/lib/icons';
 import './style.scss';
 
 const B = 'annuaire';
 
 export type AnnuaireCardData = {
 	key: string;
-	icon: LucideIcon;
+	// Nom d'icône lucide-react (ex. venu de Payload) plutôt qu'une référence
+	// de composant — voir shared/lib/icons.ts.
+	icon: string;
 	iconVariant: IconVariant;
 	category: string;
 	name: string;
@@ -31,7 +33,13 @@ type CtaProps = {
 
 type Props = {
 	breadcrumbLabel: string;
-	eyebrowIcon: LucideIcon;
+	// Nom d'icône lucide-react (pas une référence de composant) — cette page
+	// est un Client Component ('use client' ci-dessus), et une référence de
+	// composant reçue en prop depuis un Server Component (la page qui utilise
+	// ce layout) n'est pas sérialisable à travers cette frontière (planté en
+	// conditions réelles : "Only plain objects can be passed to Client
+	// Components from Server Components").
+	eyebrowIcon: string;
 	eyebrowText: string;
 	title: string;
 	subtitle: React.ReactNode;
@@ -90,7 +98,7 @@ export default function AnnuaireLayout({
 		<>
 			<PageHeader
 				breadcrumb={breadcrumbLabel}
-				eyebrowIcon={eyebrowIcon}
+				eyebrowIcon={(props) => <LucideIconByName name={eyebrowIcon} {...props} />}
 				eyebrow={eyebrowText}
 				title={title}
 				subtitle={subtitle}

@@ -8,7 +8,7 @@ import 'leaflet/dist/leaflet.css';
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css';
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.Default.css';
 import { Plus, Minus, SlidersHorizontal, ChevronDown } from 'lucide-react';
-import { pois, sentiers } from './data';
+import type { POI, Sentier } from './data';
 import './style.scss';
 
 const TILES = {
@@ -95,7 +95,17 @@ function MapControls() {
 	);
 }
 
-function FlyTo({ id, markersRef }: { id?: string; markersRef: React.RefObject<Map<string, L.Marker>> }) {
+function FlyTo({
+	id,
+	markersRef,
+	pois,
+	sentiers
+}: {
+	id?: string;
+	markersRef: React.RefObject<Map<string, L.Marker>>;
+	pois: POI[];
+	sentiers: Sentier[];
+}) {
 	const map = useMap();
 	useEffect(() => {
 		if (!id) return;
@@ -110,7 +120,7 @@ function FlyTo({ id, markersRef }: { id?: string; markersRef: React.RefObject<Ma
 			const bounds = L.latLngBounds(sentier.coordinates.map((c) => L.latLng(c[0], c[1])));
 			map.fitBounds(bounds, { padding: [60, 60], animate: true });
 		}
-	}, [id, map, markersRef]);
+	}, [id, map, markersRef, pois, sentiers]);
 	return null;
 }
 
@@ -128,12 +138,12 @@ function FitCommune({ geoJSON, skip }: { geoJSON: any; skip: boolean }) {
 }
 
 type FilterState = { hebergement: boolean; 'site-visite': boolean; sentier: boolean };
-type Props = { initialId?: string };
+type Props = { initialId?: string; pois: POI[]; sentiers: Sentier[] };
 
 const SHEET_MIN = 80;
 const SHEET_MAX = 0.48;
 
-export default function MapClient({ initialId }: Props) {
+export default function MapClient({ initialId, pois, sentiers }: Props) {
 	const [filters, setFilters] = useState<FilterState>({
 		hebergement: true,
 		'site-visite': true,
@@ -277,7 +287,7 @@ export default function MapClient({ initialId }: Props) {
 			scrollWheelZoom={false}
 		>
 			<TileLayer url={TILES.plan.url} attribution={TILES.plan.attribution} maxZoom={TILES.plan.maxZoom} />
-			<FlyTo id={selectedId} markersRef={markerRefs} />
+			<FlyTo id={selectedId} markersRef={markerRefs} pois={pois} sentiers={sentiers} />
 			<FitCommune geoJSON={communeGeoJSON} skip={!!initialId} />
 			<MapResizer trigger={sheetHeight} />
 			<MapControls />

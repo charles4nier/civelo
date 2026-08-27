@@ -1,11 +1,50 @@
-import { Building2, UtensilsCrossed, Info, ShieldCheck, Phone } from 'lucide-react';
+import { Building2, Info, ShieldCheck, Phone } from 'lucide-react';
 import PageHeader from '@themes/app/components/PageHeader';
 import CtaBanner from '@themes/app/components/CtaBanner';
+import { LucideIconByName } from '@shared/lib/icons';
+import { getCatalogueLieuxItems } from '@lib/payload';
 import './style.scss';
 
 const CLASS_NAME = 'location';
 
+type Ligne = { public: string; prix: string; caution?: string };
+type GroupeTarif = { label: string; lignes: Ligne[] };
+type Note = { texte: string; type: 'info' | 'condition' };
+type Salle = { key: string; nom: string; description?: string; icone?: string; groupesTarifs: GroupeTarif[]; notes: Note[] };
+
+const fallbackSalles: Salle[] = [
+	{
+		key: 'polyvalente',
+		nom: 'Salle polyvalente',
+		description: 'Location à caractère associatif ou familial.',
+		icone: 'Building2',
+		groupesTarifs: [
+			{
+				label: 'Manifestations',
+				lignes: [
+					{ public: 'Associations de la commune', prix: 'Gratuit', caution: 'Caution 160 €' },
+					{ public: 'Habitants de la commune', prix: '260 €', caution: 'Caution 260 €' },
+					{ public: 'Personnes extérieures', prix: '350 €', caution: 'Caution 350 €' }
+				]
+			}
+		],
+		notes: [{ texte: 'Assurance obligatoire · État des lieux avant et après utilisation', type: 'info' }]
+	}
+];
+
 export default async function LocationSallePage() {
+	const items = await getCatalogueLieuxItems('location-salle');
+	const salles: Salle[] = items?.length
+		? items.map((s) => ({
+				key: s.key,
+				nom: s.nom,
+				description: s.description,
+				icone: s.icone,
+				groupesTarifs: s.groupesTarifs,
+				notes: s.notes
+			}))
+		: fallbackSalles;
+
 	return (
 		<>
 			<PageHeader
@@ -13,113 +52,62 @@ export default async function LocationSallePage() {
 				eyebrowIcon={Building2}
 				eyebrow="Votre mairie"
 				title="Location de salles"
-				subtitle={<>Deux espaces disponibles pour vos événements associatifs et familiaux.<br />Réservation et renseignements auprès de la mairie.</>}
+				subtitle={<>Des espaces disponibles pour vos événements associatifs et familiaux.<br />Réservation et renseignements auprès de la mairie.</>}
 			/>
 
 			<section className={`${CLASS_NAME}__section`}>
 				<div className={`${CLASS_NAME}__inner container`}>
 					<div className={`${CLASS_NAME}__grid`}>
-
-						<div className={`${CLASS_NAME}__salle`}>
-							<div className={`${CLASS_NAME}__salle-header`}>
-								<div className={`${CLASS_NAME}__salle-icon`}>
-									<Building2 size={22} strokeWidth={1.5} />
-								</div>
-								<h2 className={`${CLASS_NAME}__salle-title`}>Salle polyvalente</h2>
-								<p className={`${CLASS_NAME}__salle-desc`}>Location à caractère associatif ou familial.</p>
-							</div>
-
-							<div className={`${CLASS_NAME}__salle-body`}>
-								<p className={`${CLASS_NAME}__tarif-group-label`}>Manifestations</p>
-								<div className={`${CLASS_NAME}__tarifs`}>
-									<div className={`${CLASS_NAME}__tarif`}>
-										<span className={`${CLASS_NAME}__tarif-public`}>Associations de la commune</span>
-										<span className={`${CLASS_NAME}__tarif-price ${CLASS_NAME}__tarif-price--free`}>Gratuit</span>
-										<span className={`${CLASS_NAME}__tarif-caution`}>Caution 160 €</span>
+						{salles.map((salle, i) => (
+							<div key={salle.key} className={`${CLASS_NAME}__salle${i % 2 === 1 ? ` ${CLASS_NAME}__salle--alt` : ''}`}>
+								<div className={`${CLASS_NAME}__salle-header`}>
+									<div className={`${CLASS_NAME}__salle-icon${i % 2 === 1 ? ` ${CLASS_NAME}__salle-icon--alt` : ''}`}>
+										<LucideIconByName name={salle.icone ?? 'Building2'} size={22} strokeWidth={1.5} />
 									</div>
-									<div className={`${CLASS_NAME}__tarif`}>
-										<span className={`${CLASS_NAME}__tarif-public`}>Habitants de la commune</span>
-										<span className={`${CLASS_NAME}__tarif-price`}>260 €</span>
-										<span className={`${CLASS_NAME}__tarif-caution`}>Caution 260 €</span>
-									</div>
-									<div className={`${CLASS_NAME}__tarif`}>
-										<span className={`${CLASS_NAME}__tarif-public`}>Personnes extérieures</span>
-										<span className={`${CLASS_NAME}__tarif-price`}>350 €</span>
-										<span className={`${CLASS_NAME}__tarif-caution`}>Caution 350 €</span>
-									</div>
+									<h2 className={`${CLASS_NAME}__salle-title`}>{salle.nom}</h2>
+									{salle.description && <p className={`${CLASS_NAME}__salle-desc`}>{salle.description}</p>}
 								</div>
 
-								<p className={`${CLASS_NAME}__tarif-group-label`}>Vins d'honneur</p>
-								<div className={`${CLASS_NAME}__tarifs`}>
-									<div className={`${CLASS_NAME}__tarif`}>
-										<span className={`${CLASS_NAME}__tarif-public`}>Habitants de la commune</span>
-										<span className={`${CLASS_NAME}__tarif-price`}>110 €</span>
-										<span className={`${CLASS_NAME}__tarif-caution`}>Caution 250 €</span>
-									</div>
-									<div className={`${CLASS_NAME}__tarif`}>
-										<span className={`${CLASS_NAME}__tarif-public`}>Personnes extérieures</span>
-										<span className={`${CLASS_NAME}__tarif-price`}>160 €</span>
-										<span className={`${CLASS_NAME}__tarif-caution`}>Caution 350 €</span>
-									</div>
-								</div>
+								<div className={`${CLASS_NAME}__salle-body`}>
+									{salle.notes
+										.filter((n) => n.type === 'condition')
+										.map((n, ni) => (
+											<div key={ni} className={`${CLASS_NAME}__salle-condition`}>
+												<Info size={14} />
+												<span>{n.texte}</span>
+											</div>
+										))}
 
-								<div className={`${CLASS_NAME}__salle-note`}>
-									<ShieldCheck size={14} />
-									<span>Assurance obligatoire · État des lieux avant et après utilisation</span>
-								</div>
-							</div>
-						</div>
+									{salle.groupesTarifs.map((g) => (
+										<div key={g.label}>
+											<p className={`${CLASS_NAME}__tarif-group-label`}>{g.label}</p>
+											<div className={`${CLASS_NAME}__tarifs`}>
+												{g.lignes.map((l, li) => (
+													<div key={li} className={`${CLASS_NAME}__tarif`}>
+														<span className={`${CLASS_NAME}__tarif-public`}>{l.public}</span>
+														<span
+															className={`${CLASS_NAME}__tarif-price${l.prix.toLowerCase() === 'gratuit' ? ` ${CLASS_NAME}__tarif-price--free` : ''}`}
+														>
+															{l.prix}
+														</span>
+														{l.caution && <span className={`${CLASS_NAME}__tarif-caution`}>{l.caution}</span>}
+													</div>
+												))}
+											</div>
+										</div>
+									))}
 
-						<div className={`${CLASS_NAME}__salle ${CLASS_NAME}__salle--alt`}>
-							<div className={`${CLASS_NAME}__salle-header`}>
-								<div className={`${CLASS_NAME}__salle-icon ${CLASS_NAME}__salle-icon--alt`}>
-									<UtensilsCrossed size={22} strokeWidth={1.5} />
-								</div>
-								<h2 className={`${CLASS_NAME}__salle-title`}>Salle du restaurant scolaire</h2>
-								<p className={`${CLASS_NAME}__salle-desc`}>
-									Disponible uniquement le week-end pour les associations et particuliers,
-									pour des manifestations à caractère familial ou associatif.
-								</p>
-							</div>
-
-							<div className={`${CLASS_NAME}__salle-body`}>
-								<div className={`${CLASS_NAME}__salle-condition`}>
-									<Info size={14} />
-									<span>
-										<strong>Traiteur obligatoire</strong> — lui seul et son personnel
-										sont autorisés à utiliser le réfrigérateur, le four, la cuisinière
-										à gaz et le lave-vaisselle.
-									</span>
-								</div>
-
-								<p className={`${CLASS_NAME}__tarif-group-label`}>Location</p>
-								<div className={`${CLASS_NAME}__tarifs`}>
-									<div className={`${CLASS_NAME}__tarif`}>
-										<span className={`${CLASS_NAME}__tarif-public`}>Habitants de la commune</span>
-										<span className={`${CLASS_NAME}__tarif-price`}>650 €</span>
-										<span className={`${CLASS_NAME}__tarif-caution`}>+ cautions</span>
-									</div>
-									<div className={`${CLASS_NAME}__tarif`}>
-										<span className={`${CLASS_NAME}__tarif-public`}>Personnes extérieures</span>
-										<span className={`${CLASS_NAME}__tarif-price`}>750 €</span>
-										<span className={`${CLASS_NAME}__tarif-caution`}>+ cautions</span>
-									</div>
-								</div>
-
-								<p className={`${CLASS_NAME}__tarif-group-label`}>Cautions</p>
-								<div className={`${CLASS_NAME}__tarifs`}>
-									<div className={`${CLASS_NAME}__tarif`}>
-										<span className={`${CLASS_NAME}__tarif-public`}>Dégradation des locaux ou du matériel</span>
-										<span className={`${CLASS_NAME}__tarif-price`}>1 000 €</span>
-									</div>
-									<div className={`${CLASS_NAME}__tarif`}>
-										<span className={`${CLASS_NAME}__tarif-public`}>Nettoyage insuffisant ou mobilier non remis en place</span>
-										<span className={`${CLASS_NAME}__tarif-price`}>120 €</span>
-									</div>
+									{salle.notes
+										.filter((n) => n.type === 'info')
+										.map((n, ni) => (
+											<div key={ni} className={`${CLASS_NAME}__salle-note`}>
+												<ShieldCheck size={14} />
+												<span>{n.texte}</span>
+											</div>
+										))}
 								</div>
 							</div>
-						</div>
-
+						))}
 					</div>
 
 					<CtaBanner

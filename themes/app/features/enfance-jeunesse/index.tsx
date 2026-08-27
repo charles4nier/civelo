@@ -1,15 +1,13 @@
-'use client';
-
-import { Baby, School, Star, Users, type LucideIcon } from 'lucide-react';
 import AnnuaireLayout, { type AnnuaireCardData } from '@themes/app/components/AnnuaireLayout';
 import type { IconVariant } from '@themes/app/components/ContactCard';
+import { getAnnuaireItems } from '@lib/payload';
 import { services, type Category, type ServiceCard } from './data';
 
-const categoryMeta: Record<Category, { icon: LucideIcon; iconVariant: IconVariant }> = {
-	'École':                   { icon: School, iconVariant: 'coral' },
-	'Petite enfance':          { icon: Star,   iconVariant: 'sunshine' },
-	'Centre de loisirs':       { icon: Users,  iconVariant: 'primary' },
-	'Assistantes maternelles': { icon: Baby,   iconVariant: 'leaf' },
+const categoryMeta: Record<Category, { icon: string; iconVariant: IconVariant }> = {
+	'École':                   { icon: 'School', iconVariant: 'coral' },
+	'Petite enfance':          { icon: 'Star',   iconVariant: 'sunshine' },
+	'Centre de loisirs':       { icon: 'Users',  iconVariant: 'primary' },
+	'Assistantes maternelles': { icon: 'Baby',   iconVariant: 'leaf' },
 };
 
 function toContacts(s: ServiceCard) {
@@ -21,7 +19,7 @@ function toContacts(s: ServiceCard) {
 	];
 }
 
-const cards: AnnuaireCardData[] = services.map((s) => ({
+const fallbackCards: AnnuaireCardData[] = services.map((s) => ({
 	key: s.name,
 	icon: categoryMeta[s.category].icon,
 	iconVariant: categoryMeta[s.category].iconVariant,
@@ -34,10 +32,12 @@ const cards: AnnuaireCardData[] = services.map((s) => ({
 const filters = ['Tous', 'École', 'Petite enfance', 'Centre de loisirs', 'Assistantes maternelles'];
 
 export default async function EnfanceJeunessePage() {
+	const cards = (await getAnnuaireItems('vivre/enfance-jeunesse')) ?? fallbackCards;
+
 	return (
 		<AnnuaireLayout
 			breadcrumbLabel="Enfance & jeunesse"
-			eyebrowIcon={Baby}
+			eyebrowIcon="Baby"
 			eyebrowText="Vivre à la commune"
 			title="Enfance & jeunesse"
 			subtitle={<>École, micro-crèche, centre de loisirs et assistantes maternelles :<br />tous les services dédiés aux familles de la commune.</>}

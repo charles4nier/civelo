@@ -1,37 +1,21 @@
 import Link from 'next/link';
-import { FileText, Building2, Bell, Calendar, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { LucideIconByName } from '@shared/lib/icons';
 import './style.scss';
 
 const CLASS_NAME = 'quick-access';
 
-const services = [
-	{
-		icon: FileText,
-		title: 'Démarches administratives',
-		text: 'État civil, urbanisme, demandes en quelques clics.',
-		href: '/demarches',
-	},
-	{
-		icon: Building2,
-		title: 'Délibérations & Actes',
-		text: 'Comptes-rendus du conseil municipal et arrêtés.',
-		href: '/mairie/comptes-rendus',
-	},
-	{
-		icon: Bell,
-		title: 'Services & Urgences',
-		text: 'Numéros utiles et services publics à proximité.',
-		href: '/numeros-utiles',
-	},
-	{
-		icon: Calendar,
-		title: 'Agenda du village',
-		text: 'Marchés, festivités, vie associative et culturelle.',
-		href: '/mairie/actualites',
-	},
-];
+export type QuickAccessItemData = {
+	key: string;
+	icon: string;
+	title: string;
+	desc?: string;
+	href: string;
+};
 
-export default function QuickAccess() {
+type Props = { items: QuickAccessItemData[] };
+
+export default function QuickAccess({ items }: Props) {
 	return (
 		<section id="demarches" className={CLASS_NAME}>
 			<div className={`${CLASS_NAME}__inner container`}>
@@ -44,13 +28,13 @@ export default function QuickAccess() {
 				</div>
 
 				<div className={`${CLASS_NAME}__grid`}>
-					{services.map(({ icon: Icon, title, text, href }) => (
-						<Link key={href} href={href} className={`${CLASS_NAME}__card`}>
+					{items.map((item) => (
+						<Link key={item.key} href={item.href} className={`${CLASS_NAME}__card`}>
 							<div className={`${CLASS_NAME}__card-icon`}>
-								<Icon size={20} />
+								<LucideIconByName name={item.icon} size={20} strokeWidth={2} aria-hidden="true" />
 							</div>
-							<h3 className={`${CLASS_NAME}__card-title`}>{title}</h3>
-							<p className={`${CLASS_NAME}__card-text`}>{text}</p>
+							<h3 className={`${CLASS_NAME}__card-title`}>{item.title}</h3>
+							{item.desc && <p className={`${CLASS_NAME}__card-text`}>{item.desc}</p>}
 							<ArrowRight size={16} className={`${CLASS_NAME}__card-arrow`} />
 						</Link>
 					))}

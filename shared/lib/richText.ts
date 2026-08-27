@@ -26,3 +26,23 @@ export function paragraphsToRichText(paragraphs: string[]): SerializedEditorStat
 		}
 	} as unknown as SerializedEditorState;
 }
+
+// Opération inverse — pour un thème dont le gabarit éditorial attend du
+// texte simple (`paragraphs: string[]`) plutôt qu'un rendu Lexical complet
+// (`<RichText>`). Pas de tentative de préserver le formatage (gras,
+// liens...) : jointure de tous les nœuds texte descendants de chaque bloc de
+// premier niveau (paragraphe, titre, liste...) en une chaîne, un bloc = une
+// chaîne du tableau retourné. Blocs vides ignorés.
+type LexicalNodeLike = { type?: string; text?: string; children?: LexicalNodeLike[] };
+
+function flattenText(node: LexicalNodeLike): string {
+	if (typeof node.text === 'string') return node.text;
+	if (!node.children) return '';
+	return node.children.map(flattenText).join('');
+}
+
+export function richTextToParagraphs(data: SerializedEditorState | null | undefined): string[] {
+	const root = (data as unknown as { root?: { children?: LexicalNodeLike[] } } | undefined)?.root;
+	if (!root?.children) return [];
+	return root.children.map(flattenText).map((s) => s.trim()).filter(Boolean);
+}

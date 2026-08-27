@@ -1,34 +1,26 @@
 import { Users, Calendar } from 'lucide-react';
 import PageHeader from '@themes/app/components/PageHeader';
+import { getTrombinoscopeData } from '@lib/payload';
 import './style.scss';
 
 const CLASS_NAME = 'elus';
 
 type Elu = { name: string; role: string; commissions?: string[]; note?: string };
 
-const maire: Elu = { name: 'Prénom NOM', role: 'Maire', note: 'Président de toutes les commissions' };
+const fallbackMaire: Elu = { name: 'Prénom NOM', role: 'Maire', note: 'Président de toutes les commissions' };
 
-const adjoints: Elu[] = [
-	{ name: 'Prénom NOM', role: '1er Adjoint',   commissions: ['Finances', 'Sports, loisirs et culture', 'Affaires sociales et santé publique (vice-président)', "Appel d'offres"] },
-	{ name: 'Prénom NOM', role: '2ème Adjointe',  commissions: ['Finances', 'Sports, loisirs et culture (vice-présidente)', 'Affaires sociales et santé publique'] },
-	{ name: 'Prénom NOM', role: '3ème Adjoint',   commissions: ['Finances', 'Travaux, aménagement et urbanisme', 'Affaires sociales (vice-président)', "Appel d'offres"] },
-	{ name: 'Prénom NOM', role: '4ème Adjoint',   commissions: ['Travaux, aménagement et urbanisme (vice-président)', 'Sports, loisirs et culture'] },
+const fallbackAdjoints: Elu[] = [
+	{ name: 'Prénom NOM', role: '1er Adjoint', commissions: ['Finances', 'Sports, loisirs et culture'] },
+	{ name: 'Prénom NOM', role: '2ème Adjointe', commissions: ['Finances', 'Affaires sociales et santé publique'] },
 ];
 
-const delegues: Elu[] = [
-	{ name: 'Prénom NOM', role: 'Conseiller·e délégué·e', commissions: ['Communication', 'Affaires sociales et santé publique', "Appel d'offres"] },
-	{ name: 'Prénom NOM', role: 'Conseiller·e délégué·e', commissions: ['Affaires scolaires', 'Patrimoine, environnement et tourisme'] },
+const fallbackDelegues: Elu[] = [
+	{ name: 'Prénom NOM', role: 'Conseiller·e délégué·e', commissions: ['Communication', "Appel d'offres"] },
 ];
 
-const conseillers: Elu[] = [
+const fallbackConseillers: Elu[] = [
 	{ name: 'Prénom NOM', role: 'Conseiller·e', commissions: ['Affaires scolaires', 'Affaires sociales et santé publique'] },
-	{ name: 'Prénom NOM', role: 'Conseiller·e', commissions: ['Affaires scolaires', 'Communication', 'Sports, loisirs et culture'] },
-	{ name: 'Prénom NOM', role: 'Conseiller·e', commissions: ['Communication', 'Sports, loisirs et culture', 'Patrimoine, environnement et tourisme'] },
-	{ name: 'Prénom NOM', role: 'Conseiller·e', commissions: ['Travaux, aménagement et urbanisme', 'Communication', 'Patrimoine, environnement et tourisme', "Appel d'offres"] },
-	{ name: 'Prénom NOM', role: 'Conseiller·e', commissions: ['Travaux, aménagement et urbanisme', 'Communication', 'Affaires sociales et santé publique'] },
-	{ name: 'Prénom NOM', role: 'Conseiller·e', commissions: ['Affaires scolaires', 'Communication (vice-président·e)', 'Sports, loisirs et culture'] },
-	{ name: 'Prénom NOM', role: 'Conseiller·e', commissions: ['Finances (vice-président·e)', 'Patrimoine, environnement et tourisme', "Appel d'offres"] },
-	{ name: 'Prénom NOM', role: 'Conseiller·e', commissions: ['Travaux, aménagement et urbanisme', 'Patrimoine, environnement et tourisme (vice-président·e)', "Appel d'offres"] },
+	{ name: 'Prénom NOM', role: 'Conseiller·e', commissions: ['Communication', 'Sports, loisirs et culture'] },
 ];
 
 function initials(name: string) {
@@ -71,6 +63,32 @@ function GroupHeader({ label }: { label: string }) {
 }
 
 export default async function ElusPage() {
+	const data = await getTrombinoscopeData('mairie/maire-elus');
+
+	let maire: Elu = fallbackMaire;
+	let adjoints: Elu[] = fallbackAdjoints;
+	let delegues: Elu[] = fallbackDelegues;
+	let conseillers: Elu[] = fallbackConseillers;
+	let meetingInfo: string | undefined;
+
+	if (data?.members.length) {
+		const toElu = (m: (typeof data.members)[number]): Elu => ({
+			name: m.nom,
+			role: m.fonction,
+			commissions: m.commissions,
+			note: m.note
+		});
+		const byRole = data.members.reduce<Record<string, typeof data.members>>((acc, m) => {
+			(acc[m.role] ??= []).push(m);
+			return acc;
+		}, {});
+		maire = byRole.maire?.[0] ? toElu(byRole.maire[0]) : fallbackMaire;
+		adjoints = (byRole.adjoint ?? []).map(toElu);
+		delegues = (byRole.delegue ?? []).map(toElu);
+		conseillers = (byRole.conseiller ?? []).map(toElu);
+		meetingInfo = data.meetingInfo;
+	}
+
 	return (
 		<>
 			<PageHeader
@@ -93,20 +111,32 @@ export default async function ElusPage() {
 					<div className={`${CLASS_NAME}__maire`}>
 						<div className={`${CLASS_NAME}__maire-avatar`}>{initials(maire.name)}</div>
 						<div className={`${CLASS_NAME}__maire-body`}>
-							<p className={`${CLASS_NAME}__maire-role`}>{maire.role}</p>
+							<p className={`${CLASS_NAME}__maire-role`}>Maire</p>
 							<h3 className={`${CLASS_NAME}__maire-name`}>M. {maire.name}</h3>
-							<p className={`${CLASS_NAME}__maire-note`}>{maire.note}</p>
+							{maire.note && <p className={`${CLASS_NAME}__maire-note`}>{maire.note}</p>}
 						</div>
 					</div>
 
-					<GroupHeader label="Les adjoints" />
-					<div className={`${CLASS_NAME}__grid`}>{adjoints.map((e) => <MemberCard key={e.name + e.role} elu={e} />)}</div>
+					{adjoints.length > 0 && (
+						<>
+							<GroupHeader label="Les adjoints" />
+							<div className={`${CLASS_NAME}__grid`}>{adjoints.map((e) => <MemberCard key={e.name + e.role} elu={e} />)}</div>
+						</>
+					)}
 
-					<GroupHeader label="Les conseillers délégués" />
-					<div className={`${CLASS_NAME}__grid`}>{delegues.map((e) => <MemberCard key={e.name + e.role} elu={e} />)}</div>
+					{delegues.length > 0 && (
+						<>
+							<GroupHeader label="Les conseillers délégués" />
+							<div className={`${CLASS_NAME}__grid`}>{delegues.map((e) => <MemberCard key={e.name + e.role} elu={e} />)}</div>
+						</>
+					)}
 
-					<GroupHeader label="Les conseillers municipaux" />
-					<div className={`${CLASS_NAME}__grid`}>{conseillers.map((e) => <MemberCard key={e.name + e.role} elu={e} />)}</div>
+					{conseillers.length > 0 && (
+						<>
+							<GroupHeader label="Les conseillers municipaux" />
+							<div className={`${CLASS_NAME}__grid`}>{conseillers.map((e) => <MemberCard key={e.name + e.role} elu={e} />)}</div>
+						</>
+					)}
 				</div>
 			</section>
 
@@ -118,7 +148,7 @@ export default async function ElusPage() {
 							<p className={`${CLASS_NAME}__meeting-eyebrow`}>Prochaine réunion</p>
 							<h3 className={`${CLASS_NAME}__meeting-title`}>Conseil municipal — date à définir</h3>
 							<p className={`${CLASS_NAME}__meeting-desc`}>
-								Les séances du conseil municipal sont publiques et ouvertes à tous les habitants.
+								{meetingInfo || 'Les séances du conseil municipal sont publiques et ouvertes à tous les habitants.'}
 							</p>
 						</div>
 					</div>

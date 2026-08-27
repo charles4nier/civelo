@@ -4,38 +4,31 @@ import './style.scss';
 
 const CLASS_NAME = 'news';
 
-const articles = [
-	{
-		date:      '12 Mai',
-		categorie: 'Conseil municipal',
-		titre:     'Compte-rendu de la séance du 5 mai 2026',
-		resume:    "Budget primitif, voirie communale et nouveaux aménagements de l'étang.",
-		href:      '/mairie/comptes-rendus',
-	},
-	{
-		date:      '08 Mai',
-		categorie: 'Vie locale',
-		titre:     'Marché de producteurs : nouvelle saison',
-		resume:    'Tous les samedis matin sur la place du village, de mai à septembre.',
-		href:      '/mairie/actualites',
-	},
-	{
-		date:      '01 Mai',
-		categorie: 'Travaux',
-		titre:     'Rénovation de la salle des fêtes',
-		resume:    "Les travaux débutent en juin pour une livraison prévue à l'automne.",
-		href:      '/mairie/actualites',
-	},
-];
+export type NewsItemData = {
+	key: string;
+	date: string; // ISO
+	category?: string;
+	title: string;
+	excerpt: string;
+	documentHref?: string;
+};
 
-export default function News() {
+type Props = { articles: NewsItemData[] };
+
+const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short' });
+
+export default function News({ articles }: Props) {
 	return (
 		<section id="actualites" className={CLASS_NAME}>
 			<div className={`${CLASS_NAME}__inner container`}>
 				<div className={`${CLASS_NAME}__header`}>
 					<div>
 						<p className="eyebrow">Actualités municipales</p>
-						<h2 className={`${CLASS_NAME}__title`}>Les dernières nouvelles<br />de la commune</h2>
+						<h2 className={`${CLASS_NAME}__title`}>
+							Les dernières nouvelles
+							<br />
+							de la commune
+						</h2>
 					</div>
 					<Link href="/mairie/actualites" className="btn-outline">
 						Toutes les actualités <ArrowRight size={14} />
@@ -44,15 +37,19 @@ export default function News() {
 
 				<div className={`${CLASS_NAME}__grid`}>
 					{articles.map((a) => (
-						<article key={a.titre} className={`${CLASS_NAME}__card`}>
+						<article key={a.key} className={`${CLASS_NAME}__card`}>
 							<div className={`${CLASS_NAME}__card-meta`}>
-								<span className={`${CLASS_NAME}__card-date`}>{a.date}</span>
-								<span className={`${CLASS_NAME}__card-dot`} />
-								<span className={`${CLASS_NAME}__card-cat`}>{a.categorie}</span>
+								<span className={`${CLASS_NAME}__card-date`}>{DATE_FORMAT.format(new Date(a.date))}</span>
+								{a.category && (
+									<>
+										<span className={`${CLASS_NAME}__card-dot`} />
+										<span className={`${CLASS_NAME}__card-cat`}>{a.category}</span>
+									</>
+								)}
 							</div>
-							<h3 className={`${CLASS_NAME}__card-title`}>{a.titre}</h3>
-							<p className={`${CLASS_NAME}__card-text`}>{a.resume}</p>
-							<Link href={a.href} className={`${CLASS_NAME}__card-link`}>
+							<h3 className={`${CLASS_NAME}__card-title`}>{a.title}</h3>
+							<p className={`${CLASS_NAME}__card-text`}>{a.excerpt}</p>
+							<Link href={a.documentHref ?? '/mairie/actualites'} className={`${CLASS_NAME}__card-link`}>
 								Lire la suite <ArrowRight size={13} />
 							</Link>
 						</article>
@@ -62,4 +59,3 @@ export default function News() {
 		</section>
 	);
 }
-
