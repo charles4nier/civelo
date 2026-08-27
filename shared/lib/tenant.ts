@@ -22,7 +22,11 @@ export const getCurrentTenant = cache(async (payload: Payload): Promise<CurrentT
 	try {
 		const host = (await headers()).get('host');
 		if (!host) return null;
-		const hostname = host.split(':')[0];
+		// `Tenants.domaine` stocke toujours le nom d'hôte nu (jamais de
+		// "www.") — un visiteur qui tape "www.macommune.fr" par habitude (très
+		// courant) doit résoudre le même tenant que "macommune.fr", pas
+		// tomber sur le thème par défaut faute de correspondance exacte.
+		const hostname = host.split(':')[0].replace(/^www\./, '');
 
 		const { docs } = await payload.find({
 			collection: 'tenants',
