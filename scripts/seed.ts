@@ -31,17 +31,17 @@ import { fileURLToPath } from 'url';
 import { getPayload } from 'payload';
 import config from '../payload.config';
 
-import { commerces } from '../themes/style-edito/features/commerces/data';
-import { associations } from '../themes/style-edito/features/vie-associative/data';
-import { services } from '../themes/style-edito/features/enfance-jeunesse/data';
-import { activities } from '../themes/style-edito/features/sports-loisirs/data';
-import { events } from '../themes/style-edito/features/agenda/data';
-import { articles } from '../themes/style-edito/features/actualites/data';
-import { docs } from '../themes/style-edito/features/documents/data';
-import { entries as budgetProjetEntries } from '../themes/style-edito/features/budget-projets/data';
-import { pois, sentiers } from '../themes/style-edito/features/carte/data';
-import { maire, adjoints, delegues, conseillers } from '../themes/style-edito/features/elus/data';
-import { urgences, locaux } from '../themes/style-edito/features/numeros-utiles/data';
+import { commerces } from '../themes/edito/features/commerces/data';
+import { associations } from '../themes/edito/features/vie-associative/data';
+import { services } from '../themes/edito/features/enfance-jeunesse/data';
+import { activities } from '../themes/edito/features/sports-loisirs/data';
+import { events } from '../themes/edito/features/agenda/data';
+import { articles } from '../themes/edito/features/actualites/data';
+import { docs } from '../themes/edito/features/documents/data';
+import { entries as budgetProjetEntries } from '../themes/edito/features/budget-projets/data';
+import { pois, sentiers } from '../themes/edito/features/carte/data';
+import { maire, adjoints, delegues, conseillers } from '../themes/edito/features/elus/data';
+import { urgences, locaux } from '../themes/edito/features/numeros-utiles/data';
 
 type CategoryMap = Record<string, string>;
 

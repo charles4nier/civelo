@@ -1,0 +1,168 @@
+@import '@themes/edito/styles/variables';
+.cta {
+	padding-top: $section-padding-y-desktop;
+	padding-bottom: $section-padding-y-desktop;
+
+	&__card {
+		position: relative;
+		overflow: hidden;
+		background: $gradient-forest;
+		padding: $spacing-4xl $spacing-5xl;
+		color: #ffffff;
+		box-shadow: $shadow-elegant;
+		border-top: 4px solid $sunshine;
+	}
+
+	&__blob {
+		position: absolute;
+		width: 384px;
+		height: 384px;
+		border-radius: 50%;
+		filter: blur(80px);
+		pointer-events: none;
+
+		&--top {
+			top: -96px;
+			right: -96px;
+			background: $sunshine-30;
+		}
+
+		&--bottom {
+			bottom: -128px;
+			left: -64px;
+			background: $leaf-40;
+		}
+	}
+
+	&__grid {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: $spacing-4xl + $spacing-xl;
+		align-items: center;
+	}
+
+	/* ---- Intro ---- */
+
+	&__eyebrow {
+		font-family: $font-body;
+		font-size: $xs-size-desktop;
+		font-weight: $font-weight-bold;
+		text-transform: uppercase;
+		letter-spacing: 0.22em;
+		color: $sunshine;
+	}
+
+	&__title {
+		font-family: $font-display;
+		font-size: clamp(28px, 3vw, 40px);
+		font-weight: $font-weight-semibold;
+		line-height: $line-height-snug;
+		margin-top: $spacing-sm;
+		color: #ffffff;
+		letter-spacing: -0.02em;
+	}
+
+	&__divider {
+		width: 64px;
+		height: 4px;
+		background-color: $sunshine;
+		margin-top: $spacing-md;
+	}
+
+	&__desc {
+		margin-top: $spacing-xl;
+		color: rgba(255, 255, 255, 0.9);
+		font-size: $body-size-desktop;
+		line-height: $line-height-relaxed;
+		max-width: 420px;
+	}
+
+	&__btn {
+		display: inline-flex;
+		align-items: center;
+		margin-top: $spacing-2xl;
+		padding: 14px 28px;
+		background-color: #ffffff;
+		color: $leaf;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		transition: $transition-smooth;
+
+		&:hover {
+			background-color: $sunshine;
+			color: $foreground;
+		}
+	}
+
+	/* ---- Contacts ---- */
+
+	&__contacts {
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-sm;
+	}
+
+	&__contact-item {
+		display: flex;
+		align-items: center;
+		gap: $spacing-md;
+		padding: $spacing-xl;
+		background: rgba(255, 255, 255, 0.15);
+		backdrop-filter: blur(8px);
+		border-left: 2px solid $sunshine;
+	}
+
+	&__contact-icon {
+		width: 44px;
+		height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	&__contact-label {
+		font-family: $font-body;
+		font-size: $xs-size-desktop;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: rgba(255, 255, 255, 0.75);
+	}
+
+	&__contact-value {
+		font-family: $font-body;
+		font-weight: $font-weight-medium;
+		margin-top: 2px;
+		color: #ffffff;
+	}
+
+	/* ---- Responsive ---- */
+
+	@media (max-width: $breakpoint-md) {
+		padding-top: $section-padding-y-tablet;
+		padding-bottom: $section-padding-y-tablet;
+
+		&__card {
+			padding: $spacing-3xl;
+		}
+
+		&__grid {
+			grid-template-columns: 1fr;
+			gap: $spacing-3xl;
+		}
+	}
+
+	@media (max-width: $breakpoint-sm) {
+		padding-top: $section-padding-y-mobile;
+		padding-bottom: $section-padding-y-mobile;
+
+		&__card {
+			padding: $spacing-2xl $spacing-xl;
+		}
+	}
+}

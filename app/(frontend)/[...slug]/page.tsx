@@ -1,18 +1,18 @@
 import { notFound } from 'next/navigation';
 import { FileText } from 'lucide-react';
 import { RichText } from '@payloadcms/richtext-lexical/react';
-import AnnuaireLayout from '@themes/style-edito/components/AnnuaireLayout';
-import DemarchesLayout from '@themes/style-edito/components/DemarchesLayout';
-import AgendaLayout from '@themes/style-edito/components/AgendaLayout';
-import ActualitesLayout from '@themes/style-edito/components/ActualitesLayout';
-import DocumentLayout from '@themes/style-edito/components/DocumentLayout';
-import BudgetProjetLayout from '@themes/style-edito/components/BudgetProjetLayout';
-import TrombinoscopeLayout from '@themes/style-edito/components/TrombinoscopeLayout';
-import CatalogueLieuxLayout from '@themes/style-edito/components/CatalogueLieuxLayout';
-import ContactLayout from '@themes/style-edito/components/ContactLayout';
-import NumerosUtilesLayout from '@themes/style-edito/components/NumerosUtilesLayout';
-import EditorialLayout from '@themes/style-edito/components/EditorialLayout';
-import EditorialSections from '@themes/style-edito/components/EditorialLayout/Sections';
+import AnnuaireLayout from '@themes/edito/components/AnnuaireLayout';
+import DemarchesLayout from '@themes/edito/components/DemarchesLayout';
+import AgendaLayout from '@themes/edito/components/AgendaLayout';
+import ActualitesLayout from '@themes/edito/components/ActualitesLayout';
+import DocumentLayout from '@themes/edito/components/DocumentLayout';
+import BudgetProjetLayout from '@themes/edito/components/BudgetProjetLayout';
+import TrombinoscopeLayout from '@themes/edito/components/TrombinoscopeLayout';
+import CatalogueLieuxLayout from '@themes/edito/components/CatalogueLieuxLayout';
+import ContactLayout from '@themes/edito/components/ContactLayout';
+import NumerosUtilesLayout from '@themes/edito/components/NumerosUtilesLayout';
+import EditorialLayout from '@themes/edito/components/EditorialLayout';
+import EditorialSections from '@themes/edito/components/EditorialLayout/Sections';
 import {
 	getPageBySlug,
 	getAnnuaireItems,

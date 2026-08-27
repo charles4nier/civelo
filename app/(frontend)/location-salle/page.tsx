@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import StyleEditoLocationSallePage from '@themes/style-edito/features/location-salle';
+import { generatePageMetadata } from '@themes/edito/config/seo';
+import StyleEditoLocationSallePage from '@themes/edito/features/location-salle';
 import AppLocationSallePage from '@themes/app/features/location-salle';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
@@ -15,6 +15,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { 'style-edito': StyleEditoLocationSallePage, app: AppLocationSallePage });
+	const Component = pickTheme(theme, { 'edito': StyleEditoLocationSallePage, app: AppLocationSallePage });
 	return <Component />;
 }

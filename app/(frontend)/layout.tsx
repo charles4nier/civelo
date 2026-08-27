@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
-import { defaultMetadata } from '@themes/style-edito/config/seo';
-import StyleEditoRootLayout from '@themes/style-edito/RootLayout';
+import { defaultMetadata } from '@themes/edito/config/seo';
+import StyleEditoRootLayout from '@themes/edito/RootLayout';
 import AppRootLayout from '@themes/app/RootLayout';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getNavLinks, getIdentiteData, getBoutonEnteteData, getFooterData, getPayloadClient } from '../../lib/payload';
@@ -13,7 +13,7 @@ import { getNavLinks, getIdentiteData, getBoutonEnteteData, getFooterData, getPa
 // thème du tenant résolu par domaine.
 //
 // Métadonnées par défaut encore prises directement dans la config SEO de
-// style-edito (pas de dispatch par thème) — un SEO réellement multi-thème
+// edito (pas de dispatch par thème) — un SEO réellement multi-thème
 // nécessiterait un `generateMetadata` async résolvant le tenant, hors
 // périmètre de cette extraction.
 export const metadata: Metadata = defaultMetadata;
@@ -36,7 +36,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
 	]);
 
 	const RootLayout = pickTheme(theme, {
-		'style-edito': StyleEditoRootLayout,
+		'edito': StyleEditoRootLayout,
 		app: AppRootLayout
 	});
 

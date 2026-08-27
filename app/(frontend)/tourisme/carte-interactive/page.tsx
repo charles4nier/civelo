@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import StyleEditoCarteInteractive from '@themes/style-edito/features/carte';
-import { pois as fallbackPois, sentiers as fallbackSentiers } from '@themes/style-edito/features/carte/data';
+import { generatePageMetadata } from '@themes/edito/config/seo';
+import StyleEditoCarteInteractive from '@themes/edito/features/carte';
+import { pois as fallbackPois, sentiers as fallbackSentiers } from '@themes/edito/features/carte/data';
 import AppCarteInteractive from '@themes/app/features/carte';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getCarteData, getPayloadClient } from '@lib/payload';

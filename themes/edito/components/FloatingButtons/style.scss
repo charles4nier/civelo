@@ -1,0 +1,425 @@
+@import '@themes/edito/styles/variables';
+
+$b: 'floating';
+
+@keyframes backdrop-in {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+
+@keyframes backdrop-out {
+	from { opacity: 1; }
+	to   { opacity: 0; }
+}
+
+@keyframes modal-in {
+	from { transform: translateX(100%); opacity: 0; }
+	to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes modal-out {
+	from { transform: translateX(0);    opacity: 1; }
+	to   { transform: translateX(100%); opacity: 0; }
+}
+
+/* ========================
+   Boutons flottants
+   ======================== */
+
+.#{$b}__buttons {
+	position: fixed;
+	bottom: 32px;
+	right: 32px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	z-index: 100;
+	border-radius: 16px;
+
+	@media (max-width: $breakpoint-sm) {
+		bottom: 20px;
+		right: 16px;
+	}
+}
+
+.#{$b}__btn {
+	width: 52px;
+	height: 52px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #ffffff;
+	border: none;
+	cursor: pointer;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+	transition: $transition-smooth;
+
+	&:hover {
+		transform: scale(1.1);
+		box-shadow: 0 6px 28px rgba(0, 0, 0, 0.28);
+	}
+
+	&--leaf {
+		background: $leaf;
+	}
+
+	&--coral {
+		background: $coral;
+	}
+
+	&--sunshine {
+		background: $sunshine;
+		color: $foreground;
+	}
+}
+
+/* ========================
+   Backdrop
+   ======================== */
+
+.#{$b}__backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 110;
+	background: rgba(0, 0, 0, 0.45);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+	animation: backdrop-in 0.25s ease forwards;
+
+	&--closing {
+		animation: backdrop-out 0.28s ease forwards;
+	}
+}
+
+/* ========================
+   Modal (panel droite)
+   ======================== */
+
+.#{$b}__modal {
+	position: fixed;
+	top: 5vh;
+	right: 0;
+	width: 25vw;
+	min-width: 320px;
+	height: 90vh;
+	background: $background;
+	border-left: 1px solid $border;
+	box-shadow: -8px 0 40px rgba(0, 0, 0, 0.12);
+	z-index: 120;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	animation: modal-in 0.32s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+
+	&--closing {
+		animation: modal-out 0.28s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+	}
+
+	@media (max-width: $breakpoint-md) {
+		width: 90vw;
+		min-width: unset;
+		right: 0;
+		top: 5vh;
+	}
+}
+
+.#{$b}__modal-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: $spacing-lg $spacing-lg;
+	border-bottom: 1px solid $border;
+	flex-shrink: 0;
+}
+
+.#{$b}__modal-title-group {
+	display: flex;
+	align-items: center;
+	gap: $spacing-sm + 4px;
+	// Comes second in the DOM (the close button is first, so it's the first
+	// thing focus lands on) but stays visually first/left via order.
+	order: -1;
+}
+
+.#{$b}__modal-icon {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #ffffff;
+	flex-shrink: 0;
+
+	&--leaf {
+		background: $leaf;
+	}
+
+	&--coral {
+		background: $coral;
+	}
+}
+
+.#{$b}__modal-title {
+	font-family: $font-display;
+	font-size: 16px;
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+}
+
+.#{$b}__modal-close {
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: $muted-foreground;
+	border-radius: 50%;
+	transition: $transition-smooth;
+	cursor: pointer;
+
+	&:hover {
+		background: $muted;
+		color: $foreground;
+	}
+}
+
+.#{$b}__modal-body {
+	flex: 1;
+	overflow-y: auto;
+	padding: $spacing-lg;
+}
+
+/* ========================
+   Modal contact
+   ======================== */
+
+.#{$b}__contact-infos {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-md;
+}
+
+.#{$b}__contact-info {
+	display: flex;
+	align-items: flex-start;
+	gap: $spacing-sm + 4px;
+}
+
+.#{$b}__contact-info-icon {
+	color: $leaf;
+	flex-shrink: 0;
+	margin-top: 3px;
+}
+
+.#{$b}__contact-info-label {
+	font-size: 11px;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.15em;
+	color: $muted-foreground;
+	margin-bottom: 2px;
+}
+
+.#{$b}__contact-info-value {
+	font-size: $small-size-desktop;
+	color: $foreground;
+	line-height: $line-height-relaxed;
+	transition: $transition-smooth;
+
+	&:hover {
+		color: $coral;
+	}
+}
+
+.#{$b}__divider {
+	height: 1px;
+	background: $border;
+	margin: $spacing-lg 0;
+}
+
+.#{$b}__form-title {
+	font-family: $font-display;
+	font-size: 15px;
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+	margin-bottom: $spacing-md;
+}
+
+.#{$b}__form {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-md;
+}
+
+.#{$b}__field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.#{$b}__label {
+	font-size: 12px;
+	font-weight: $font-weight-medium;
+	color: $foreground-80;
+}
+
+.#{$b}__input {
+	width: 100%;
+	padding: 10px 14px;
+	border: 1px solid $border;
+	background: $card;
+	font-family: $font-body;
+	font-size: $small-size-desktop;
+	color: $foreground;
+	outline: none;
+	transition: $transition-smooth;
+
+	&:focus {
+		border-color: $primary;
+	}
+
+	&::placeholder {
+		color: $muted-foreground;
+	}
+}
+
+.#{$b}__textarea {
+	width: 100%;
+	padding: 10px 14px;
+	border: 1px solid $border;
+	background: $card;
+	font-family: $font-body;
+	font-size: $small-size-desktop;
+	color: $foreground;
+	outline: none;
+	transition: $transition-smooth;
+	resize: vertical;
+	min-height: 100px;
+
+	&:focus {
+		border-color: $primary;
+	}
+
+	&::placeholder {
+		color: $muted-foreground;
+	}
+}
+
+.#{$b}__submit {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	padding: 11px 20px;
+	background: $primary;
+	color: #ffffff;
+	font-family: $font-body;
+	font-size: 13px;
+	font-weight: $font-weight-semibold;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	cursor: pointer;
+	transition: $transition-smooth;
+	border: none;
+
+	&:hover {
+		background: $coral;
+	}
+}
+
+/* ========================
+   Modal bot
+   ======================== */
+
+.#{$b}__modal-body--bot {
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.#{$b}__chat {
+	flex: 1;
+	overflow-y: auto;
+	padding: $spacing-md;
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-sm;
+}
+
+.#{$b}__message {
+	max-width: 85%;
+	padding: 10px 14px;
+	font-size: $small-size-desktop;
+	line-height: $line-height-relaxed;
+
+	&--bot {
+		background: $muted;
+		color: $foreground;
+		align-self: flex-start;
+		border-radius: 0 12px 12px 12px;
+	}
+
+	&--user {
+		background: $primary;
+		color: #ffffff;
+		align-self: flex-end;
+		border-radius: 12px 12px 0 12px;
+	}
+}
+
+.#{$b}__suggestions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: $spacing-xs + 2px;
+	padding: $spacing-sm $spacing-md;
+	border-top: 1px solid $border;
+	border-bottom: 1px solid $border;
+}
+
+.#{$b}__suggestion {
+	padding: 5px 12px;
+	border: 1px solid $border;
+	border-radius: 999px;
+	font-size: 12px;
+	color: $foreground-80;
+	cursor: pointer;
+	background: transparent;
+	transition: $transition-smooth;
+
+	&:hover {
+		border-color: $coral;
+		color: $coral;
+	}
+}
+
+.#{$b}__chat-input {
+	display: flex;
+	gap: $spacing-sm;
+	padding: $spacing-md;
+	border-top: 1px solid $border;
+
+	.#{$b}__input {
+		flex: 1;
+	}
+}
+
+.#{$b}__send {
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: $coral;
+	color: #ffffff;
+	border: none;
+	border-radius: 50%;
+	cursor: pointer;
+	flex-shrink: 0;
+	transition: $transition-smooth;
+
+	&:hover {
+		background: $primary;
+	}
+}

@@ -1,0 +1,257 @@
+@import '@themes/edito/styles/variables';
+
+$b: 'actualites';
+
+/* ========================
+   Hero
+   ======================== */
+
+.#{$b}__hero {
+	position: relative;
+	padding-top: 160px;
+	padding-bottom: $spacing-6xl;
+	padding-left: $spacing-lg;
+	padding-right: $spacing-lg;
+	overflow: hidden;
+	background: $gradient-primary;
+	color: #ffffff;
+	text-align: center;
+
+	@media (min-width: $breakpoint-md) {
+		padding-left: $spacing-5xl;
+		padding-right: $spacing-5xl;
+	}
+}
+
+.#{$b}__hero-blur {
+	position: absolute;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	filter: blur(80px);
+	pointer-events: none;
+
+	&--top {
+		top: -96px;
+		right: -96px;
+		background: $sunshine-25;
+	}
+
+	&--bottom {
+		bottom: -128px;
+		left: -96px;
+		background: $primary-30;
+	}
+}
+
+.#{$b}__hero-content {
+	position: relative;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.#{$b}__breadcrumb {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.8);
+	margin-bottom: $spacing-lg;
+
+	a:hover {
+		color: #ffffff;
+	}
+
+	svg {
+		flex-shrink: 0;
+	}
+}
+
+.#{$b}__eyebrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.28em;
+	color: $sunshine;
+}
+
+.#{$b}__title {
+	font-family: $font-display;
+	font-size: clamp(36px, 6vw, 64px);
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-tight;
+	color: #ffffff;
+	margin-top: $spacing-md;
+}
+
+.#{$b}__divider {
+	width: 80px;
+	height: 4px;
+	background: $sunshine;
+	margin: $spacing-lg auto 0;
+}
+
+.#{$b}__subtitle {
+	margin-top: $spacing-3xl;
+	font-size: $body-size-desktop;
+	color: rgba(255, 255, 255, 0.85);
+	line-height: $line-height-relaxed;
+}
+
+/* ========================
+   Section articles
+   ======================== */
+
+.#{$b}__section {
+	padding-top: $section-padding-y-desktop;
+	padding-bottom: $section-padding-y-desktop;
+}
+
+.#{$b}__header {
+	margin-bottom: $spacing-4xl;
+}
+
+.#{$b}__header-eyebrow {
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	color: $primary;
+}
+
+.#{$b}__header-title {
+	font-family: $font-display;
+	font-size: $h2-size-desktop;
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-snug;
+	margin-top: $spacing-sm;
+	color: $foreground;
+}
+
+.#{$b}__header-divider {
+	width: 64px;
+	height: 4px;
+	background: $coral;
+	margin-top: $spacing-md;
+}
+
+/* ========================
+   Grille d'articles
+   ======================== */
+
+.#{$b}__grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: $spacing-xl;
+
+	@media (min-width: $breakpoint-sm) {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media (min-width: $breakpoint-md) {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+.#{$b}__card {
+	background: #ffffff;
+	padding: $spacing-xl;
+	display: flex;
+	flex-direction: column;
+	transition: $transition-smooth;
+
+	&:hover {
+		box-shadow: $shadow-soft;
+	}
+}
+
+.#{$b}__card-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: $spacing-md;
+	margin-bottom: $spacing-lg;
+	flex-wrap: wrap;
+}
+
+.#{$b}__card-cat {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 10px;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	padding: 4px 10px;
+
+	&--primary {
+		background: $primary-10;
+		color: $primary;
+	}
+
+	&--leaf {
+		background: $leaf-15;
+		color: $leaf;
+	}
+
+	&--coral {
+		background: $coral-15;
+		color: $coral;
+	}
+
+	&--sunshine {
+		background: $sunshine-25;
+		color: $foreground-80;
+	}
+
+	&--muted {
+		background: $secondary;
+		color: $foreground;
+	}
+}
+
+.#{$b}__card-date {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 11px;
+	color: $muted-foreground;
+	white-space: nowrap;
+}
+
+.#{$b}__card-title {
+	font-family: $font-display;
+	font-size: $h3-size-desktop;
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-snug;
+	color: $foreground;
+	margin-bottom: $spacing-md;
+}
+
+.#{$b}__card-excerpt {
+	flex: 1;
+	font-size: $small-size-desktop;
+	line-height: $line-height-relaxed;
+	color: $foreground-80;
+	margin-bottom: $spacing-xl;
+}
+
+.#{$b}__card-link {
+	display: inline-flex;
+	align-items: center;
+	gap: $spacing-sm;
+	font-size: $small-size-desktop;
+	font-weight: $font-weight-medium;
+	color: $primary;
+	margin-top: auto;
+	transition: gap 0.15s;
+
+	&:hover {
+		gap: $spacing-md;
+	}
+}

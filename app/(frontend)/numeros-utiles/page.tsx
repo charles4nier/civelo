@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import StyleEditoNumerosUtilesPage from '@themes/style-edito/features/numeros-utiles';
+import { generatePageMetadata } from '@themes/edito/config/seo';
+import StyleEditoNumerosUtilesPage from '@themes/edito/features/numeros-utiles';
 import AppNumerosUtilesPage from '@themes/app/features/numeros-utiles';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
@@ -14,6 +14,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { 'style-edito': StyleEditoNumerosUtilesPage, app: AppNumerosUtilesPage });
+	const Component = pickTheme(theme, { 'edito': StyleEditoNumerosUtilesPage, app: AppNumerosUtilesPage });
 	return <Component />;
 }

@@ -1,8 +1,8 @@
 import { getPayload } from 'payload';
 import config from '../payload.config';
-import type { AnnuaireCardData } from '@themes/style-edito/components/AnnuaireLayout';
-import type { ContactItem, IconVariant } from '@themes/style-edito/components/ContactCard';
-import type { EditorialSection } from '@themes/style-edito/components/EditorialLayout/Sections';
+import type { AnnuaireCardData } from '@themes/edito/components/AnnuaireLayout';
+import type { ContactItem, IconVariant } from '@themes/edito/components/ContactCard';
+import type { EditorialSection } from '@themes/edito/components/EditorialLayout/Sections';
 import { getCurrentTenant } from '@shared/lib/tenant';
 
 // Item 11/12 de la feuille de route — couche de récupération de données

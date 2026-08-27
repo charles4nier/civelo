@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/style-edito/config/seo';
-import StyleEditoDemarchesPage from '@themes/style-edito/features/demarches';
+import { generatePageMetadata } from '@themes/edito/config/seo';
+import StyleEditoDemarchesPage from '@themes/edito/features/demarches';
 import AppDemarchesPage from '@themes/app/features/demarches';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
@@ -15,6 +15,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { 'style-edito': StyleEditoDemarchesPage, app: AppDemarchesPage });
+	const Component = pickTheme(theme, { 'edito': StyleEditoDemarchesPage, app: AppDemarchesPage });
 	return <Component />;
 }

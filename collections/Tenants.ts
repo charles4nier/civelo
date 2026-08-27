@@ -51,12 +51,12 @@ export const Tenants: CollectionConfig = {
 				name: 'theme',
 				type: 'select',
 				required: true,
-				defaultValue: 'style-edito',
+				defaultValue: 'edito',
 				access: { update: isSuperAdminField },
 				// À étoffer au fur et à mesure que d'autres structures de page
 				// seront construites (3e thème prévu, ex-style-ludique).
 				options: [
-					{ label: 'Style édito', value: 'style-edito' },
+					{ label: 'Style édito', value: 'edito' },
 					{ label: 'App', value: 'app' }
 				]
 			},
