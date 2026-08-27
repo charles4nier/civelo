@@ -11,6 +11,7 @@ import {
 	Shapes,
 	FileStack,
 	Users,
+	Building2,
 	MapPinned,
 	Waypoints,
 	ChevronDown,
@@ -204,6 +205,13 @@ export default function AdminNavClient({ pages }: Props) {
 		]
 	};
 
+	// Décision — "Communes" (collection `tenants`) réservé au super-admin :
+	// nom/domaine/thème/statut du contrat sont des leviers commerciaux, pas
+	// des réglages qu'un admin/éditeur de commune doit voir ou toucher (accès
+	// déjà verrouillé côté champ dans `collections/Tenants.ts`, ce lien
+	// n'ajoute qu'un raccourci de navigation cohérent avec ce même rôle).
+	const isSuperAdmin = user?.role === 'super-admin';
+
 	const parametres: NavSection = {
 		label: 'Paramètres',
 		items: [
@@ -211,7 +219,10 @@ export default function AdminNavClient({ pages }: Props) {
 			{ kind: 'link', label: 'Icônes', href: '/collections/icones', icon: Shapes },
 			{ kind: 'link', label: 'Médias', href: '/collections/media', icon: Images },
 			{ kind: 'link', label: 'Documents', href: '/collections/documents', icon: FileStack },
-			{ kind: 'link', label: 'Utilisateurs', href: '/collections/users', icon: Users }
+			{ kind: 'link', label: 'Utilisateurs', href: '/collections/users', icon: Users },
+			...(isSuperAdmin
+				? [{ kind: 'link' as const, label: 'Communes', href: '/collections/tenants', icon: Building2 }]
+				: [])
 		]
 	};
 
