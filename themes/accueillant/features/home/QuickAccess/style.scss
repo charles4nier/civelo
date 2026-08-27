@@ -1,0 +1,90 @@
+@import '@themes/accueillant/styles/variables';
+.quick-access {
+	padding: $spacing-6xl 0;
+
+	&__header {
+		margin-bottom: $spacing-2xl;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: $spacing-lg;
+	}
+
+	&__title {
+		margin-top: $spacing-sm;
+		font-size: clamp(30px, 3.5vw, 44px);
+		font-weight: $font-weight-semibold;
+		color: $foreground;
+	}
+
+	&__grid {
+		display: grid;
+		gap: $spacing-lg;
+
+		@media (min-width: $breakpoint-xs + 1) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		@media (min-width: $breakpoint-md + 1) {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	&__item {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		border-radius: 8px;
+		padding: $spacing-xl;
+		box-shadow: 0 0 0 1px rgba(42, 36, 56, 0.05);
+		transition: transform 0.25s $ease-smooth;
+
+		&:hover {
+			transform: translateY(-4px);
+		}
+
+		&--sun { background-color: $sunshine; }
+		&--coral { background-color: $coral; }
+		&--sky { background-color: $sky; }
+		&--leaf { background-color: $leaf; }
+
+		&--coral,
+		&--sky,
+		&--leaf {
+			color: #ffffff;
+		}
+	}
+
+	&__item-title {
+		margin-bottom: $spacing-sm;
+		font-size: 22px;
+		font-weight: $font-weight-semibold;
+		color: inherit;
+	}
+
+	&__item-desc {
+		font-size: $small-size-desktop;
+		line-height: $line-height-relaxed;
+		color: inherit;
+		opacity: 0.85;
+	}
+
+	&__item-link {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-xs;
+		margin-top: $spacing-3xl;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		color: inherit;
+	}
+
+	&__item-arrow {
+		transition: transform 0.2s $ease-smooth;
+	}
+
+	&__item:hover &__item-arrow {
+		transform: translateX(4px);
+	}
+}

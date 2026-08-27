@@ -53,11 +53,10 @@ export const Tenants: CollectionConfig = {
 				required: true,
 				defaultValue: 'edito',
 				access: { update: isSuperAdminField },
-				// À étoffer au fur et à mesure que d'autres structures de page
-				// seront construites (3e thème prévu, ex-style-ludique).
 				options: [
 					{ label: 'Style édito', value: 'edito' },
-					{ label: 'App', value: 'app' }
+					{ label: 'App', value: 'app' },
+					{ label: 'Accueillant', value: 'accueillant' }
 				]
 			},
 			'La structure de page utilisée par le site de cette commune.'

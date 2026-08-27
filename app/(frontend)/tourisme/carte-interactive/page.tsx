@@ -3,6 +3,7 @@ import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoCarteInteractive from '@themes/edito/features/carte';
 import { pois as fallbackPois, sentiers as fallbackSentiers } from '@themes/edito/features/carte/data';
 import AppCarteInteractive from '@themes/app/features/carte';
+import AccueillantCarteInteractive from '@themes/accueillant/features/carte';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getCarteData, getPayloadClient } from '@lib/payload';
 
@@ -23,6 +24,10 @@ export default async function Page({ searchParams }: PageProps) {
 
 	if (theme === 'app') {
 		return <AppCarteInteractive initialId={id} />;
+	}
+
+	if (theme === 'accueillant') {
+		return <AccueillantCarteInteractive initialId={id} />;
 	}
 
 	return <StyleEditoCarteInteractive initialId={id} pois={data?.pois ?? fallbackPois} sentiers={data?.sentiers ?? fallbackSentiers} />;

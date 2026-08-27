@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoAgendaPage from '@themes/edito/features/agenda';
 import AppAgendaPage from '@themes/app/features/agenda';
+import AccueillantAgendaPage from '@themes/accueillant/features/agenda';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -14,6 +15,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { 'edito': StyleEditoAgendaPage, app: AppAgendaPage });
+	const Component = pickTheme(theme, { edito: StyleEditoAgendaPage, app: AppAgendaPage, accueillant: AccueillantAgendaPage });
 	return <Component />;
 }
