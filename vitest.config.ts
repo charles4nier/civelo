@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config.js';
 import path from 'node:path';
 
 // Étape 10 du plan multi-tenant — suite de tests d'isolation entre

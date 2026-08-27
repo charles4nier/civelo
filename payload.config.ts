@@ -73,7 +73,11 @@ export default buildConfig({
 	// nécessité d'administration système, cf. fiche de cadrage).
 	db: postgresAdapter({
 		pool: {
-			connectionString: process.env.DATABASE_URI || ''
+			// `DATABASE_URI` en local (voir .env) ; Scalingo injecte automatiquement
+			// `DATABASE_URL` pour son addon PostgreSQL — accepter les deux évite de
+			// dupliquer la valeur à la main (qui deviendrait obsolète si Scalingo
+			// la fait tourner, ex. après un changement de plan).
+			connectionString: process.env.DATABASE_URI || process.env.DATABASE_URL || ''
 		}
 	}),
 	// Étape 2 du plan multi-tenant — les fichiers uploadés (Media,
