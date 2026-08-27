@@ -1,5 +1,6 @@
 import type { ServerProps } from 'payload';
 import { Newspaper, CalendarDays, FileStack, Phone, ArrowRight, CircleAlert } from 'lucide-react';
+import { getSelectedTenantId } from '../lib/getSelectedTenantId';
 import './style.scss';
 
 // Décision 69 — "le tableau de bord ne doit pas être des collections, je
@@ -30,9 +31,16 @@ export default async function Dashboard({ payload, user }: ServerProps) {
 	const prenom = typeof user?.prenom === 'string' && user.prenom ? user.prenom : undefined;
 	const today = TODAY_FORMAT.format(new Date());
 
+	// Bug réel du 27/08/2026 — corrigé : sans ce filtre, `bySlug.get(...)`
+	// pouvait résoudre la page d'une AUTRE commune (même slug, tenant
+	// différent) — un raccourci "Nouvelle actualité" pouvait alors pointer
+	// vers le contenu d'un tenant qui n'est pas celui affiché (voir
+	// `getSelectedTenantId`).
+	const tenantId = await getSelectedTenantId();
+	const slugFilter = { slug: { in: [...SHORTCUT_SLUGS, ...CHECKLIST_SLUGS] } };
 	const { docs: pages } = await payload.find({
 		collection: 'pages',
-		where: { slug: { in: [...SHORTCUT_SLUGS, ...CHECKLIST_SLUGS] } },
+		where: tenantId ? { and: [slugFilter, { tenant: { equals: tenantId } }] } : slugFilter,
 		limit: 0,
 		pagination: false,
 		depth: 0
@@ -49,18 +57,20 @@ export default async function Dashboard({ payload, user }: ServerProps) {
 	const horaires = bySlug.get('mairie/horaires');
 
 	// Étape 5 du plan multi-tenant — `identite`/`footer` étaient des Globals
-	// Payload, convertis en collections tenant-scopées. `payload` vient ici
-	// de `ServerProps` (lié à la vraie requête admin authentifiée) — le
-	// filtrage par tenant du plugin (`useBaseFilter`) s'applique
-	// normalement à ce contexte, contrairement à un appel Local API "nu"
-	// hors requête (voir étape 10 du plan, à vérifier une fois la suite de
-	// tests d'isolation écrite).
+	// Payload, convertis en collections tenant-scopées. Correction du
+	// 27/08/2026 : l'hypothèse initiale ("le filtrage par tenant du plugin
+	// s'applique normalement à ce contexte") était FAUSSE — un appel Local
+	// API direct comme celui-ci n'est jamais filtré automatiquement, quel
+	// que soit le contexte d'où il part (voir `getSelectedTenantId`). Sans
+	// le `where` ci-dessous, `docs[0]` pouvait être la fiche identité/pied
+	// de page d'une AUTRE commune.
+	const tenantWhere = tenantId ? { where: { tenant: { equals: tenantId } } } : {};
 	const identite = (await payload
-		.find({ collection: 'identite', depth: 0, limit: 1 })
+		.find({ collection: 'identite', depth: 0, limit: 1, ...tenantWhere })
 		.then((r) => r.docs[0] ?? null)
 		.catch(() => null)) as any;
 	const footer = (await payload
-		.find({ collection: 'footer', depth: 0, limit: 1 })
+		.find({ collection: 'footer', depth: 0, limit: 1, ...tenantWhere })
 		.then((r) => r.docs[0] ?? null)
 		.catch(() => null)) as any;
 
