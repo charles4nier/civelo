@@ -2,77 +2,99 @@
    🎨 Palette Prestige
    ========================= */
 
-$background:          oklch(1 0 0);
-$foreground:          oklch(0.28 0.04 200);
-$card:                oklch(1 0 0);
-$card-foreground:     oklch(0.28 0.04 200);
-$secondary:           oklch(0.97 0.01 95);
-$secondary-foreground: oklch(0.28 0.04 200);
-$muted:               oklch(0.97 0.01 95);
-$muted-foreground:    oklch(0.50 0.03 200);
-$border:              oklch(0.90 0.02 95);
-$input:               oklch(0.90 0.02 95);
+// Personnalisation par commune — même mécanisme que themes/edito/styles/
+// variables.scss : chaque couleur de base est une custom property CSS avec
+// repli sur la valeur actuelle (`var(--x, <valeur>)`), les teintes alpha/
+// dégradés/ombres dérivent de la couleur de base via la syntaxe de couleur
+// relative CSS (`oklch(from var(--x) l c h / a)`) plutôt que d'être des
+// custom properties indépendantes.
+$background:          var(--color-background, oklch(1 0 0));
+$foreground:          var(--color-foreground, oklch(0.28 0.04 200));
+$card:                var(--color-card, oklch(1 0 0));
+$card-foreground:     var(--color-card-foreground, oklch(0.28 0.04 200));
+$secondary:           var(--color-secondary, oklch(0.97 0.01 95));
+$secondary-foreground: var(--color-secondary-foreground, oklch(0.28 0.04 200));
+$muted:               var(--color-muted, oklch(0.97 0.01 95));
+$muted-foreground:    var(--color-muted-foreground, oklch(0.50 0.03 200));
+$border:              var(--color-border, oklch(0.90 0.02 95));
+$input:               var(--color-input, oklch(0.90 0.02 95));
 
 /* Couleurs de marque */
-$primary:             oklch(0.36 0.07 195);   /* forest-deep — teal foncé */
-$primary-foreground:  oklch(0.985 0.012 95);  /* cream */
-$primary-light:       oklch(0.55 0.09 195);   /* teal clair */
-$accent:              oklch(0.74 0.16 55);    /* tangerine chaud */
-$accent-foreground:   oklch(0.25 0.05 30);
-$forest:              oklch(0.58 0.14 140);   /* vert prairie */
-$cream:               oklch(0.985 0.012 95);  /* blanc cassé chaud */
-$ochre:               oklch(0.82 0.15 80);    /* tournesol */
+$primary:             var(--color-primary, oklch(0.36 0.07 195));   /* forest-deep — teal foncé */
+$primary-foreground:  var(--color-primary-foreground, oklch(0.985 0.012 95));  /* cream */
+$primary-light:       var(--color-primary-light, oklch(0.55 0.09 195));   /* teal clair */
+$accent:              var(--color-accent, oklch(0.74 0.16 55));    /* tangerine chaud */
+$accent-foreground:   var(--color-accent-foreground, oklch(0.25 0.05 30));
+$forest:              var(--color-forest, oklch(0.58 0.14 140));   /* vert prairie */
+$cream:               var(--color-cream, oklch(0.985 0.012 95));  /* blanc cassé chaud */
+$ochre:               var(--color-ochre, oklch(0.82 0.15 80));    /* tournesol */
+// Ivoire chaud — distinct de $cream (teinte différente : 85 vs 95), utilisé
+// pour le texte/fond clair sur surface sombre (bloc CTA).
+$ivory:                var(--color-ivory, oklch(0.97 0.015 85));
 
-$error:               oklch(0.62 0.24 25);
+$error:               var(--color-error, oklch(0.62 0.24 25));
 
-/* --- Variantes alpha --- */
-$primary-05:          oklch(0.36 0.07 195 / 0.05);
-$primary-10:          oklch(0.36 0.07 195 / 0.10);
-$primary-20:          oklch(0.36 0.07 195 / 0.20);
-$primary-30:          oklch(0.36 0.07 195 / 0.30);
-$primary-40:          oklch(0.36 0.07 195 / 0.40);
-$primary-50:          oklch(0.36 0.07 195 / 0.50);
-$primary-60:          oklch(0.36 0.07 195 / 0.60);
-$primary-60:          oklch(0.36 0.07 195 / 0.60);
-$primary-70:          oklch(0.36 0.07 195 / 0.70);
-$accent-15:           oklch(0.74 0.16 55 / 0.15);
-$accent-20:           oklch(0.74 0.16 55 / 0.20);
-$accent-30:           oklch(0.74 0.16 55 / 0.30);
-$forest-10:           oklch(0.58 0.14 140 / 0.10);
-$forest-15:           oklch(0.58 0.14 140 / 0.15);
-$forest-40:           oklch(0.58 0.14 140 / 0.40);
-$forest-60:           oklch(0.58 0.14 140 / 0.60);
-$forest-70:           oklch(0.58 0.14 140 / 0.70);
-$accent-70:           oklch(0.74 0.16 55 / 0.70);
-$primary-80:          oklch(0.36 0.07 195 / 0.80);
-$cream-06:            oklch(0.985 0.012 95 / 0.06);
-$cream-10:            oklch(0.985 0.012 95 / 0.10);
-$cream-20:            oklch(0.985 0.012 95 / 0.20);
-$cream-15:            oklch(0.985 0.012 95 / 0.15);
-$cream-30:            oklch(0.985 0.012 95 / 0.30);
-$cream-35:            oklch(0.985 0.012 95 / 0.35);
-$cream-50:            oklch(0.985 0.012 95 / 0.50);
-$cream-60:            oklch(0.985 0.012 95 / 0.60);
-$cream-70:            oklch(0.985 0.012 95 / 0.70);
-$cream-75:            oklch(0.985 0.012 95 / 0.75);
-$cream-80:            oklch(0.985 0.012 95 / 0.80);
-$foreground-20:       oklch(0.28 0.04 200 / 0.20);
-$foreground-50:       oklch(0.28 0.04 200 / 0.50);
-$foreground-80:       oklch(0.28 0.04 200 / 0.80);
-$muted-foreground-50: oklch(0.50 0.03 200 / 0.50);
-$background-15:       oklch(1 0 0 / 0.15);
-$background-95:       oklch(1 0 0 / 0.95);
+/* --- Variantes alpha (dérivées, pas des custom properties séparées) --- */
+$primary-05:          oklch(from #{$primary} l c h / 0.05);
+$primary-10:          oklch(from #{$primary} l c h / 0.10);
+$primary-20:          oklch(from #{$primary} l c h / 0.20);
+$primary-25:          oklch(from #{$primary} l c h / 0.25);
+$primary-30:          oklch(from #{$primary} l c h / 0.30);
+$primary-40:          oklch(from #{$primary} l c h / 0.40);
+$primary-50:          oklch(from #{$primary} l c h / 0.50);
+$primary-60:          oklch(from #{$primary} l c h / 0.60);
+$primary-70:          oklch(from #{$primary} l c h / 0.70);
+$primary-80:          oklch(from #{$primary} l c h / 0.80);
+// Survol des boutons/liens primaires — même teinte que $primary, assombrie
+// et légèrement plus saturée (l/c fixés plutôt que calc relatif : $primary
+// peut être n'importe quelle luminosité une fois personnalisable par
+// commune, un delta risquerait de sortir de [0,1] sur une base déjà très
+// sombre ou très claire au moment de la conversion).
+$primary-dark:        oklch(from #{$primary} calc(l - 0.04) calc(c - 0.005) h);
+$accent-15:           oklch(from #{$accent} l c h / 0.15);
+$accent-20:           oklch(from #{$accent} l c h / 0.20);
+$accent-30:           oklch(from #{$accent} l c h / 0.30);
+$accent-70:           oklch(from #{$accent} l c h / 0.70);
+// Survol des boutons/liens accent — même logique que $primary-dark.
+$accent-hover:        oklch(from #{$accent} calc(l - 0.04) calc(c + 0.01) h);
+$forest-10:           oklch(from #{$forest} l c h / 0.10);
+$forest-15:           oklch(from #{$forest} l c h / 0.15);
+$forest-40:           oklch(from #{$forest} l c h / 0.40);
+$forest-60:           oklch(from #{$forest} l c h / 0.60);
+$forest-70:           oklch(from #{$forest} l c h / 0.70);
+$cream-06:            oklch(from #{$cream} l c h / 0.06);
+$cream-10:            oklch(from #{$cream} l c h / 0.10);
+$cream-15:            oklch(from #{$cream} l c h / 0.15);
+$cream-20:            oklch(from #{$cream} l c h / 0.20);
+$cream-30:            oklch(from #{$cream} l c h / 0.30);
+$cream-35:            oklch(from #{$cream} l c h / 0.35);
+$cream-50:            oklch(from #{$cream} l c h / 0.50);
+$cream-60:            oklch(from #{$cream} l c h / 0.60);
+$cream-70:            oklch(from #{$cream} l c h / 0.70);
+$cream-75:            oklch(from #{$cream} l c h / 0.75);
+$cream-80:            oklch(from #{$cream} l c h / 0.80);
+$ivory-08:             oklch(from #{$ivory} l c h / 0.08);
+$ivory-10:             oklch(from #{$ivory} l c h / 0.10);
+$ivory-15:             oklch(from #{$ivory} l c h / 0.15);
+$ivory-60:             oklch(from #{$ivory} l c h / 0.60);
+$ivory-75:             oklch(from #{$ivory} l c h / 0.75);
+$foreground-20:       oklch(from #{$foreground} l c h / 0.20);
+$foreground-50:       oklch(from #{$foreground} l c h / 0.50);
+$foreground-80:       oklch(from #{$foreground} l c h / 0.80);
+$muted-foreground-50: oklch(from #{$muted-foreground} l c h / 0.50);
+$background-15:       oklch(from #{$background} l c h / 0.15);
+$background-95:       oklch(from #{$background} l c h / 0.95);
 
 /* --- Dégradés --- */
-$gradient-hero:    linear-gradient(180deg, transparent 0%, oklch(0.36 0.07 195 / 0.2) 50%, oklch(0.36 0.07 195 / 0.7) 100%);
-$gradient-primary: linear-gradient(135deg, oklch(0.36 0.07 195), oklch(0.28 0.06 195));
-$gradient-warm:    linear-gradient(135deg, oklch(0.74 0.16 55), oklch(0.82 0.15 80));
-$gradient-forest:  linear-gradient(135deg, oklch(0.58 0.14 140), oklch(0.45 0.10 155));
+$gradient-hero:    linear-gradient(180deg, transparent 0%, oklch(from #{$primary} l c h / 0.2) 50%, oklch(from #{$primary} l c h / 0.7) 100%);
+$gradient-primary: linear-gradient(135deg, #{$primary}, oklch(from #{$primary} calc(l - 0.08) calc(c - 0.01) h));
+$gradient-warm:    linear-gradient(135deg, #{$accent}, #{$ochre});
+$gradient-forest:  linear-gradient(135deg, #{$forest}, oklch(from #{$forest} calc(l - 0.13) calc(c - 0.04) calc(h + 15)));
 
 /* --- Ombres --- */
-$shadow-soft:    0 10px 40px -12px oklch(0.28 0.04 200 / 0.15);
-$shadow-elegant: 0 20px 60px -20px oklch(0.36 0.07 195 / 0.30);
-$shadow-warm:    0 14px 40px -12px oklch(0.74 0.16 55 / 0.30);
+$shadow-soft:    0 10px 40px -12px oklch(from #{$foreground} l c h / 0.15);
+$shadow-elegant: 0 20px 60px -20px oklch(from #{$primary} l c h / 0.30);
+$shadow-warm:    0 14px 40px -12px oklch(from #{$accent} l c h / 0.30);
 
 /* --- Transition --- */
 $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
@@ -156,10 +178,11 @@ $title-margin-bottom-desktop: $spacing-md;
 $title-margin-bottom-mobile:  $spacing-sm;
 
 /* Aliases pour compatibilité features portées */
-$coral:       oklch(0.60 0.22 25);
-$coral-15:    oklch(0.60 0.22 25 / 0.15);
+$coral:       var(--color-coral, oklch(0.60 0.22 25));
+$coral-15:    oklch(from #{$coral} l c h / 0.15);
 $leaf:        $forest;
 $leaf-15:     $forest-15;
 $sunshine:    $ochre;
-$sunshine-25: oklch(0.82 0.15 80 / 0.25);
-$terracotta:  oklch(0.55 0.19 40);
+$sunshine-25: oklch(from #{$sunshine} l c h / 0.25);
+$sunshine-50: oklch(from #{$sunshine} l c h / 0.5);
+$terracotta:  var(--color-terracotta, oklch(0.55 0.19 40));

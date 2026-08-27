@@ -79,7 +79,7 @@
 		display: flex;
 		border-radius: 24px;
 		background: $cream;
-		box-shadow: 0 25px 50px -12px oklch(0.36 0.07 195 / 0.25);
+		box-shadow: 0 25px 50px -12px $primary-25;
 		outline: 1px solid $primary-10;
 		overflow: hidden;
 		max-height: 440px;
@@ -105,7 +105,7 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		color: oklch(0.36 0.07 195 / 0.80);
+		color: $primary-80;
 		transition: color 0.15s, background 0.15s;
 
 		&:hover, &--active {
@@ -121,7 +121,7 @@
 		height: 32px;
 		border-radius: 50%;
 		background: $primary-05;
-		color: oklch(0.36 0.07 195 / 0.70);
+		color: $primary-70;
 		flex-shrink: 0;
 		transition: background 0.15s, color 0.15s;
 

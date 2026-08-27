@@ -140,7 +140,7 @@
 		box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 
 		&:hover {
-			background: oklch(0.32 0.065 195);
+			background: $primary-dark;
 		}
 	}
 

@@ -153,7 +153,7 @@ $b: 'filter-bar';
 .#{$b}__pills--numeric .#{$b}__pill {
 	background: transparent;
 	border: 1px solid $primary-20;
-	color: oklch(0.36 0.07 195 / 0.6);
+	color: $primary-60;
 	font-size: 11px;
 	text-transform: uppercase;
 	letter-spacing: 0.1em;

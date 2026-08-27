@@ -39,7 +39,7 @@ $b: 'cta';
 .#{$b}__sep {
 	width: 1px;
 	align-self: stretch;
-	background: oklch(0.97 0.015 85 / 0.15);
+	background: $ivory-15;
 
 	@media (max-width: $breakpoint-md) {
 		width: 100%;
@@ -69,13 +69,13 @@ $b: 'cta';
 	em {
 		font-style: italic;
 		font-weight: $font-weight-regular;
-		color: oklch(0.97 0.015 85 / 0.75);
+		color: $ivory-75;
 	}
 }
 
 .#{$b}__desc {
 	margin-top: $spacing-lg;
-	color: oklch(0.97 0.015 85 / 0.75);
+	color: $ivory-75;
 	font-size: $small-size-desktop;
 	line-height: $line-height-relaxed;
 	max-width: 420px;
@@ -96,7 +96,7 @@ $b: 'cta';
 	transition: $transition-smooth;
 	box-shadow: 0 4px 20px $accent-30;
 
-	&:hover { background-color: oklch(0.70 0.17 55); color: $primary; }
+	&:hover { background-color: $accent-hover; color: $primary; }
 }
 
 /* ── Location : photos ── */
@@ -133,7 +133,7 @@ $b: 'cta';
 	align-items: center;
 	gap: $spacing-md;
 	padding: $spacing-lg $spacing-xl;
-	background: oklch(0.97 0.015 85 / 0.08);
+	background: $ivory-08;
 	border-left: 2px solid $accent;
 	border-radius: 0 8px 8px 0;
 }
@@ -145,7 +145,7 @@ $b: 'cta';
 	place-items: center;
 	flex-shrink: 0;
 	border-radius: 50%;
-	background: oklch(0.97 0.015 85 / 0.1);
+	background: $ivory-10;
 	color: $accent;
 }
 
@@ -153,7 +153,7 @@ $b: 'cta';
 	font-size: $xs-size-desktop;
 	text-transform: uppercase;
 	letter-spacing: 0.18em;
-	color: oklch(0.97 0.015 85 / 0.6);
+	color: $ivory-60;
 }
 
 .#{$b}__tile-value {

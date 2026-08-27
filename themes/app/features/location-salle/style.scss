@@ -66,7 +66,7 @@ $b: 'location';
 .#{$b}__salle-desc {
 	margin-top: $spacing-sm;
 	font-size: $small-size-desktop;
-	color: oklch(0.36 0.07 195 / 0.7);
+	color: $primary-70;
 	line-height: $line-height-relaxed;
 }
 
@@ -85,7 +85,7 @@ $b: 'location';
 	background: $primary-05;
 	border-radius: 8px;
 	font-size: $small-size-desktop;
-	color: oklch(0.36 0.07 195 / 0.7);
+	color: $primary-70;
 	line-height: $line-height-relaxed;
 
 	svg {
@@ -147,7 +147,7 @@ $b: 'location';
 .#{$b}__tarif-public {
 	flex: 1;
 	font-size: $small-size-desktop;
-	color: oklch(0.36 0.07 195 / 0.7);
+	color: $primary-70;
 	line-height: $line-height-snug;
 }
 
