@@ -183,9 +183,9 @@ export default function AdminNavClient({ pages }: Props) {
 				kind: 'subgroup',
 				label: 'En-tête & pied de page',
 				items: [
-					{ kind: 'link', label: 'Identité du site', href: '/globals/identite', icon: Fingerprint },
-					{ kind: 'link', label: "Bouton d'en-tête", href: '/globals/bouton-entete', icon: PanelTop },
-					{ kind: 'link', label: 'Pied de page', href: '/globals/footer', icon: PanelBottom }
+					{ kind: 'link', label: 'Identité du site', href: '/collections/identite', icon: Fingerprint },
+					{ kind: 'link', label: "Bouton d'en-tête", href: '/collections/bouton-entete', icon: PanelTop },
+					{ kind: 'link', label: 'Pied de page', href: '/collections/footer', icon: PanelBottom }
 				]
 			},
 			// Sous-groupe plutôt qu'une section à part (ancienne "Carte
