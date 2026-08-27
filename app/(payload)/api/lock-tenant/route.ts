@@ -13,7 +13,15 @@ export async function GET(request: NextRequest) {
 	const rawNext = request.nextUrl.searchParams.get('next') ?? '/admin';
 	const nextPath = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/admin';
 
-	const redirectUrl = new URL(nextPath, request.url);
+	// `request.url`/`request.nextUrl.origin` reflètent l'adresse interne du
+	// conteneur derrière le proxy de Scalingo (ex. `localhost:23335`), pas le
+	// domaine public — la redirection partirait sur une URL inutilisable pour
+	// le navigateur. `x-forwarded-proto`, posé par le proxy, signale qu'on est
+	// bien derrière lui ; sans ce header (dev local, pas de proxy), l'origine
+	// de la requête elle-même est déjà correcte.
+	const forwardedProto = request.headers.get('x-forwarded-proto');
+	const origin = forwardedProto ? `${forwardedProto}://${host}` : request.nextUrl.origin;
+	const redirectUrl = new URL(nextPath, origin);
 	const response = NextResponse.redirect(redirectUrl);
 	response.cookies.set('tenant-locked-host', host, { path: '/', sameSite: 'lax' });
 
