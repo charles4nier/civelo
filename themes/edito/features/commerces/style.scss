@@ -168,8 +168,8 @@ $b: 'commerces';
 
 	&--stuck {
 		background: $gradient-warm;
-		border-bottom-color: oklch(0.72 0.18 18 / 0.4);
-		box-shadow: 0 4px 24px -8px oklch(0.84 0.17 88 / 0.25);
+		border-bottom-color: $coral-40;
+		box-shadow: 0 4px 24px -8px $sunshine-25;
 	}
 }
 
@@ -367,7 +367,7 @@ $b: 'commerces';
 	}
 
 	&:hover {
-		background-color: oklch(0.54 0.16 150);
+		background-color: $leaf-dark;
 	}
 }
 }

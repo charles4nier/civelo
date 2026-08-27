@@ -2,65 +2,92 @@
    🎨 Palette Saint-Hilaire-Bonneval
    ========================= */
 
-$background:          oklch(0.99 0.006 90);
-$foreground:          oklch(0.20 0.05 250);
-$card:                oklch(1 0 0);
-$card-foreground:     oklch(0.20 0.05 250);
-$secondary:           oklch(0.96 0.018 90);
-$secondary-foreground: oklch(0.25 0.05 250);
-$muted:               oklch(0.965 0.012 90);
-$muted-foreground:    oklch(0.50 0.03 250);
-$border:              oklch(0.91 0.012 240);
-$input:               oklch(0.91 0.012 240);
+// Personnalisation par commune — chaque couleur de base est une custom
+// property CSS avec repli sur la valeur actuelle (`var(--x, <valeur>)`) :
+// tant qu'aucun tenant ne définit `--color-primary` etc. (à poser plus tard
+// en `<style>` inline par requête, résolu par domaine comme `getCurrentTenant()`
+// déjà en place), le rendu reste identique au pixel près à aujourd'hui — pas
+// de bloc `:root` séparé à synchroniser, le repli est directement dans la
+// variable Sass elle-même. Les teintes alpha/dégradés/ombres ci-dessous ne
+// sont PAS des custom properties indépendantes : elles dérivent de la
+// couleur de base via la syntaxe de couleur relative CSS
+// (`oklch(from var(--x) l c h / a)`), pour qu'un changement de teinte de
+// base entraîne automatiquement ses variantes — pas besoin de redéfinir
+// chaque teinte alpha séparément par commune.
+$background:          var(--color-background, oklch(0.99 0.006 90));
+$foreground:          var(--color-foreground, oklch(0.20 0.05 250));
+$card:                var(--color-card, oklch(1 0 0));
+$card-foreground:     var(--color-card-foreground, oklch(0.20 0.05 250));
+$secondary:           var(--color-secondary, oklch(0.96 0.018 90));
+$secondary-foreground: var(--color-secondary-foreground, oklch(0.25 0.05 250));
+$muted:               var(--color-muted, oklch(0.965 0.012 90));
+$muted-foreground:    var(--color-muted-foreground, oklch(0.50 0.03 250));
+$border:              var(--color-border, oklch(0.91 0.012 240));
+$input:               var(--color-input, oklch(0.91 0.012 240));
 
-$primary:             oklch(0.52 0.17 240);
-$primary-foreground:  oklch(0.99 0.005 110);
-$primary-glow:        oklch(0.70 0.16 220);
-$coral:               oklch(0.72 0.18 18);
-$sunshine:            oklch(0.84 0.17 88);
-$leaf:                oklch(0.62 0.16 150);
-$terracotta:          oklch(0.68 0.19 28);
-$sky:                 oklch(0.78 0.12 220);
-$berry:               oklch(0.55 0.20 340);
+$primary:             var(--color-primary, oklch(0.52 0.17 240));
+$primary-foreground:  var(--color-primary-foreground, oklch(0.99 0.005 110));
+$primary-glow:        var(--color-primary-glow, oklch(0.70 0.16 220));
+$coral:               var(--color-coral, oklch(0.72 0.18 18));
+$sunshine:            var(--color-sunshine, oklch(0.84 0.17 88));
+$leaf:                var(--color-leaf, oklch(0.62 0.16 150));
+$terracotta:          var(--color-terracotta, oklch(0.68 0.19 28));
+$sky:                 var(--color-sky, oklch(0.78 0.12 220));
+$berry:               var(--color-berry, oklch(0.55 0.20 340));
 
-$error:               oklch(0.62 0.24 25);
+$error:               var(--color-error, oklch(0.62 0.24 25));
 
-/* --- Variantes alpha --- */
-$primary-10:          oklch(0.52 0.17 240 / 0.1);
-$primary-30:          oklch(0.52 0.17 240 / 0.3);
-$coral-15:            oklch(0.72 0.18 18 / 0.15);
-$leaf-15:             oklch(0.62 0.16 150 / 0.15);
-$leaf-40:             oklch(0.62 0.16 150 / 0.4);
-$sunshine-25:         oklch(0.84 0.17 88 / 0.25);
-$sunshine-30:         oklch(0.84 0.17 88 / 0.3);
-$foreground-20:       oklch(0.20 0.05 250 / 0.2);
-$foreground-50:       oklch(0.20 0.05 250 / 0.5);
-$foreground-80:       oklch(0.20 0.05 250 / 0.8);
-$foreground-85:       oklch(0.20 0.05 250 / 0.85);
-$background-10:       oklch(0.99 0.006 90 / 0.1);
-$background-15:       oklch(0.99 0.006 90 / 0.15);
-$background-20:       oklch(0.99 0.006 90 / 0.2);
-$background-50:       oklch(0.99 0.006 90 / 0.5);
-$background-60:       oklch(0.99 0.006 90 / 0.6);
-$background-70:       oklch(0.99 0.006 90 / 0.7);
-$background-85:       oklch(0.99 0.006 90 / 0.85);
-$background-90:       oklch(0.99 0.006 90 / 0.9);
-$background-95:       oklch(0.99 0.006 90 / 0.95);
-$secondary-40:        oklch(0.96 0.018 90 / 0.4);
-$muted-foreground-50: oklch(0.50 0.03 250 / 0.5);
+/* --- Variantes alpha (dérivées, pas des custom properties séparées) --- */
+$primary-10:          oklch(from #{$primary} l c h / 0.1);
+$primary-30:          oklch(from #{$primary} l c h / 0.3);
+$coral-15:            oklch(from #{$coral} l c h / 0.15);
+$coral-40:            oklch(from #{$coral} l c h / 0.4);
+$leaf-15:             oklch(from #{$leaf} l c h / 0.15);
+$leaf-40:             oklch(from #{$leaf} l c h / 0.4);
+// Survol/actif — même teinte que $leaf, assombrie (l fixé plutôt que
+// `calc(l - x)` : $leaf peut être n'importe quelle luminosité une fois
+// personnalisable par commune, un delta relatif risquerait de sortir de
+// l'intervalle [0,1] sur une teinte de base déjà très sombre ou très claire).
+$leaf-dark:           oklch(from #{$leaf} 0.54 c h);
+$sunshine-25:         oklch(from #{$sunshine} l c h / 0.25);
+$sunshine-30:         oklch(from #{$sunshine} l c h / 0.3);
+// Texte lisible sur fond $sunshine-25 — custom property INDÉPENDANTE plutôt
+// que dérivée de $sunshine : la valeur d'origine (#8a6d1a, vérifiée en
+// contraste WCAG AA, audit RGAA saint-hilaire-demo) n'était pas exprimée en
+// oklch avec la même chrominance/teinte que $sunshine — impossible de
+// garantir qu'une dérivation mathématique reproduirait le même rendu au
+// pixel près sans un outil de vérification visuelle. Une commune qui
+// personnalise $sunshine devra donc aussi choisir son propre
+// $sunshine-foreground pour rester lisible/conforme.
+$sunshine-foreground: var(--color-sunshine-foreground, #8a6d1a);
+$foreground-20:       oklch(from #{$foreground} l c h / 0.2);
+$foreground-50:       oklch(from #{$foreground} l c h / 0.5);
+$foreground-80:       oklch(from #{$foreground} l c h / 0.8);
+$foreground-85:       oklch(from #{$foreground} l c h / 0.85);
+$background-10:       oklch(from #{$background} l c h / 0.1);
+$background-15:       oklch(from #{$background} l c h / 0.15);
+$background-20:       oklch(from #{$background} l c h / 0.2);
+$background-50:       oklch(from #{$background} l c h / 0.5);
+$background-60:       oklch(from #{$background} l c h / 0.6);
+$background-70:       oklch(from #{$background} l c h / 0.7);
+$background-85:       oklch(from #{$background} l c h / 0.85);
+$background-90:       oklch(from #{$background} l c h / 0.9);
+$background-95:       oklch(from #{$background} l c h / 0.95);
+$secondary-40:        oklch(from #{$secondary} l c h / 0.4);
+$muted-foreground-50: oklch(from #{$muted-foreground} l c h / 0.5);
 
 /* --- Dégradés --- */
-$gradient-hero:    linear-gradient(180deg, transparent 0%, oklch(0.20 0.05 250 / 0.2) 50%, oklch(0.18 0.06 250 / 0.85) 100%);
-$gradient-forest:  linear-gradient(135deg, oklch(0.62 0.16 150), oklch(0.45 0.11 158));
-$gradient-primary: linear-gradient(135deg, oklch(0.52 0.17 240), oklch(0.70 0.16 220));
-$gradient-warm:    linear-gradient(135deg, oklch(0.84 0.17 88), oklch(0.72 0.18 18));
-$gradient-sunset:  linear-gradient(135deg, oklch(0.72 0.18 18), oklch(0.55 0.20 340));
-$gradient-meadow:  linear-gradient(135deg, oklch(0.62 0.16 150), oklch(0.78 0.12 220));
+$gradient-hero:    linear-gradient(180deg, transparent 0%, oklch(from #{$foreground} l c h / 0.2) 50%, oklch(from #{$foreground} calc(l - 0.02) calc(c + 0.01) h / 0.85) 100%);
+$gradient-forest:  linear-gradient(135deg, #{$leaf}, oklch(from #{$leaf} calc(l - 0.17) calc(c - 0.05) calc(h + 8)));
+$gradient-primary: linear-gradient(135deg, #{$primary}, #{$primary-glow});
+$gradient-warm:    linear-gradient(135deg, #{$sunshine}, #{$coral});
+$gradient-sunset:  linear-gradient(135deg, #{$coral}, #{$berry});
+$gradient-meadow:  linear-gradient(135deg, #{$leaf}, #{$sky});
 
 /* --- Ombres --- */
-$shadow-soft:    0 10px 40px -12px oklch(0.20 0.05 250 / 0.18);
-$shadow-elegant: 0 20px 60px -20px oklch(0.52 0.17 240 / 0.35);
-$shadow-warm:    0 14px 40px -12px oklch(0.72 0.18 18 / 0.35);
+$shadow-soft:    0 10px 40px -12px oklch(from #{$foreground} l c h / 0.18);
+$shadow-elegant: 0 20px 60px -20px oklch(from #{$primary} l c h / 0.35);
+$shadow-warm:    0 14px 40px -12px oklch(from #{$coral} l c h / 0.35);
 
 /* --- Transition --- */
 $ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);

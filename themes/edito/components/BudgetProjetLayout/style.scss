@@ -257,7 +257,7 @@ $b: 'budget-projets';
 	padding: 3px 9px;
 	border-radius: 999px;
 
-	&--sunshine { color: #8a6d1a; background: $sunshine-25; }
+	&--sunshine { color: $sunshine-foreground; background: $sunshine-25; }
 	&--primary  { color: $primary; background: $primary-10; }
 	&--leaf     { color: $leaf;    background: $leaf-15; }
 }
