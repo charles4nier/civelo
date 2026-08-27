@@ -219,7 +219,16 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 	// des réglages qu'un admin/éditeur de commune doit voir ou toucher (accès
 	// déjà verrouillé côté champ dans `collections/Tenants.ts`, ce lien
 	// n'ajoute qu'un raccourci de navigation cohérent avec ce même rôle).
+	//
+	// Bug réel du 27/08/2026 — corrigé : `isSuperAdmin` seul ne suffit pas.
+	// Le rôle est une propriété de l'UTILISATEUR, pas du domaine — un
+	// super-admin qui navigue via app.civelo.fr (verrouillé sur ce tenant par
+	// `middleware.ts`) reste super-admin, donc ce lien s'affichait quand même
+	// alors qu'il n'a de sens que sur la console super-admin dédiée
+	// (`SUPER_ADMIN_DOMAIN`, non verrouillée). `hideTenantSelector` (déjà
+	// calculé pour masquer le sélecteur de tenant, même raison) sert aussi ici.
 	const isSuperAdmin = user?.role === 'super-admin';
+	const isSuperAdminConsole = isSuperAdmin && !hideTenantSelector;
 
 	const parametres: NavSection = {
 		label: 'Paramètres',
@@ -229,7 +238,7 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 			{ kind: 'link', label: 'Médias', href: '/collections/media', icon: Images },
 			{ kind: 'link', label: 'Documents', href: '/collections/documents', icon: FileStack },
 			{ kind: 'link', label: 'Utilisateurs', href: '/collections/users', icon: Users },
-			...(isSuperAdmin
+			...(isSuperAdminConsole
 				? [{ kind: 'link' as const, label: 'Communes', href: '/collections/tenants', icon: Building2 }]
 				: [])
 		]
