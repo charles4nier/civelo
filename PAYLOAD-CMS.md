@@ -997,6 +997,43 @@ Les 17 routes statiques + la route générique `[...slug]` ne sont **pas** conve
 
 Vérifié en conditions réelles : `npx tsc --noEmit` propre, 9 tests d'isolation toujours verts, puis un vrai `next dev` (Node 22 via nvm — le shell par défaut pointait sur Node 16, `next dev` refusait de démarrer) sur un port de test dédié (3010, jamais le serveur de dev du client sur 3000), toutes les routes testées répondent 200 avec le contenu réel de Saint-Hilaire-Bonneval (CSS chargé, `/admin` accessible), `/demarches/urbanisme` répond 404 comme attendu (page qui n'a jamais existé dans style-edito).
 
+### 93. Premier déploiement réel — Scalingo + OVH, produit renommé Civelo
+
+Le produit s'appelle **Civelo** (le nom "Civilo" initialement choisi n'était pas disponible en `.com` ni en `.fr` — décision de dernière minute, domaine final `civelo.fr`). Repo `communes/civilo` → `communes/civelo`, dépôt GitHub et appli Scalingo renommés en conséquence.
+
+Déploiement Scalingo choisi en push git par clé SSH dédiée (`~/.ssh/civilo_scalingo`) plutôt que l'intégration GitHub proposée par défaut — celle-ci demande un accès large lecture/écriture à **tous** les repos publics/privés du compte GitHub personnel, y compris la gestion des organisations dont l'utilisateur est membre (dont une organisation professionnelle) : périmètre jugé disproportionné pour ce qu'on veut faire (déployer un seul repo), écarté sans perte de fonctionnalité.
+
+Conteneur M + PostgreSQL Starter 512M (tarifs réels vérifiés via le catalogue officiel Scalingo, PDF secteur public) — coût total pour une seule commune ≈ 25-30€ TTC/mois, qui ne bouge quasiment pas en ajoutant des tenants (charge/trafic-dépendant, pas nombre-de-tenants-dépendant). Stockage objet : bucket OVH `civelo-storage` (le nom a suivi le même changement de marque, recréé proprement via script en profitant qu'il était encore vide).
+
+Bascule des données réelles de Saint-Hilaire-Bonneval vers Scalingo faite par **copie directe Postgres→Postgres** (`pg_dump`/`pg_restore` via `scalingo db-tunnel`, nécessitant d'installer `postgresql@16` en client local — la version 14 déjà présente ne peut pas dumper un serveur 16) plutôt qu'en rejouant le script de migration Mongo→Postgres : la base locale avait déjà le résultat final propre, inutile de repasser par Mongo. Les fichiers médias réels (5 fichiers) ont dû être re-uploadés à la main vers le bucket OVH — la copie de base ne copie que les métadonnées, pas les objets S3 eux-mêmes, qui n'avaient jamais été poussés vers ce bucket (seulement testés puis nettoyés).
+
+Domaine de démonstration choisi : sous-domaine `edito.civelo.fr` (DNS + certificat SSL automatique Scalingo, propagation quasi instantanée) plutôt qu'un domaine séparé à acheter — le tenant Saint-Hilaire-Bonneval y est rattaché en plus de son domaine réel, pour pouvoir montrer un rendu concret aux prospects sans dépendre de la bascule DNS officielle de la mairie. Limite Scalingo découverte et actée avec leur support : 20 domaines personnalisés par appli par défaut, levable gratuitement sur simple demande — décision explicite de ne pas la demander tout de suite (le rythme réel de démarchage ne justifie pas d'anticiper), à refaire quand on s'en approchera pour de vrai.
+
+**Bug d'admin trouvé en testant en conditions réelles** : les liens de la sidebar custom (`admin/Nav/Client.tsx`) vers Identité/Bouton d'en-tête/Pied de page pointaient encore vers `/admin/globals/...` — url plus valide depuis que ces 3 sections sont devenues des collections `isGlobal: true` (décision 90), pas des vrais Globals Payload. Corrigé vers `/admin/collections/<slug>` (liste), le plugin multi-tenant se charge de rediriger automatiquement vers le bon document du tenant sélectionné (vérifié en lisant le code source du plugin, `getGlobalViewRedirect`) — l'isolation entre tenants sur cette vue confirmée au passage (un seul document affiché, jamais un mélange).
+
+### 94. Portage du 2ᵉ thème — "App" (ex-style-prestige)
+
+Renommé "App" plutôt que "Prestige" (décision produit, pas de raison technique). Phase 1 du plan multi-thèmes (décision 92) enfin exécutée : `style-prestige` porté dans `themes/app/` — 11 pages copiées telles quelles, 2 réextraites proprement (histoire, la-commune, qui vivaient en dur dans `app/**/page.tsx` plutôt que dans un module `features/`), 5 en repli "Coming Soon" honnête (agenda, contact, budget-projets, horaires, sports-loisirs — contenu réel à construire plus tard), 5 routes de style-prestige jamais portées du tout (2 doublons + 3 pages abandonnées) — résolu par construction, puisque seuls `features/`+`shared/` sont copiés, jamais `app/`.
+
+Les 17 routes + le layout racine, jusque-là des imports directs vers style-edito (limite assumée en décision 92), sont enfin devenus de vrais dispatcheurs `pickTheme()` — c'est le moment où ce mécanisme sert pour de vrai, avec un 2ᵉ thème effectivement sélectionnable.
+
+3 vrais bugs trouvés en testant en conditions réelles (invisibles au typecheck) :
+- `pickTheme<T>()` échouait à unifier le type générique entre les composants style-edito (Server Components asynchrones) et les composants app fraîchement copiés (synchrones) — corrigé en rendant tous les composants de page du thème app asynchrones aussi, plutôt que d'élargir le type de `pickTheme` lui-même.
+- `next/dynamic(..., { ssr: false })` interdit dans un Server Component (`themes/app/features/carte/index.tsx`) — il manquait `'use client'` (présent dans l'équivalent style-edito, jamais copié puisque absent du fichier source).
+- Chemins CSS `react-leaflet-cluster` obsolètes (style-prestige utilisait la v2.x, civelo a la v4.1.3 installée, structure de dossier différente) — ce bug précis faisait planter **toutes** les autres routes en cascade en dev, pas seulement la carte, le temps de le corriger.
+
+La limite SCSS multi-thèmes anticipée en décision 92 (mécanisme global `prependData`/`includePaths` ambigu dès qu'un 2ᵉ thème a son propre `variables.scss`) est enfin résolue pour de vrai : `next.config.mjs` ne fait plus d'injection globale, chaque fichier `style.scss` important désormais explicitement `@import '@themes/<theme>/styles/variables'`.
+
+Vérifié en conditions réelles (pas seulement le typecheck) : les 17 routes retournent 200 pour un tenant sur le thème "app" (contenu distinctif confirmé, pas un repli silencieux vers style-edito), et saint-hilaire-bonneval.fr (style-edito) retesté sans régression.
+
+### 95. Renommage style-edito → edito, et découverte : la prod ne synchronise jamais son schéma automatiquement
+
+Cohérence de nommage entre les 3 thèmes : `style-edito` → `edito` (dossier `themes/`, `ThemeName`, option du sélecteur), pour matcher `app` et le 3ᵉ thème prévu **Accueillant** (renommé depuis "style-ludique" — nom écarté pour connotation trop "jeu", pas assez adapté à un discours face à des maires). `edito.civelo.fr` colle enfin exactement au nom du thème.
+
+**Découverte opérationnelle importante, avec de vraies conséquences** : contrairement au dev local (où `next dev` déclenche un `push` Drizzle automatique à la première requête Payload), **la base de production ne synchronise jamais son schéma toute seule au déploiement**. Constaté concrètement : le thème "app" ajouté en décision 94 n'avait jamais été réellement propagé en base de prod (l'enum Postgres n'avait que `style-edito`), et le renommage de cette décision-ci a cassé la résolution de thème pour de vrai en production jusqu'à correction manuelle. Corrigé dans l'urgence via `scalingo db-tunnel` : `ALTER TYPE enum_tenants_theme ADD VALUE ...` puis `UPDATE tenants SET theme = ...` sur les 4 tenants concernés. Un `next build` production réel (pas `next dev`) a aussi révélé un bug distinct que le dev n'attrapait pas : 9 fichiers `admin/*/style.scss` dépendaient eux aussi du mécanisme global `prependData` retiré en décision 94, sans qu'aucun ne le montre en dev (probablement un ordre de compilation différent) — corrigés avec le même import explicite que les thèmes.
+
+**Conséquence à traiter tôt ou tard** : tant qu'un vrai processus `payload migrate` (prévu dès le plan initial, jamais mis en place) n'existe pas, **chaque futur changement de schéma nécessitera cette même manipulation manuelle** (tunnel + SQL) avant ou après chaque déploiement qui en introduit un. Pas bloquant à l'échelle actuelle (une poignée de tenants de test), mais deviendra un vrai risque opérationnel à mesure que de vraies communes clientes dépendront de la continuité du service.
+
 ## Catalogue des gabarits (état actuel)
 
 | Gabarit | Type | Pages actuelles | Notes |
