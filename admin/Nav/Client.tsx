@@ -144,7 +144,7 @@ function NavGroup({ section, base, pathname }: { section: NavSection; base: stri
 	);
 }
 
-type Props = { pages: NavPage[]; siteName: string };
+type Props = { pages: NavPage[]; siteName: string; hideTenantSelector: boolean };
 
 // Décision — sigle affiché dans le badge de marque (ex. "Saint-Hilaire-
 // Bonneval" → "SB") : 2 premières initiales des mots du nom, ou les 2
@@ -155,7 +155,7 @@ function brandMark(name: string): string {
 	return name.slice(0, 2).toUpperCase();
 }
 
-export default function AdminNavClient({ pages, siteName }: Props) {
+export default function AdminNavClient({ pages, siteName, hideTenantSelector }: Props) {
 	const pathname = usePathname();
 	const base = useAdminBase();
 	const { user, logOut } = useAuth();
@@ -237,6 +237,16 @@ export default function AdminNavClient({ pages, siteName }: Props) {
 
 	return (
 		<nav className="admin-nav">
+			{hideTenantSelector && (
+				// Sur un domaine verrouillé (`middleware.ts`), le sélecteur de
+				// tenant du plugin (`.tenant-selector`, injecté ailleurs dans la
+				// page via `admin.components.beforeNav`) reste sans effet réel —
+				// reverrouillé à chaque requête suivante — mais listait quand même
+				// le nom des autres communes dans son menu déroulant. Masqué ici
+				// plutôt que retiré côté plugin (pas destiné à être surchargé
+				// conditionnellement par domaine à ce niveau).
+				<style>{'.tenant-selector { display: none; }'}</style>
+			)}
 			<div className="admin-nav__brand">
 				<span className="admin-nav__brand-mark">{brandMark(siteName)}</span>
 				<span className="admin-nav__brand-name">{siteName}</span>

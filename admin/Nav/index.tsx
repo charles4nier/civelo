@@ -1,6 +1,6 @@
 import type { ServerProps } from 'payload';
 import AdminNavClient from './Client';
-import { getSelectedTenantId } from '../lib/getSelectedTenantId';
+import { getSelectedTenantId, isTenantLocked } from '../lib/getSelectedTenantId';
 
 // Décision 43/46 — sidebar sur-mesure. Server Component (reçoit `payload`
 // via les ServerProps que Payload injecte automatiquement dans les
@@ -41,5 +41,7 @@ export default async function AdminNav({ payload }: ServerProps) {
 		}
 	}
 
-	return <AdminNavClient pages={pages} siteName={siteName} />;
+	const hideTenantSelector = await isTenantLocked();
+
+	return <AdminNavClient pages={pages} siteName={siteName} hideTenantSelector={hideTenantSelector} />;
 }

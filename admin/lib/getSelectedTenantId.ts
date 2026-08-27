@@ -22,3 +22,15 @@ export async function getSelectedTenantId(): Promise<string | undefined> {
 	const store = await cookies();
 	return store.get('payload-tenant')?.value || undefined;
 }
+
+// Vrai uniquement sur un domaine verrouillé par `middleware.ts` (jamais posé
+// sur `SUPER_ADMIN_DOMAIN`, la seule exception où le middleware ne touche
+// pas à ce cookie) — sert à masquer le sélecteur de tenant du plugin sur les
+// domaines des vraies communes : il resterait sinon affiché (juste sans
+// effet, `middleware.ts` reverrouille à chaque requête suivante), listant au
+// passage le nom des autres communes dans son menu déroulant.
+export async function isTenantLocked(): Promise<boolean> {
+	const store = await cookies();
+	const marker = store.get('tenant-locked-host')?.value ?? '';
+	return marker !== '' && !marker.endsWith('::none');
+}
