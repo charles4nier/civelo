@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload';
 import { isSuperAdmin, isLoggedIn, isSuperAdminField } from './access';
 import { withInfo } from './Pages';
+import { seedDefaultPagesForTenant } from '../lib/seedDefaultPages';
 
 // Étape 3 du plan multi-tenant — collection pivot (une ligne par commune
 // cliente). Registrée dans `payload.config.ts` en dehors de la config du
@@ -112,5 +113,24 @@ export const Tenants: CollectionConfig = {
 			},
 			"Le statut du contrat de cette commune — une suspension/résiliation suit une procédure contractuelle définie, ne pas couper l'accès directement depuis ce champ sans l'avoir suivie."
 		)
-	]
+	],
+	hooks: {
+		// "Je veux que chaque nouveau domaine, donc nouveau tenant, ait de base
+		// toutes les pages que nous retrouvons sur edito, app et accueillant."
+		// Provisionne automatiquement le catalogue complet des 18 gabarits en
+		// contenu générique dès la création d'une commune, plutôt qu'un tenant
+		// vide (voir `lib/seedDefaultPages.ts`). Ne bloque jamais la création du
+		// tenant lui-même si le seed échoue — juste consigné.
+		afterChange: [
+			async ({ doc, operation, req }) => {
+				if (operation !== 'create') return doc;
+				try {
+					await seedDefaultPagesForTenant(req.payload, doc.id, req);
+				} catch (err) {
+					req.payload.logger.error({ err, msg: 'Échec du seed des pages par défaut pour le nouveau tenant.' });
+				}
+				return doc;
+			}
+		]
+	}
 };
