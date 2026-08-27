@@ -11,6 +11,13 @@ import { getSelectedTenantId } from '../lib/getSelectedTenantId';
 // PAS du filtrage par tenant du plugin (voir `getSelectedTenantId`) ; sans
 // le `where` ci-dessous, la sidebar mélangeait les pages de toutes les
 // communes.
+//
+// Même 27/08/2026 — le badge de marque en haut de la sidebar ("SH / Saint-
+// Hilaire") était resté du texte en dur depuis l'époque mono-tenant,
+// jamais mis à jour lors de la bascule multi-tenant : repéré en testant
+// app.civelo.fr (verrouillé sur le tenant "App"), qui affichait quand même
+// "Saint-Hilaire". Résolu ici en allant chercher le vrai nom du tenant
+// verrouillé.
 export default async function AdminNav({ payload }: ServerProps) {
 	const tenantId = await getSelectedTenantId();
 	const { docs } = await payload.find({
@@ -24,5 +31,15 @@ export default async function AdminNav({ payload }: ServerProps) {
 
 	const pages = docs.map((p) => ({ id: String(p.id), title: String(p.title) }));
 
-	return <AdminNavClient pages={pages} />;
+	let siteName = 'Civelo';
+	if (tenantId) {
+		try {
+			const tenant = await payload.findByID({ collection: 'tenants', id: tenantId, depth: 0 });
+			if (tenant?.nom) siteName = String(tenant.nom);
+		} catch {
+			// Tenant introuvable (id invalide/périmé) — repli sur "Civelo".
+		}
+	}
+
+	return <AdminNavClient pages={pages} siteName={siteName} />;
 }

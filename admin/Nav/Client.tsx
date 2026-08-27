@@ -144,9 +144,18 @@ function NavGroup({ section, base, pathname }: { section: NavSection; base: stri
 	);
 }
 
-type Props = { pages: NavPage[] };
+type Props = { pages: NavPage[]; siteName: string };
 
-export default function AdminNavClient({ pages }: Props) {
+// Décision — sigle affiché dans le badge de marque (ex. "Saint-Hilaire-
+// Bonneval" → "SB") : 2 premières initiales des mots du nom, ou les 2
+// premières lettres s'il n'y a qu'un seul mot.
+function brandMark(name: string): string {
+	const words = name.split(/[\s-]+/).filter(Boolean);
+	if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
+	return name.slice(0, 2).toUpperCase();
+}
+
+export default function AdminNavClient({ pages, siteName }: Props) {
 	const pathname = usePathname();
 	const base = useAdminBase();
 	const { user, logOut } = useAuth();
@@ -229,8 +238,8 @@ export default function AdminNavClient({ pages }: Props) {
 	return (
 		<nav className="admin-nav">
 			<div className="admin-nav__brand">
-				<span className="admin-nav__brand-mark">SH</span>
-				<span className="admin-nav__brand-name">Saint-Hilaire</span>
+				<span className="admin-nav__brand-mark">{brandMark(siteName)}</span>
+				<span className="admin-nav__brand-name">{siteName}</span>
 			</div>
 
 			<div className="admin-nav__body">
