@@ -17,11 +17,45 @@
 		position: relative;
 	}
 
+	// Regroupées ici plutôt qu'en `.scrolled &` dispersés dans chaque
+	// sous-élément : ce dernier pattern capture tout le sélecteur parent
+	// accumulé (y compris le `.theme-edito` englobant) dans `&`, et
+	// `.scrolled &` le préfixe alors du mauvais côté — `.scrolled` doit
+	// rester un ancêtre direct de `.header`, jamais un ancêtre du wrapper
+	// de thème lui-même. Des sélecteurs plats en descendance directe de
+	// `&.scrolled` (qui, lui, compile correctement) évitent le problème.
 	&.scrolled {
 		background: $background-95;
 		backdrop-filter: blur(20px);
 		-webkit-backdrop-filter: blur(20px);
 		box-shadow: 0 1px 0 $border, $shadow-soft;
+
+		.header__logo-badge {
+			background: $card;
+			border: 1px solid $border;
+		}
+
+		.header__logo-name {
+			color: $foreground;
+			text-shadow: none;
+		}
+
+		.header__logo-sub {
+			color: $muted-foreground;
+		}
+
+		.header__nav-link {
+			color: $foreground-80;
+
+			&:hover {
+				color: $coral;
+				border-bottom-color: $coral;
+			}
+		}
+
+		.header__burger {
+			color: $foreground;
+		}
 	}
 
 	/* ---- Logo ---- */
@@ -48,11 +82,6 @@
 		background: rgba(255, 255, 255, 0.95);
 		box-shadow: $shadow-soft;
 		overflow: hidden;
-
-		.scrolled & {
-			background: $card;
-			border: 1px solid $border;
-		}
 	}
 
 	&__logo-text {
@@ -71,11 +100,6 @@
 		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 		transition: $transition-smooth;
 
-		.scrolled & {
-			color: $foreground;
-			text-shadow: none;
-		}
-
 		@media (max-width: $breakpoint-sm) {
 			font-size: 15px;
 		}
@@ -89,10 +113,6 @@
 		color: rgba(255, 255, 255, 0.85);
 		margin-top: 3px;
 		transition: $transition-smooth;
-
-		.scrolled & {
-			color: $muted-foreground;
-		}
 
 		@media (max-width: $breakpoint-sm) {
 			display: none;
@@ -133,15 +153,6 @@
 		&:hover {
 			color: $sunshine;
 			border-bottom-color: $sunshine;
-		}
-
-		.scrolled & {
-			color: $foreground-80;
-
-			&:hover {
-				color: $coral;
-				border-bottom-color: $coral;
-			}
 		}
 	}
 
@@ -253,10 +264,6 @@
 		padding: 8px;
 		color: #ffffff;
 		transition: $transition-smooth;
-
-		.scrolled & {
-			color: $foreground;
-		}
 
 		@media (min-width: $breakpoint-md + 1) {
 			display: none;
