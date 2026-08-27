@@ -1,0 +1,87 @@
+@import '@themes/edito/styles/variables';
+
+.create-tenant {
+	margin-bottom: 20px;
+}
+
+.create-tenant__modal {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.create-tenant__panel {
+	width: 100%;
+	max-width: 440px;
+	background: var(--theme-elevation-0);
+	border: 1px solid var(--theme-border-color);
+	border-radius: 16px;
+	padding: 28px;
+}
+
+.create-tenant__title {
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--theme-text);
+	margin: 0 0 8px;
+}
+
+.create-tenant__hint {
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--theme-elevation-500);
+	margin: 0 0 20px;
+}
+
+.create-tenant__form {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.create-tenant__field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--theme-text);
+
+	input,
+	select {
+		font-size: 14px;
+		font-weight: 400;
+		color: var(--theme-text);
+		background: var(--theme-input-bg);
+		border: 1px solid var(--theme-border-color);
+		border-radius: 8px;
+		padding: 10px 12px;
+
+		&:focus {
+			outline: none;
+			border-color: $terracotta;
+		}
+	}
+}
+
+.create-tenant__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	margin-top: 8px;
+}
+
+.create-tenant__cancel {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--theme-elevation-500);
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 0 8px;
+
+	&:hover {
+		color: var(--theme-text);
+	}
+}

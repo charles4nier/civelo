@@ -20,7 +20,10 @@ export const Tenants: CollectionConfig = {
 	slug: 'tenants',
 	admin: {
 		useAsTitle: 'nom',
-		defaultColumns: ['nom', 'domaine', 'statutContrat']
+		defaultColumns: ['nom', 'domaine', 'statutContrat'],
+		components: {
+			beforeList: ['/admin/CreateTenantButton']
+		}
 	},
 	access: {
 		// Jamais public — contrairement à Pages/Media/etc. Une lecture

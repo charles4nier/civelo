@@ -33,9 +33,11 @@ import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83
 import { default as default_06806397ca6828cb04eecde6af176023 } from '../../../admin/IconCell'
 import { default as default_77d0f5ea9b1204c83f51dfe969e62d9a } from '../../../admin/IconPreviewField'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { default as default_1ab560c54c2176dcebd531ed2fc0caf8 } from '../../../admin/CreateTenantButton'
 import { default as default_0093e585c2b8179db0a2ec805741a8fa } from '../../../admin/Nav'
 import { default as default_8ecc5f2ff0510d3ad8701a53f4d66d9e } from '../../../admin/BreadcrumbHome'
 import { default as default_38999c7e0eefa9c4f332b92da59fb7fe } from '../../../admin/LoginLogo'
+import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { TenantSelectionProvider as TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
@@ -79,9 +81,11 @@ export const importMap = {
   "/admin/IconCell#default": default_06806397ca6828cb04eecde6af176023,
   "/admin/IconPreviewField#default": default_77d0f5ea9b1204c83f51dfe969e62d9a,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,
+  "/admin/CreateTenantButton#default": default_1ab560c54c2176dcebd531ed2fc0caf8,
   "/admin/Nav#default": default_0093e585c2b8179db0a2ec805741a8fa,
   "/admin/BreadcrumbHome#default": default_8ecc5f2ff0510d3ad8701a53f4d66d9e,
   "/admin/LoginLogo#default": default_38999c7e0eefa9c4f332b92da59fb7fe,
+  "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelectionProvider": TenantSelectionProvider_d6d5f193a167989e2ee7d14202901e62,
