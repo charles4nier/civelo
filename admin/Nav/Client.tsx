@@ -230,6 +230,11 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 	const isSuperAdmin = user?.role === 'super-admin';
 	const isSuperAdminConsole = isSuperAdmin && !hideTenantSelector;
 
+	// Décision — "Mes sites" en entrée principale, pas un lien de plus sous
+	// "Paramètres" (où vivait l'ancien lien "Communes") : c'est le point
+	// d'entrée de toute la console super-admin, doit être vu en premier.
+	const mesSites: NavLinkItem = { kind: 'link', label: 'Mes sites', href: '/mes-sites', icon: Building2 };
+
 	const parametres: NavSection = {
 		label: 'Paramètres',
 		items: [
@@ -237,10 +242,7 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 			{ kind: 'link', label: 'Icônes', href: '/collections/icones', icon: Shapes },
 			{ kind: 'link', label: 'Médias', href: '/collections/media', icon: Images },
 			{ kind: 'link', label: 'Documents', href: '/collections/documents', icon: FileStack },
-			{ kind: 'link', label: 'Utilisateurs', href: '/collections/users', icon: Users },
-			...(isSuperAdminConsole
-				? [{ kind: 'link' as const, label: 'Communes', href: '/collections/tenants', icon: Building2 }]
-				: [])
+			{ kind: 'link', label: 'Utilisateurs', href: '/collections/users', icon: Users }
 		]
 	};
 
@@ -262,6 +264,11 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 			</div>
 
 			<div className="admin-nav__body">
+				{isSuperAdminConsole && (
+					<div className="admin-nav__top-link">
+						<NavLink item={mesSites} base={base} pathname={pathname} />
+					</div>
+				)}
 				<NavGroup section={monSite} base={base} pathname={pathname} />
 				<NavGroup section={parametres} base={base} pathname={pathname} />
 			</div>

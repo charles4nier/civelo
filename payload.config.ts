@@ -38,6 +38,13 @@ export default buildConfig({
 			views: {
 				dashboard: {
 					Component: '/admin/Dashboard'
+				},
+				// Console super-admin — liste toutes les communes en cartes,
+				// une ouverture bascule le tenant actif puis va sur ses pages
+				// (voir `admin/MesSites`, lien de nav dans `admin/Nav/Client.tsx`).
+				mesSites: {
+					Component: '/admin/MesSites',
+					path: '/mes-sites'
 				}
 			}
 		}
