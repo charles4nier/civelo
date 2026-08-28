@@ -40,8 +40,13 @@ export default async function Dashboard({ payload, user }: ServerProps) {
 	const isSuperAdminConsole = user?.role === 'super-admin' && !(await isTenantLocked());
 
 	if (isSuperAdminConsole) {
+		// Le tenant "maison" (domaine = `SUPER_ADMIN_DOMAIN`, sert à
+		// rattacher les comptes de l'équipe — voir `collections/Users.ts`)
+		// n'est pas une commune : exclu de la grille.
+		const superAdminDomain = process.env.SUPER_ADMIN_DOMAIN;
 		const { docs } = await payload.find({
 			collection: 'tenants',
+			where: superAdminDomain ? { domaine: { not_equals: superAdminDomain } } : undefined,
 			limit: 0,
 			pagination: false,
 			sort: 'nom',

@@ -24,6 +24,33 @@ export const Users: CollectionConfig = {
 	admin: {
 		useAsTitle: 'email'
 	},
+	// 2026-08-28 — `tenants` (ajouté par le plugin, `tenantsArrayField`)
+	// n'a, contrairement au champ `tenant` simple des autres collections,
+	// aucun remplissage automatique à la création : il fallait le choisir à
+	// la main, y compris pour un compte super-admin créé depuis la console
+	// dédiée — confusant ("pourquoi rattacher ce compte à UNE commune ?") et
+	// source d'un vrai bug (un compte créé sans tenant devenait invisible
+	// dans les vues filtrées). Rattaché d'office au tenant "maison" de
+	// l'équipe (`domaine` = `SUPER_ADMIN_DOMAIN`) quand rien n'est choisi.
+	hooks: {
+		beforeChange: [
+			async ({ data, operation, req }) => {
+				if (operation !== 'create') return data;
+				if (Array.isArray(data.tenants) && data.tenants.length > 0) return data;
+				const domaine = process.env.SUPER_ADMIN_DOMAIN;
+				if (!domaine) return data;
+				const { docs } = await req.payload.find({
+					collection: 'tenants',
+					where: { domaine: { equals: domaine } },
+					limit: 1,
+					overrideAccess: true
+				});
+				const homeTenant = docs[0];
+				if (homeTenant) data.tenants = [{ tenant: homeTenant.id }];
+				return data;
+			}
+		]
+	},
 	access: {
 		read: scopedToOwnTenants,
 		// admin (mairie) peut créer/modifier/supprimer, mais jamais accorder un

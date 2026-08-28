@@ -276,7 +276,14 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 						<NavLink item={mesSites} base={base} pathname={pathname} />
 					</div>
 				)}
-				<NavGroup section={monSite} base={base} pathname={pathname} />
+				{
+					// 2026-08-28 — "ici je ne crée pas de site, je supervise tout" :
+					// "Mon site" (pages, en-tête/pied de page, lieux & sentiers) n'a
+					// pas de sens sur la console super-admin, qui ne gère aucun
+					// contenu en propre — seulement sur le domaine verrouillé d'une
+					// vraie commune.
+					!isSuperAdminConsole && <NavGroup section={monSite} base={base} pathname={pathname} />
+				}
 				<NavGroup section={parametres} base={base} pathname={pathname} />
 			</div>
 
