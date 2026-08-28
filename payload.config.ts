@@ -35,16 +35,14 @@ export default buildConfig({
 			},
 			// Décision 69 — tableau de bord par défaut (grille de collections)
 			// remplacé par une page d'accueil qui salue l'utilisateur connecté.
+			//
+			// 2026-08-28 — pas de route dédiée pour "Mes sites" : ce même
+			// composant `Dashboard` bascule vers la grille de communes quand
+			// l'utilisateur est un super-admin sur la console dédiée (voir
+			// `admin/Dashboard/index.tsx`), sinon le "Bonjour" habituel.
 			views: {
 				dashboard: {
 					Component: '/admin/Dashboard'
-				},
-				// Console super-admin — liste toutes les communes en cartes,
-				// une ouverture bascule le tenant actif puis va sur ses pages
-				// (voir `admin/MesSites`, lien de nav dans `admin/Nav/Client.tsx`).
-				mesSites: {
-					Component: '/admin/MesSites',
-					path: '/mes-sites'
 				}
 			}
 		}

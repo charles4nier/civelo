@@ -41,19 +41,16 @@ export default function middleware(request: NextRequest) {
 	const pathname = request.nextUrl.pathname;
 	const superAdminDomain = process.env.SUPER_ADMIN_DOMAIN;
 
-	// 2026-08-28 — sur le domaine super-admin dédié, jamais le site public
-	// (aucun tenant n'y correspond de toute façon) ni le tableau de bord
-	// Payload classique : tout renvoie vers "Mes sites" (`admin/MesSites`),
-	// le vrai point d'entrée de cette console. Exceptions : les routes
-	// `/admin/*` déjà utiles telles quelles (mes-sites lui-même, login,
-	// collections...) et `/api/*`, dont l'admin dépend pour fonctionner
-	// (login, sauvegardes, médias...) — les rediriger casserait l'admin
-	// entier, pas seulement la page d'accueil.
+	// 2026-08-28 — sur le domaine super-admin dédié, jamais le site public :
+	// aucun tenant n'y correspond de toute façon. Tout renvoie vers `/admin`
+	// — pas de route "Mes sites" séparée, c'est `admin/Dashboard` lui-même
+	// qui bascule sur la grille de communes pour un super-admin sur cette
+	// console (voir son commentaire d'en-tête). Seule exception : `/api/*`,
+	// dont l'admin dépend pour fonctionner (login, sauvegardes, médias...) —
+	// le rediriger casserait l'admin entier, pas seulement la page d'accueil.
 	if (superAdminDomain && host === superAdminDomain) {
-		const isApi = pathname.startsWith('/api');
-		const isAdminSubpage = pathname.startsWith('/admin') && pathname !== '/admin';
-		if (isApi || isAdminSubpage) return NextResponse.next();
-		return NextResponse.redirect(new URL('/admin/mes-sites', request.url));
+		if (pathname.startsWith('/api') || pathname.startsWith('/admin')) return NextResponse.next();
+		return NextResponse.redirect(new URL('/admin', request.url));
 	}
 
 	// Tout ce qui suit (verrouillage par tenant) ne concernait déjà que

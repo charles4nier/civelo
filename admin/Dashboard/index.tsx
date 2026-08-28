@@ -1,6 +1,7 @@
 import type { ServerProps } from 'payload';
 import { Newspaper, CalendarDays, FileStack, Phone, ArrowRight, CircleAlert } from 'lucide-react';
-import { getSelectedTenantId } from '../lib/getSelectedTenantId';
+import { getSelectedTenantId, isTenantLocked } from '../lib/getSelectedTenantId';
+import MesSitesClient from '../MesSites/Client';
 import './style.scss';
 
 // Décision 69 — "le tableau de bord ne doit pas être des collections, je
@@ -14,6 +15,14 @@ import './style.scss';
 // interroge la base en direct pour lister le contenu encore vide repéré
 // lors des audits des décisions 62-65 — pas une liste figée, elle se vide
 // au fur et à mesure que le client remplit les choses.
+//
+// 2026-08-28 — "Mes sites" n'a finalement plus sa propre route (`/mes-sites`
+// supprimée) : sur la console super-admin, LE tableau de bord EST "Mes
+// sites" (voir `middleware.ts`, qui redirige tout vers `/admin` — jamais
+// vers une route dédiée). Ce composant devient donc à deux visages : la
+// grille de sites pour un super-admin sur la console dédiée, le "Bonjour"
+// habituel pour tout le reste (éditeur/admin d'une commune, ou super-admin
+// verrouillé sur le domaine d'une commune via le sélecteur).
 
 const SHORTCUT_SLUGS = ['mairie/actualites', 'agenda', 'mairie/publications', 'numeros-utiles'] as const;
 const CHECKLIST_SLUGS = ['histoire', 'vivre/la-commune', 'contact', 'mairie/horaires'] as const;
@@ -28,6 +37,28 @@ const TODAY_FORMAT = new Intl.DateTimeFormat('fr-FR', {
 });
 
 export default async function Dashboard({ payload, user }: ServerProps) {
+	const isSuperAdminConsole = user?.role === 'super-admin' && !(await isTenantLocked());
+
+	if (isSuperAdminConsole) {
+		const { docs } = await payload.find({
+			collection: 'tenants',
+			limit: 0,
+			pagination: false,
+			sort: 'nom',
+			depth: 0,
+			overrideAccess: true
+		});
+		const tenants = (docs as any[]).map((t) => ({
+			id: String(t.id),
+			nom: t.nom as string,
+			domaine: t.domaine as string,
+			theme: t.theme as string,
+			statutContrat: t.statutContrat as string,
+			createdAt: t.createdAt as string
+		}));
+		return <MesSitesClient tenants={tenants} />;
+	}
+
 	const prenom = typeof user?.prenom === 'string' && user.prenom ? user.prenom : undefined;
 	const today = TODAY_FORMAT.format(new Date());
 

@@ -37,6 +37,10 @@ type NavLinkItem = {
 	label: string;
 	href: string;
 	icon: React.ElementType;
+	// "Mes sites" pointe vers la racine (`href: ''`, base seul) — sans ce
+	// flag, le préfixe `${href}/` matcherait TOUTE page admin (tout
+	// commence par `/admin/`), le laissant actif partout.
+	exact?: boolean;
 };
 
 // Décision 67 — "Mes pages" / "En-tête & pied de page" / "Lieux & sentiers"
@@ -71,7 +75,7 @@ function NavLink({
 	pathname: string;
 }) {
 	const href = `${base}${item.href}`;
-	const active = pathname === href || pathname.startsWith(`${href}/`);
+	const active = pathname === href || (!item.exact && pathname.startsWith(`${href}/`));
 	const Icon = item.icon;
 
 	return (
@@ -233,7 +237,10 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 	// Décision — "Mes sites" en entrée principale, pas un lien de plus sous
 	// "Paramètres" (où vivait l'ancien lien "Communes") : c'est le point
 	// d'entrée de toute la console super-admin, doit être vu en premier.
-	const mesSites: NavLinkItem = { kind: 'link', label: 'Mes sites', href: '/mes-sites', icon: Building2 };
+	// 2026-08-28 — plus de route dédiée : pointe vers la racine `/admin`
+	// elle-même, qui EST "Mes sites" pour un super-admin sur cette console
+	// (voir `admin/Dashboard/index.tsx`).
+	const mesSites: NavLinkItem = { kind: 'link', label: 'Mes sites', href: '', icon: Building2, exact: true };
 
 	const parametres: NavSection = {
 		label: 'Paramètres',
