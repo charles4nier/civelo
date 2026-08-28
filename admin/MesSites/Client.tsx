@@ -88,8 +88,8 @@ export default function MesSitesClient({ tenants }: Props) {
 											<Building2 size={20} aria-hidden="true" />
 										</div>
 										<div className="mes-sites__card-body">
-											<h2 className="mes-sites__card-name">{t.nom}</h2>
-											<p className="mes-sites__card-domain">{t.domaine}</p>
+											<h2 className="mes-sites__card-domain">{t.domaine}</h2>
+											<p className="mes-sites__card-name">{t.nom}</p>
 											<div className="mes-sites__card-meta">
 												<span className="mes-sites__card-theme">{THEME_LABELS[t.theme] ?? t.theme}</span>
 												<span className={`mes-sites__card-statut mes-sites__card-statut--${t.statutContrat}`}>
