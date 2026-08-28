@@ -29,15 +29,41 @@ import { NextResponse, type NextRequest } from 'next/server';
 // edito.civelo"). La réimposition se fait ici, en pure logique cookie, sans
 // appel base : seule la toute première résolution par domaine passe par
 // `/api/lock-tenant`.
+// Élargi de `/admin/:path*` à tout le site (hors assets statiques) le
+// 2026-08-28 — nécessaire pour la redirection ci-dessous, qui doit
+// intercepter aussi `/` et les routes publiques sur `SUPER_ADMIN_DOMAIN`.
 export const config = {
-	matcher: ['/admin/:path*']
+	matcher: ['/((?!_next/static|_next/image|favicon.ico).*)']
 };
 
 export default function middleware(request: NextRequest) {
 	const host = request.headers.get('host')?.split(':')[0] ?? '';
+	const pathname = request.nextUrl.pathname;
 	const superAdminDomain = process.env.SUPER_ADMIN_DOMAIN;
 
-	if (!host || (superAdminDomain && host === superAdminDomain)) {
+	// 2026-08-28 — sur le domaine super-admin dédié, jamais le site public
+	// (aucun tenant n'y correspond de toute façon) ni le tableau de bord
+	// Payload classique : tout renvoie vers "Mes sites" (`admin/MesSites`),
+	// le vrai point d'entrée de cette console. Exceptions : les routes
+	// `/admin/*` déjà utiles telles quelles (mes-sites lui-même, login,
+	// collections...) et `/api/*`, dont l'admin dépend pour fonctionner
+	// (login, sauvegardes, médias...) — les rediriger casserait l'admin
+	// entier, pas seulement la page d'accueil.
+	if (superAdminDomain && host === superAdminDomain) {
+		const isApi = pathname.startsWith('/api');
+		const isAdminSubpage = pathname.startsWith('/admin') && pathname !== '/admin';
+		if (isApi || isAdminSubpage) return NextResponse.next();
+		return NextResponse.redirect(new URL('/admin/mes-sites', request.url));
+	}
+
+	// Tout ce qui suit (verrouillage par tenant) ne concernait déjà que
+	// `/admin/*` avant l'élargissement du matcher ci-dessus — portée
+	// inchangée pour ne pas affecter le site public des autres domaines.
+	if (!pathname.startsWith('/admin')) {
+		return NextResponse.next();
+	}
+
+	if (!host) {
 		return NextResponse.next();
 	}
 
