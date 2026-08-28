@@ -1,4 +1,6 @@
 @import '@themes/accueillant/styles/variables';
+
+.theme-accueillant {
 .cta {
 	padding: $spacing-6xl 0;
 
@@ -85,4 +87,5 @@
 			color: #ffffff;
 		}
 	}
+}
 }

@@ -1,4 +1,6 @@
 @import '@themes/accueillant/styles/variables';
+
+.theme-accueillant {
 .hero {
 	border-bottom: 1px solid $border;
 
@@ -119,4 +121,5 @@
 	&__image {
 		object-fit: cover;
 	}
+}
 }
