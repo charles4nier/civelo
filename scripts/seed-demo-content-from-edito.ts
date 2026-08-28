@@ -22,12 +22,11 @@
  * Dupliquées par page copiée, avec remap des références.
  *
  * Usage :
- *   node --experimental-loader=./scripts/_resolve-ts.mjs scripts/seed-demo-content-from-edito.ts <domaineCible>
+ *   node --experimental-loader=./scripts/_resolve-ts.mjs scripts/seed-demo-content-from-edito.ts <domaineCible> [domaineSource]
+ *   (domaineSource par défaut : edito.civelo.fr — en local, passer saint-hilaire-bonneval.fr)
  */
 import { getPayload } from 'payload';
 import config from '../payload.config';
-
-const SOURCE_DOMAIN = 'saint-hilaire-bonneval.fr';
 
 const GABARIT_GROUP_FIELD: Record<string, string> = {
 	liste: 'liste',
@@ -107,8 +106,9 @@ function remapCategories(listeGroup: any, idMap: Record<string, number>): any {
 
 async function main() {
 	const targetDomain = process.argv[2];
+	const sourceDomain = process.argv[3] || 'edito.civelo.fr';
 	if (!targetDomain) {
-		console.error('Usage: seed-demo-content-from-edito.ts <domaineCible>');
+		console.error('Usage: seed-demo-content-from-edito.ts <domaineCible> [domaineSource]');
 		process.exit(1);
 	}
 
@@ -116,11 +116,11 @@ async function main() {
 
 	const { docs: sourceTenants } = await payload.find({
 		collection: 'tenants',
-		where: { domaine: { equals: SOURCE_DOMAIN } },
+		where: { domaine: { equals: sourceDomain } },
 		overrideAccess: true
 	});
 	const source = sourceTenants[0];
-	if (!source) throw new Error(`Tenant source introuvable (${SOURCE_DOMAIN})`);
+	if (!source) throw new Error(`Tenant source introuvable (${sourceDomain})`);
 
 	const { docs: targetTenants } = await payload.find({
 		collection: 'tenants',
