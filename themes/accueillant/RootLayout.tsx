@@ -6,8 +6,6 @@ import Footer from '@themes/accueillant/components/Footer';
 import FloatingButtons from '@themes/accueillant/components/FloatingButtons';
 import type { RootLayoutProps } from '../registry';
 
-// Header/Footer encore 100% statiques, pas encore rebranchés sur Payload —
-// même état que le thème "app" au moment de son portage.
 const ebGaramond = EB_Garamond({
 	subsets: ['latin'],
 	weight: ['400', '500', '600', '700'],
@@ -23,13 +21,13 @@ const interTight = Inter_Tight({
 	display: 'swap'
 });
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({ navLinks, identite, boutonEntete, footer, children }: RootLayoutProps) {
 	return (
 		<html lang="fr" className={`theme-accueillant ${ebGaramond.variable} ${interTight.variable}`}>
 			<body>
-				<Header />
+				<Header navLinks={navLinks} identite={identite} bouton={boutonEntete} />
 				<main>{children}</main>
-				<Footer />
+				<Footer navLinks={navLinks} identite={identite} data={footer} />
 				<FloatingButtons />
 			</body>
 		</html>

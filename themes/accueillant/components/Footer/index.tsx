@@ -3,63 +3,97 @@ import './style.scss';
 
 const CLASS_NAME = 'footer';
 
-export default function Footer() {
+type NavLink = { label: string; href: string; children?: { label: string; href: string }[] };
+
+type Props = {
+	navLinks: NavLink[];
+	identite: { titre: string; sousTitre?: string; logoUrl: string };
+	data: {
+		description: string;
+		adresse?: string;
+		telephone?: string;
+		email?: string;
+		siteWeb?: string;
+		joursOuverture?: string;
+		horaires?: string;
+		facebook?: string;
+		instagram?: string;
+	};
+};
+
+export default function Footer({ navLinks, identite, data }: Props) {
 	const year = new Date().getFullYear();
+	const exploreLinks = navLinks
+		.map((link) => ({ href: link.children?.[0]?.href ?? link.href, label: link.label }))
+		.filter((l) => l.href !== '#');
 
 	return (
 		<footer className={CLASS_NAME}>
 			<div className={`${CLASS_NAME}__inner container`}>
 				<div className={`${CLASS_NAME}__grid`}>
 					<div className={`${CLASS_NAME}__brand`}>
-						<span className={`${CLASS_NAME}__brand-name`}>Saint-Hilaire-Bonneval</span>
+						<span className={`${CLASS_NAME}__brand-name`}>{identite.titre}</span>
 						<p className={`${CLASS_NAME}__brand-desc`}>
-							Mairie de Saint-Hilaire-Bonneval
-							<br />
-							Le Bourg, 87260 Saint-Hilaire-Bonneval
-							<br />
-							Tél : 05 55 00 61 65
+							{data.description}
+							{data.adresse && (
+								<>
+									<br />
+									{data.adresse}
+								</>
+							)}
+							{data.telephone && (
+								<>
+									<br />
+									Tél : {data.telephone}
+								</>
+							)}
 						</p>
-						<a href="#" className={`${CLASS_NAME}__social`}>
-							<Facebook size={16} />
-							Suivez-nous sur Facebook
-						</a>
+						{data.facebook && (
+							<a href={data.facebook} className={`${CLASS_NAME}__social`}>
+								<Facebook size={16} />
+								Suivez-nous sur Facebook
+							</a>
+						)}
 					</div>
 
 					<div className={`${CLASS_NAME}__col`}>
 						<h4 className={`${CLASS_NAME}__col-title`}>Navigation</h4>
 						<ul className={`${CLASS_NAME}__col-links`}>
-							<li><a href="#">Mentions légales</a></li>
-							<li><a href="#contact">Contactez-nous</a></li>
-							<li><a href="#">Plan du site</a></li>
+							{exploreLinks.map((l) => (
+								<li key={l.href}>
+									<a href={l.href}>{l.label}</a>
+								</li>
+							))}
 						</ul>
-						<div className={`${CLASS_NAME}__address`}>
-							<div className={`${CLASS_NAME}__address-item`}>
-								<MapPin size={14} />
-								<span>
-									Le Bourg
-									<br />
-									87260 Saint-Hilaire-Bonneval
-								</span>
+						{(data.adresse || data.horaires) && (
+							<div className={`${CLASS_NAME}__address`}>
+								{data.adresse && (
+									<div className={`${CLASS_NAME}__address-item`}>
+										<MapPin size={14} />
+										<span>{data.adresse}</span>
+									</div>
+								)}
+								{data.horaires && (
+									<div className={`${CLASS_NAME}__address-item`}>
+										<Clock size={14} />
+										<span>{data.horaires}</span>
+									</div>
+								)}
 							</div>
-							<div className={`${CLASS_NAME}__address-item`}>
-								<Clock size={14} />
-								<span>Mar–Ven · 9h–12h / 14h–17h</span>
-							</div>
-						</div>
+						)}
 					</div>
 
 					<div className={`${CLASS_NAME}__col`}>
-						<h4 className={`${CLASS_NAME}__col-title`}>Suivez-nous</h4>
+						<h4 className={`${CLASS_NAME}__col-title`}>Informations</h4>
 						<ul className={`${CLASS_NAME}__col-links`}>
-							<li><a href="#">Facebook</a></li>
-							<li><a href="#">Instagram</a></li>
-							<li><a href="#">Newsletter</a></li>
+							<li><a href="#">Mentions légales</a></li>
+							<li><a href="#">Accessibilité</a></li>
 						</ul>
 					</div>
 				</div>
 
 				<div className={`${CLASS_NAME}__bottom`}>
-					<span>© {year} Commune de Saint-Hilaire-Bonneval</span>
+					<span>© {year} {identite.titre}</span>
 					<span>Site officiel de la mairie</span>
 				</div>
 			</div>

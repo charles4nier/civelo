@@ -1,19 +1,31 @@
-import { commune } from '@themes/app/config/commune';
+import type { NavLink } from '@themes/app/components/MegaMenu';
 import './style.scss';
 
 const C = 'footer';
 
-const navLinks = [
-	{ href: '/mairie/actualites', label: 'Votre mairie' },
-	{ href: '/tourisme', label: 'Tourisme' },
-	{ href: '/demarches', label: 'Démarches' },
-	{ href: '/location-salles', label: 'Location de salles' },
-	{ href: '/mairie/actualites', label: 'Actualités' },
-	{ href: '/contact', label: 'Contact' },
-];
+type Props = {
+	navLinks: NavLink[];
+	identite: { titre: string; sousTitre?: string; logoUrl: string };
+	data: {
+		description: string;
+		adresse?: string;
+		telephone?: string;
+		email?: string;
+		siteWeb?: string;
+		joursOuverture?: string;
+		horaires?: string;
+		facebook?: string;
+		instagram?: string;
+	};
+};
 
-export default function Footer() {
+export default function Footer({ navLinks, identite, data }: Props) {
 	const year = new Date().getFullYear();
+	// Colonne "Explorer" — un lien par section du menu principal (pas la
+	// liste complète des 18 pages, juste un point d'entrée par thématique).
+	const explorerLinks = navLinks
+		.map((link) => ({ href: link.children?.[0]?.href ?? link.href, label: link.label }))
+		.filter((l) => l.href !== '#');
 
 	return (
 		<footer className={C}>
@@ -22,19 +34,15 @@ export default function Footer() {
 				<div className={`${C}__grid`}>
 
 					<div className={`${C}__brand`}>
-						<div className={`${C}__brand-badge`}>
-							{commune.departement} · {commune.codePostal}
-						</div>
-						<p className={`${C}__brand-name`}>{commune.nom}</p>
-						<p className={`${C}__brand-desc`}>
-							Site officiel de la commune. Au cœur du Limousin, entre nature et patrimoine.
-						</p>
+						{identite.sousTitre && <div className={`${C}__brand-badge`}>{identite.sousTitre}</div>}
+						<p className={`${C}__brand-name`}>{identite.titre}</p>
+						<p className={`${C}__brand-desc`}>{data.description}</p>
 					</div>
 
 					<div className={`${C}__col`}>
 						<div className={`${C}__col-title`}>Explorer</div>
 						<div className={`${C}__col-pills`}>
-							{navLinks.map((l) => (
+							{explorerLinks.map((l) => (
 								<a key={l.href} href={l.href} className={`${C}__pill-link`}>
 									{l.label}
 								</a>
@@ -45,17 +53,19 @@ export default function Footer() {
 					<div className={`${C}__col`}>
 						<div className={`${C}__col-title`}>Nous joindre</div>
 						<div className={`${C}__contact-list`}>
-							<div>{commune.adresse}</div>
-							<div style={{ fontWeight: 500 }}>{commune.telephone}</div>
-							<a href={`mailto:${commune.email}`} className={`${C}__contact-email`}>
-								{commune.email}
-							</a>
+							{data.adresse && <div>{data.adresse}</div>}
+							{data.telephone && <div style={{ fontWeight: 500 }}>{data.telephone}</div>}
+							{data.email && (
+								<a href={`mailto:${data.email}`} className={`${C}__contact-email`}>
+									{data.email}
+								</a>
+							)}
 						</div>
 					</div>
 				</div>
 
 				<div className={`${C}__bottom`}>
-					<div>© {year} Commune de {commune.nom}</div>
+					<div>© {year} {identite.titre}</div>
 					<div className={`${C}__bottom-links`}>
 						<a href="#">Mentions légales</a>
 						<span style={{ opacity: 0.2 }}>·</span>

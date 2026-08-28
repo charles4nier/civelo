@@ -4,48 +4,18 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { X, Search, Globe, ChevronDown, ChevronRight, ArrowRight, Menu } from 'lucide-react';
-import { commune } from '@themes/app/config/commune';
-import { MegaMenu } from '@themes/app/components/MegaMenu';
+import { MegaMenu, type NavLink } from '@themes/app/components/MegaMenu';
 import './style.scss';
 
 const CLASS_NAME = 'header';
 
 type SubLink = { label: string; href: string };
-type NavLink = { label: string; href: string; children?: SubLink[] };
 
-const navLinks: NavLink[] = [
-	{
-		label: 'Votre mairie',
-		href: '#',
-		children: [
-			{ label: 'Actualités',              href: '/mairie/actualites' },
-			{ label: 'Le maire & les élus',     href: '/mairie/maire-elus' },
-			{ label: 'Documents & publications', href: '/mairie/publications' },
-			{ label: 'Horaires & informations', href: '/mairie/horaires' },
-			{ label: 'Budget & projets',        href: '/mairie/budget-projets' },
-		],
-	},
-	{
-		label: 'Vivre à ' + commune.nom.split('-')[0],
-		href: '#',
-		children: [
-			{ label: 'La commune',          href: '/vivre/la-commune' },
-			{ label: 'Services & vie pratique', href: '/commerces' },
-			{ label: 'Enfance & jeunesse',  href: '/vivre/enfance-jeunesse' },
-			{ label: 'Vie associative',     href: '/vivre/vie-associative' },
-			{ label: 'Sports & loisirs',    href: '/vivre/sports-loisirs' },
-		],
-	},
-	{
-		label: 'Tourisme & découvertes',
-		href: '#',
-		children: [
-			{ label: 'Histoire',          href: '/histoire' },
-			{ label: 'Carte interactive', href: '/tourisme/carte-interactive' },
-		],
-	},
-	{ label: 'Mes démarches', href: '/demarches' },
-];
+type Props = {
+	navLinks: NavLink[];
+	identite: { titre: string; sousTitre?: string; logoUrl: string };
+	bouton: { label: string; href: string };
+};
 
 function DropdownItem({ link }: { link: NavLink }) {
 	if (!link.children) {
@@ -113,7 +83,7 @@ function MobileNavItem({ link, onClose }: { link: NavLink; onClose: () => void }
 	);
 }
 
-export default function Header() {
+export default function Header({ navLinks, identite, bouton }: Props) {
 	const [isOpen, setIsOpen]   = useState(false);
 	const [mounted, setMounted] = useState(false);
 
@@ -130,7 +100,7 @@ export default function Header() {
 
 					{/* Gauche : MegaMenu + Search */}
 					<div className={`${CLASS_NAME}__left`}>
-						<MegaMenu />
+						<MegaMenu navLinks={navLinks} />
 						<button className={`${CLASS_NAME}__icon-btn`} aria-label="Rechercher">
 							<Search size={16} />
 						</button>
@@ -141,14 +111,14 @@ export default function Header() {
 
 					{/* Centre : logo */}
 					<Link href="/" className={`${CLASS_NAME}__logo`}>
-						<span className={`${CLASS_NAME}__logo-name`}>{commune.nom}</span>
-						<span className={`${CLASS_NAME}__logo-sub`}>{commune.departement} · {commune.codePostal}</span>
+						<span className={`${CLASS_NAME}__logo-name`}>{identite.titre}</span>
+						{identite.sousTitre && <span className={`${CLASS_NAME}__logo-sub`}>{identite.sousTitre}</span>}
 					</Link>
 
 					{/* Droite : CTA + burger mobile */}
 					<div className={`${CLASS_NAME}__right`}>
-						<Link href="/location-salle" className={`${CLASS_NAME}__cta`}>
-							Location de salles
+						<Link href={bouton.href} className={`${CLASS_NAME}__cta`}>
+							{bouton.label}
 							<ArrowRight size={16} />
 						</Link>
 						<button
@@ -171,8 +141,8 @@ export default function Header() {
 					<nav className={`${CLASS_NAME}__drawer ${isOpen ? `${CLASS_NAME}__drawer--open` : ''}`}>
 						<div className={`${CLASS_NAME}__drawer-header`}>
 							<Link href="/" className={`${CLASS_NAME}__drawer-logo`} onClick={() => setIsOpen(false)}>
-								<span className={`${CLASS_NAME}__drawer-logo-name`}>{commune.nom}</span>
-								<span className={`${CLASS_NAME}__drawer-logo-sub`}>{commune.departement} · {commune.codePostal}</span>
+								<span className={`${CLASS_NAME}__drawer-logo-name`}>{identite.titre}</span>
+								{identite.sousTitre && <span className={`${CLASS_NAME}__drawer-logo-sub`}>{identite.sousTitre}</span>}
 							</Link>
 							<button className={`${CLASS_NAME}__drawer-close`} onClick={() => setIsOpen(false)} aria-label="Fermer">
 								<X size={20} />
@@ -184,8 +154,8 @@ export default function Header() {
 							))}
 						</div>
 						<div className={`${CLASS_NAME}__drawer-footer`}>
-							<Link href="/location-salle" className={`${CLASS_NAME}__drawer-cta`} onClick={() => setIsOpen(false)}>
-								Location de salles
+							<Link href={bouton.href} className={`${CLASS_NAME}__drawer-cta`} onClick={() => setIsOpen(false)}>
+								{bouton.label}
 								<ArrowRight size={16} />
 							</Link>
 						</div>

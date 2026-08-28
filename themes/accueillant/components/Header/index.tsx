@@ -9,50 +9,25 @@ import './style.scss';
 const CLASS_NAME = 'header';
 
 type SubLink = { label: string; href: string };
-type NavLink = { label: string; href: string; mod: string; children?: SubLink[] };
+type NavLink = { label: string; href: string; children?: SubLink[] };
 
-const navLinks: NavLink[] = [
-	{
-		label: 'Votre mairie',
-		href: '#',
-		mod: 'sun',
-		children: [
-			{ label: 'Actualités', href: '/mairie/actualites' },
-			{ label: 'Le maire & les élus', href: '/mairie/maire-elus' },
-			{ label: 'Documents & publications', href: '/mairie/publications' },
-			{ label: 'Horaires & informations', href: '/mairie/horaires' },
-			{ label: 'Budget & projets', href: '/mairie/budget-projets' }
-		]
-	},
-	{
-		label: 'Vivre à Saint-Hilaire',
-		href: '#',
-		mod: 'coral',
-		children: [
-			{ label: 'La commune', href: '/vivre/la-commune' },
-			{ label: 'Services & vie pratique', href: '/commerces' },
-			{ label: 'Enfance & jeunesse', href: '/vivre/enfance-jeunesse' },
-			{ label: 'Vie associative', href: '/vivre/vie-associative' },
-			{ label: 'Sports & loisirs', href: '/vivre/sports-loisirs' }
-		]
-	},
-	{
-		label: 'Tourisme & découvertes',
-		href: '#',
-		mod: 'sky',
-		children: [
-			{ label: 'Histoire', href: '/histoire' },
-			{ label: 'Carte interactive', href: '/tourisme/carte-interactive' }
-		]
-	},
-	{ label: 'Mes démarches', href: '/demarches', mod: 'leaf' }
-];
+// Modificateur de couleur par section — purement décoratif (voir style.scss,
+// `__nav-dot--{mod}`), pas une donnée que `getNavLinks()` fournit (label +
+// lien uniquement). Attribué par position plutôt que par label : reste
+// stable même si une commune renomme une entrée de menu.
+const MODS = ['sun', 'coral', 'sky', 'leaf'];
 
-function DropdownItem({ link }: { link: NavLink }) {
+type Props = {
+	navLinks: NavLink[];
+	identite: { titre: string; sousTitre?: string; logoUrl: string };
+	bouton: { label: string; href: string };
+};
+
+function DropdownItem({ link, mod }: { link: NavLink; mod: string }) {
 	if (!link.children) {
 		return (
 			<Link href={link.href} className={`${CLASS_NAME}__nav-link`}>
-				<span className={`${CLASS_NAME}__nav-dot ${CLASS_NAME}__nav-dot--${link.mod}`} />
+				<span className={`${CLASS_NAME}__nav-dot ${CLASS_NAME}__nav-dot--${mod}`} />
 				{link.label}
 			</Link>
 		);
@@ -61,10 +36,10 @@ function DropdownItem({ link }: { link: NavLink }) {
 	return (
 		<div className={`${CLASS_NAME}__dropdown`}>
 			<button className={`${CLASS_NAME}__nav-link`}>
-				<span className={`${CLASS_NAME}__nav-dot ${CLASS_NAME}__nav-dot--${link.mod}`} />
+				<span className={`${CLASS_NAME}__nav-dot ${CLASS_NAME}__nav-dot--${mod}`} />
 				{link.label}
 			</button>
-			<div className={`${CLASS_NAME}__panel ${CLASS_NAME}__panel--${link.mod}`}>
+			<div className={`${CLASS_NAME}__panel ${CLASS_NAME}__panel--${mod}`}>
 				<div className={`${CLASS_NAME}__panel-inner`}>
 					<div className={`${CLASS_NAME}__panel-title`}>
 						<span className={`${CLASS_NAME}__panel-title-dot`} />
@@ -128,7 +103,7 @@ function MobileNavItem({ link, onClose }: { link: NavLink; onClose: () => void }
 	);
 }
 
-export default function Header() {
+export default function Header({ navLinks, identite, bouton }: Props) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
 
@@ -146,18 +121,18 @@ export default function Header() {
 			<header className={CLASS_NAME}>
 				<div className={`${CLASS_NAME}__inner container`}>
 					<Link href="/" className={`${CLASS_NAME}__logo`}>
-						<span className={`${CLASS_NAME}__logo-name`}>Saint-Hilaire-Bonneval</span>
+						<span className={`${CLASS_NAME}__logo-name`}>{identite.titre}</span>
 					</Link>
 
 					<nav className={`${CLASS_NAME}__nav`}>
-						{navLinks.map((link) => (
-							<DropdownItem key={link.label} link={link} />
+						{navLinks.map((link, i) => (
+							<DropdownItem key={link.label} link={link} mod={MODS[i % MODS.length]} />
 						))}
 					</nav>
 
 					<div className={`${CLASS_NAME}__actions`}>
-						<Link href="/location-salle" className={`${CLASS_NAME}__cta`}>
-							Location de salles
+						<Link href={bouton.href} className={`${CLASS_NAME}__cta`}>
+							{bouton.label}
 						</Link>
 						<button
 							className={`${CLASS_NAME}__burger`}
@@ -180,7 +155,7 @@ export default function Header() {
 						<nav className={`${CLASS_NAME}__drawer ${isOpen ? `${CLASS_NAME}__drawer--open` : ''}`}>
 							<div className={`${CLASS_NAME}__drawer-header`}>
 								<Link href="/" className={`${CLASS_NAME}__drawer-logo`} onClick={() => setIsOpen(false)}>
-									Saint-Hilaire-Bonneval
+									{identite.titre}
 								</Link>
 								<button
 									className={`${CLASS_NAME}__drawer-close`}
@@ -197,11 +172,11 @@ export default function Header() {
 							</div>
 							<div className={`${CLASS_NAME}__drawer-footer`}>
 								<Link
-									href="/location-salle"
+									href={bouton.href}
 									className={`${CLASS_NAME}__drawer-cta`}
 									onClick={() => setIsOpen(false)}
 								>
-									Location de salles
+									{bouton.label}
 								</Link>
 							</div>
 						</nav>

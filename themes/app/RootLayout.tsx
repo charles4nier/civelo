@@ -6,11 +6,6 @@ import Footer from '@themes/app/components/Footer';
 import FloatingButtons from '@themes/app/components/FloatingButtons';
 import type { RootLayoutProps } from '../registry';
 
-// Header/Footer encore 100% statiques (contenu en dur, voir Config
-// `@themes/app/config/commune`) — pas encore rebranchés sur Payload, à la
-// différence de style-edito. C'est la phase 2 du portage de ce thème
-// (rebranchement), pas encore faite : les props navLinks/identite/
-// boutonEntete/footer transitent ici sans effet pour l'instant.
 const cormorant = Cormorant_Garamond({
 	subsets: ['latin'],
 	weight: ['400', '500', '600'],
@@ -28,13 +23,13 @@ const inter = Inter({
 	preload: false
 });
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function RootLayout({ navLinks, identite, boutonEntete, footer, children }: RootLayoutProps) {
 	return (
 		<html lang="fr" className={`theme-app ${cormorant.variable} ${inter.variable}`}>
 			<body>
-				<Header />
+				<Header navLinks={navLinks} identite={identite} bouton={boutonEntete} />
 				<main>{children}</main>
-				<Footer />
+				<Footer navLinks={navLinks} identite={identite} data={footer} />
 				<FloatingButtons />
 			</body>
 		</html>
