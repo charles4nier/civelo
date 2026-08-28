@@ -1,77 +1,55 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import WaveSVG from '@themes/accueillant/components/WaveSVG';
 import './style.scss';
 
 const CLASS_NAME = 'discover';
 
-export type DiscoverCardData = {
-	key: string;
-	image?: string;
-	etiquette?: string;
-	titre: string;
-	description?: string;
-	href: string;
-};
+export type DiscoverCardData = { key: string; image?: string; etiquette?: string; titre: string; description?: string; href: string };
 
-type Props = { cards: DiscoverCardData[] };
+const FALLBACK_IMAGES = ['/news-garden.jpg', '/news-library.jpg', '/village-hero.jpg'];
 
-const FALLBACK_IMAGES = ['/lake.jpg', '/forest.jpg', '/village.jpg'];
+const fallbackCards: DiscoverCardData[] = [
+	{ key: '0', image: '/news-garden.jpg', etiquette: 'Nature', titre: "Nos étangs et plans d'eau", description: "Pêche, baignade et balades au fil de l'eau dans un cadre préservé.", href: '/tourisme/carte-interactive?category=nature' },
+	{ key: '1', image: '/news-library.jpg', etiquette: 'Randonnée', titre: 'Sentiers du Limousin', description: 'Plus de 40 km de chemins balisés à travers forêts et bocages.', href: '/tourisme/carte-interactive?category=randonnee' },
+	{ key: '2', image: '/village-hero.jpg', etiquette: 'Patrimoine', titre: "L'âme du village", description: 'Église, lavoirs, croix de chemin : un héritage qui se raconte.', href: '/histoire' }
+];
 
-export default function Discover({ cards }: Props) {
+type Props = { cards?: DiscoverCardData[] };
+
+export default function Discover({ cards = fallbackCards }: Props) {
 	return (
 		<section id="tourisme" className={CLASS_NAME}>
-			{/* Vague haut — absolue, rotée, couleur background (blanc) */}
-			<div className={`${CLASS_NAME}__wave-top`} aria-hidden="true">
-				<WaveSVG />
-			</div>
-
-			{/* Motif diagonal droite */}
-			<div className={`${CLASS_NAME}__wave-divider`} aria-hidden="true" />
-
-			<div className={`${CLASS_NAME}__inner container`}>
+			<div className="container">
 				<div className={`${CLASS_NAME}__header`}>
-					<p className="eyebrow eyebrow--accent">Tourisme &amp; Patrimoine</p>
-					<h2 className={`${CLASS_NAME}__title`}>
-						Un territoire à vivre,{' '}
-						<em>au rythme de la nature</em>
-					</h2>
-					<p className={`${CLASS_NAME}__subtitle`}>
-						La commune vous invite à ralentir. Découvrez ses paysages, son patrimoine bâti et la richesse d'un lieu où il
-						fait bon vivre.
+					<span className="eyebrow">Tourisme & Patrimoine</span>
+					<h2 className={`${CLASS_NAME}__title`}>Un territoire à vivre, au rythme de la nature</h2>
+					<p className={`${CLASS_NAME}__desc`}>
+						La commune vous invite à ralentir. Découvrez ses paysages, son patrimoine bâti et la richesse d'un lieu où
+						il fait bon vivre.
 					</p>
 				</div>
 
 				<div className={`${CLASS_NAME}__grid`}>
-					{cards.map((c, i) => (
-						<Link key={c.key} href={c.href} className={`${CLASS_NAME}__card`}>
-							<div className={`${CLASS_NAME}__card-img`}>
+					{cards.map((item, i) => (
+						<a key={item.key} href={item.href} className={`${CLASS_NAME}__card`}>
+							<div className={`${CLASS_NAME}__card-media`}>
 								<Image
-									src={c.image ?? FALLBACK_IMAGES[i % FALLBACK_IMAGES.length]}
-									alt={c.titre}
+									src={item.image ?? FALLBACK_IMAGES[i % FALLBACK_IMAGES.length]}
+									alt={item.titre}
 									fill
-									sizes="(max-width: 768px) 100vw, 33vw"
-									loading="lazy"
+									sizes="(min-width: 1024px) 33vw, 100vw"
 								/>
-								<div className={`${CLASS_NAME}__card-overlay`} />
-								{c.etiquette && <span className={`${CLASS_NAME}__card-tag`}>{c.etiquette}</span>}
-								<div className={`${CLASS_NAME}__card-body`}>
-									<h3 className={`${CLASS_NAME}__card-title`}>{c.titre}</h3>
-									{c.description && <p className={`${CLASS_NAME}__card-text`}>{c.description}</p>}
-									<span className={`${CLASS_NAME}__card-link`}>
-										Voir sur la carte <ArrowRight size={12} />
-									</span>
-								</div>
 							</div>
-						</Link>
+							<div className={`${CLASS_NAME}__card-body`}>
+								{item.etiquette && <div className={`${CLASS_NAME}__card-tag`}>{item.etiquette}</div>}
+								<h3 className={`${CLASS_NAME}__card-title`}>{item.titre}</h3>
+								{item.description && <p className={`${CLASS_NAME}__card-desc`}>{item.description}</p>}
+								<span className={`${CLASS_NAME}__card-link`}>
+									Voir sur la carte <span className={`${CLASS_NAME}__card-arrow`}>→</span>
+								</span>
+							</div>
+						</a>
 					))}
 				</div>
-			</div>
-
-			{/* Vague bas — absolue, couleur background (blanc) */}
-			<div className={`${CLASS_NAME}__wave-bottom`} aria-hidden="true">
-				<WaveSVG />
 			</div>
 		</section>
 	);

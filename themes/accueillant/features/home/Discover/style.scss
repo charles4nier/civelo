@@ -1,175 +1,99 @@
 @import '@themes/accueillant/styles/variables';
-
-.theme-accueillant {
 .discover {
-	position: relative;
-	background: $primary;
-	color: $cream;
-	padding: $section-padding-y-desktop 0;
-
-	@media (max-width: $breakpoint-sm) {
-		padding: $section-padding-y-mobile 0;
-	}
-
-	&__wave-top {
-		position: absolute;
-		inset-inline: 0;
-		top: -1px;
-		color: $background;
-		transform: rotate(180deg);
-		z-index: 1;
-		pointer-events: none;
-		line-height: 0;
-
-		svg { display: block; }
-	}
-
-	&__wave-bottom {
-		position: absolute;
-		inset-inline: 0;
-		bottom: -2px;
-		color: $background;
-		z-index: 1;
-		pointer-events: none;
-		line-height: 0;
-
-		svg { display: block; }
-	}
-
-	&__wave-divider {
-		position: absolute;
-		right: 0;
-		top: 0;
-		height: 100%;
-		width: 50%;
-		opacity: 0.4;
-		pointer-events: none;
-		background-image: repeating-linear-gradient(
-			135deg,
-			transparent 0 14px,
-			color-mix(in oklab, #{$forest} 18%, transparent) 14px 16px
-		);
-	}
-
-	&__inner {
-		position: relative;
-		z-index: 2;
-	}
+	background-color: $secondary;
+	padding: $spacing-6xl 0;
 
 	&__header {
-		max-width: 768px; /* max-w-3xl */
-		margin-bottom: $spacing-4xl;
+		max-width: 640px;
+		margin-bottom: $spacing-2xl;
 	}
 
 	&__title {
-		margin-top: $spacing-md;
-		color: $cream;
-		font-size: 36px; /* text-4xl */
-
-		@media (min-width: $breakpoint-sm) {
-			font-size: 60px; /* md:text-6xl */
-		}
-
-		em {
-			font-style: italic;
-			font-weight: $font-weight-regular;
-			color: $cream-80;
-		}
+		font-size: clamp(30px, 3.5vw, 44px);
+		font-weight: $font-weight-semibold;
+		color: $foreground;
 	}
 
-	&__subtitle {
-		margin-top: $spacing-xl;
-		color: $cream-75;
-		font-size: 18px; /* text-lg */
+	&__desc {
+		margin-top: $spacing-md;
+		font-size: 18px;
 		line-height: $line-height-relaxed;
-		max-width: 540px;
+		color: rgba(42, 36, 56, 0.7);
 	}
 
 	&__grid {
 		display: grid;
-		gap: 24px; /* gap-6 */
+		gap: $spacing-xl;
 
-		@media (min-width: $breakpoint-sm) {
+		@media (min-width: $breakpoint-md + 1) {
 			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 
 	&__card {
 		display: block;
+		overflow: hidden;
+		border-radius: 8px;
+		background-color: $card;
+		box-shadow: 0 0 0 1px $border;
+		transition: box-shadow 0.25s $ease-smooth;
 
 		&:hover {
-			.discover__card-img img {
-				transform: scale(1.05);
-			}
+			box-shadow: $shadow-soft;
 		}
 	}
 
-	&__card-img {
+	&__card-media {
 		position: relative;
-		aspect-ratio: 4 / 5;
-		overflow: hidden;
-		border-radius: 16px;
-
-		img {
-			object-fit: cover;
-			transition: transform 0.7s $ease-smooth;
-		}
-	}
-
-	&__card-overlay {
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(to top, $primary 0%, $primary-20 50%, transparent 100%);
-		pointer-events: none;
-	}
-
-	&__card-tag {
-		position: absolute;
-		top: $spacing-lg;
-		left: $spacing-lg;
-		font-family: $font-body;
-		font-size: 11px; /* text-[11px] */
-		font-weight: $font-weight-medium;
-		text-transform: uppercase;
-		letter-spacing: 0.25em;
-		color: $accent;
+		aspect-ratio: 4 / 3;
 	}
 
 	&__card-body {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		padding: $spacing-xl;
+		padding: $spacing-lg;
+	}
+
+	&__card-tag {
+		margin-bottom: $spacing-sm;
+		font-size: $xs-size-desktop;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: $primary;
 	}
 
 	&__card-title {
-		font-family: $font-display;
-		font-size: 24px; /* font-serif text-2xl */
-		font-weight: $font-weight-medium;
-		color: $cream;
+		margin-bottom: $spacing-sm;
+		font-size: 20px;
+		font-weight: $font-weight-semibold;
 		line-height: $line-height-snug;
+		color: $foreground;
 	}
 
-	&__card-text {
-		margin-top: $spacing-sm;
+	&__card:hover &__card-title {
+		color: $primary;
+	}
+
+	&__card-desc {
 		font-size: $small-size-desktop;
-		color: $cream-75;
 		line-height: $line-height-relaxed;
+		color: rgba(42, 36, 56, 0.6);
 	}
 
 	&__card-link {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
-		margin-top: $spacing-md;
-		font-family: $font-body;
-		font-size: $xs-size-desktop;
-		font-weight: $font-weight-medium;
-		text-transform: uppercase;
-		letter-spacing: 0.2em;
-		color: $accent;
+		gap: $spacing-xs;
+		margin-top: $spacing-lg;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		color: $foreground;
+	}
+
+	&__card-arrow {
+		transition: transform 0.2s $ease-smooth;
+	}
+
+	&__card:hover &__card-arrow {
+		transform: translateX(4px);
 	}
 }
-}
-

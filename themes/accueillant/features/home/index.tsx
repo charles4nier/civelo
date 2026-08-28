@@ -2,9 +2,9 @@ import Hero, { type HeroData } from './Hero';
 import QuickAccess, { type QuickAccessItemData } from './QuickAccess';
 import Discover, { type DiscoverCardData } from './Discover';
 import MayorWord, { type MayorWordData } from './MayorWord';
-import News, { type NewsItemData } from './News';
-import CTA from './CTA';
-import { getAccueilData, getAgendaItems, getActualitesItems, pickHomeActus } from '@lib/payload';
+import News, { type NewsActuData, type NewsAgendaData } from './News';
+import CTA, { type CTAData } from './CTA';
+import { getAccueilData, getAgendaItems, getActualitesItems, getIdentiteData, pickHomeActus } from '@lib/payload';
 
 // `getAccueilData()` (partagée par les 3 thèmes) renvoie ses propres images
 // de repli quand aucun fichier n'est uploadé — celles d'edito
@@ -16,29 +16,33 @@ function ownImage(url: string | undefined): string | undefined {
 }
 
 export default async function HomePage() {
-	const [accueil, agendaItems, actualiteItems] = await Promise.all([
+	const [accueil, agendaItems, actualiteItems, identite] = await Promise.all([
 		getAccueilData(),
 		getAgendaItems('agenda'),
-		getActualitesItems('mairie/actualites')
+		getActualitesItems('mairie/actualites'),
+		getIdentiteData()
 	]);
+
+	const nomCommune = identite.titre;
 
 	const hero: HeroData = accueil?.hero
 		? { ...accueil.hero, image: ownImage(accueil.hero.image) }
 		: { titre: 'Bienvenue sur le site de votre commune.' };
 
-	const quickAccessItems: QuickAccessItemData[] = accueil?.quickAccessItems ?? [];
+	const quickAccessItems: QuickAccessItemData[] | undefined = accueil?.quickAccessItems?.length
+		? accueil.quickAccessItems
+		: undefined;
 
-	const discoverCards: DiscoverCardData[] = (accueil?.discoverCards ?? []).map((c) => ({
-		...c,
-		image: ownImage(c.image)
-	}));
+	const discoverCards: DiscoverCardData[] | undefined = accueil?.discoverCards?.length
+		? accueil.discoverCards.map((c) => ({ ...c, image: ownImage(c.image) }))
+		: undefined;
 
 	const mayorWord: MayorWordData | null = accueil?.mayorWord
-		? { ...accueil.mayorWord, image: ownImage(accueil.mayorWord.image) }
+		? { citation: accueil.mayorWord.citation, nomSignataire: accueil.mayorWord.nomSignataire }
 		: null;
 
-	const newsArticles: NewsItemData[] = actualiteItems
-		? pickHomeActus(actualiteItems).map((a) => ({
+	const actus: NewsActuData[] | undefined = actualiteItems
+		? pickHomeActus(actualiteItems, 2).map((a) => ({
 				key: a.key,
 				date: a.date,
 				category: a.category,
@@ -46,16 +50,22 @@ export default async function HomePage() {
 				excerpt: a.excerpt,
 				documentHref: a.documentHref
 			}))
-		: [];
+		: undefined;
+
+	const agenda: NewsAgendaData[] | undefined = agendaItems?.length
+		? agendaItems.slice(0, 3).map((e) => ({ key: e.key, date: e.date, title: e.title, location: e.location }))
+		: undefined;
+
+	const cta: CTAData | null = accueil?.cta ?? null;
 
 	return (
 		<>
 			<Hero data={hero} />
-			{quickAccessItems.length > 0 && <QuickAccess items={quickAccessItems} />}
-			{discoverCards.length > 0 && <Discover cards={discoverCards} />}
-			{mayorWord && <MayorWord data={mayorWord} />}
-			{newsArticles.length > 0 && <News articles={newsArticles} />}
-			<CTA data={accueil?.cta ?? null} />
+			<QuickAccess items={quickAccessItems} />
+			<Discover cards={discoverCards} />
+			<MayorWord data={mayorWord} nomCommune={nomCommune} />
+			<News actus={actus} agenda={agenda} />
+			<CTA data={cta} nomCommune={nomCommune} />
 		</>
 	);
 }

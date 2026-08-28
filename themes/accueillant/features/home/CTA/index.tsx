@@ -1,25 +1,9 @@
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight, Mail, MapPin, Phone } from 'lucide-react';
 import type { ContactItem } from '@themes/edito/components/ContactCard';
 import './style.scss';
 
-const B = 'cta';
+const CLASS_NAME = 'cta';
 
-export type CTAData = {
-	titre?: string;
-	description?: string;
-	boutonLabel?: string;
-	contacts: ContactItem[];
-};
-
-type Props = { data: CTAData | null };
-
-const ICONS: Partial<Record<ContactItem['type'], typeof MapPin>> = {
-	address: MapPin,
-	phone: Phone,
-	email: Mail
-};
+export type CTAData = { titre?: string; description?: string; boutonLabel?: string; contacts: ContactItem[] };
 
 const LABELS: Partial<Record<ContactItem['type'], string>> = {
 	address: 'Adresse',
@@ -27,68 +11,42 @@ const LABELS: Partial<Record<ContactItem['type'], string>> = {
 	email: 'Email'
 };
 
-export default function CTA({ data }: Props) {
-	const contacts = (data?.contacts ?? []).filter((c): c is ContactItem => c.type in ICONS);
-	const emailContact = contacts.find((c) => c.type === 'email');
+const fallbackInfos: ContactItem[] = [
+	{ type: 'address', value: 'Le Bourg, 87260 Saint-Hilaire-Bonneval' },
+	{ type: 'phone', value: '05 55 00 61 65' },
+	{ type: 'email', value: 'contact@saint-hilaire-bonneval.fr' }
+];
+
+type Props = { data?: CTAData | null; nomCommune?: string };
+
+export default function CTA({ data, nomCommune }: Props) {
+	const infos = (data?.contacts ?? []).filter((c) => c.type in LABELS);
+	const emailContact = infos.find((c) => c.type === 'email');
 
 	return (
-		<section className={B}>
-			<div className={`${B}__inner container`}>
-				<div className={`${B}__card`}>
-					{/* ── Location de salle ── */}
-					<div className={`${B}__location`}>
-						<p className={`${B}__eyebrow`}>Réservez votre événement</p>
-						<h2 className={`${B}__title`}>
-							Location de salles <em>communales</em>
-						</h2>
-						<p className={`${B}__desc`}>
-							Mariage, anniversaire, réunion associative : nos salles s'adaptent à tous vos projets, dans un cadre
-							chaleureux au cœur du village.
+		<section id="contact" className={CLASS_NAME}>
+			<div className="container">
+				<div className={`${CLASS_NAME}__card`}>
+					<div className={`${CLASS_NAME}__intro`}>
+						<span className={`${CLASS_NAME}__eyebrow`}>{nomCommune ? `Mairie de ${nomCommune}` : 'Mairie'}</span>
+						<h2 className={`${CLASS_NAME}__title`}>{data?.titre || 'Nous contacter'}</h2>
+						<p className={`${CLASS_NAME}__desc`}>
+							{data?.description ||
+								"La mairie vous accueille du lundi au vendredi, de 9h à 12h et de 14h à 17h. Le secrétariat reste à votre disposition pour toute démarche."}
 						</p>
-						<Link href="/location-salle" className={`${B}__btn`}>
-							Réserver une salle <ArrowRight size={15} />
-						</Link>
-
-						<div className={`${B}__images`}>
-							<Image src="/village.jpg" alt="Salle des fêtes" width={300} height={300} loading="lazy" className={`${B}__img ${B}__img--a`} />
-							<Image src="/lake.jpg" alt="Espace extérieur" width={300} height={300} loading="lazy" className={`${B}__img ${B}__img--b`} />
-						</div>
+						<a href={emailContact ? `mailto:${emailContact.value}` : '#'} className={`${CLASS_NAME}__link`}>
+							{data?.boutonLabel || 'Prendre rendez-vous'} →
+						</a>
 					</div>
 
-					{/* ── Séparateur ── */}
-					<div className={`${B}__sep`} aria-hidden="true" />
-
-					{/* ── Nous contacter ── */}
-					<div className={`${B}__contact`}>
-						<p className={`${B}__eyebrow`}>Mairie</p>
-						<h2 className={`${B}__title`}>{data?.titre || 'Nous contacter'}</h2>
-						{data?.description && <p className={`${B}__desc`}>{data.description}</p>}
-
-						{contacts.length > 0 && (
-							<div className={`${B}__tiles`}>
-								{contacts.map((c) => {
-									const Icon = ICONS[c.type]!;
-									return (
-										<div key={c.type} className={`${B}__tile`}>
-											<div className={`${B}__tile-icon`}>
-												<Icon size={18} />
-											</div>
-											<div>
-												<div className={`${B}__tile-label`}>{LABELS[c.type]}</div>
-												<div className={`${B}__tile-value`}>{c.value}</div>
-											</div>
-										</div>
-									);
-								})}
+					<dl className={`${CLASS_NAME}__infos`}>
+						{(infos.length > 0 ? infos : fallbackInfos).map((info) => (
+							<div key={info.type}>
+								<dt>{LABELS[info.type]}</dt>
+								<dd>{info.value}</dd>
 							</div>
-						)}
-
-						{emailContact && (
-							<a href={`mailto:${emailContact.value}`} className={`${B}__btn`}>
-								{data?.boutonLabel || 'Prendre rendez-vous'} <ArrowRight size={15} />
-							</a>
-						)}
-					</div>
+						))}
+					</dl>
 				</div>
 			</div>
 		</section>

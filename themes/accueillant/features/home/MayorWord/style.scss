@@ -1,135 +1,84 @@
 @import '@themes/accueillant/styles/variables';
-
-.theme-accueillant {
 .mayor-word {
-	padding: $section-padding-y-desktop 0;
+	position: relative;
+	overflow: hidden;
+	padding: $spacing-4xl 0;
+	background-color: $primary;
+	color: #ffffff;
 
-	@media (max-width: $breakpoint-sm) {
-		padding: $section-padding-y-mobile 0;
+	@media (min-width: $breakpoint-md + 1) {
+		padding: $spacing-5xl 0;
+	}
+
+	&__dots {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		opacity: 0.18;
+		background-image: radial-gradient(circle at 1px 1px, #ffffff 1.5px, transparent 0);
+		background-size: 24px 24px;
 	}
 
 	&__inner {
-		display: grid;
-		gap: $spacing-3xl;
-		align-items: center;
-
-		@media (min-width: $breakpoint-md) {
-			grid-template-columns: 5fr 7fr;
-			gap: $spacing-4xl;
-		}
-	}
-
-	&__image-col {
 		position: relative;
+		max-width: 800px;
+		text-align: center;
 	}
 
-	&__image {
-		border-radius: 16px;
-		aspect-ratio: 4 / 5;
-		width: 100%;
-		height: auto;
-		object-fit: cover;
-	}
-
-	&__stat {
-		position: absolute;
-		bottom: -32px; /* -bottom-8 */
-		right: -16px;  /* -right-4 */
-		background: $card;
-		border: 1px solid $border;
-		border-radius: 16px;
-		padding: $spacing-xl;
-		box-shadow: $shadow-soft;
-
-		@media (max-width: $breakpoint-sm) {
-			position: static;
-			margin-top: $spacing-xl;
-			display: inline-flex;
-			flex-direction: column;
-		}
-	}
-
-	&__stat-number {
-		display: block;
-		font-family: $font-display;
-		font-size: 48px; /* font-serif text-5xl */
-		font-weight: $font-weight-medium;
-		color: $primary;
-		line-height: 1;
-	}
-
-	&__stat-label {
-		display: block;
-		margin-top: $spacing-sm;
-		font-family: $font-body;
+	&__eyebrow {
+		display: inline-block;
+		margin-bottom: $spacing-md;
 		font-size: $xs-size-desktop;
+		font-weight: $font-weight-semibold;
 		text-transform: uppercase;
-		letter-spacing: 0.2em;
-		color: $muted-foreground;
-	}
-
-	&__text-col {
-		@media (min-width: $breakpoint-md) {
-			padding-left: $spacing-2xl;
-			padding-bottom: $spacing-2xl;
-		}
-	}
-
-	&__title {
-		margin-top: $spacing-md;
-		color: $primary;
-		font-size: 36px; /* text-4xl */
-
-		@media (min-width: $breakpoint-sm) {
-			font-size: 48px; /* md:text-5xl */
-		}
-
-		em {
-			font-style: italic;
-			font-weight: $font-weight-regular;
-		}
+		letter-spacing: 0.25em;
+		color: $sunshine;
 	}
 
 	&__quote {
-		margin-top: $spacing-2xl;
 		font-family: $font-display;
-		font-size: 18px; /* text-lg */
-		font-style: italic;
-		line-height: $line-height-relaxed;
-		color: $foreground-80;
+		font-size: clamp(24px, 3vw, 32px);
+		font-weight: $font-weight-medium;
+		line-height: 1.3;
+		color: #ffffff;
 	}
 
-	&__author {
+	&__quote-highlight {
+		font-style: italic;
+		color: $sunshine;
+	}
+
+	&__signature {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: $spacing-md;
 		margin-top: $spacing-2xl;
 	}
 
-	&__author-avatar {
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		background: $primary;
-		color: $cream;
+	&__avatar {
 		display: grid;
 		place-items: center;
+		width: 44px;
+		height: 44px;
+		border-radius: 50%;
+		background-color: $sunshine;
 		font-family: $font-display;
-		font-size: 18px; /* font-serif text-lg */
-		font-weight: $font-weight-medium;
-		flex-shrink: 0;
+		font-size: 16px;
+		font-weight: $font-weight-bold;
+		color: $foreground;
 	}
 
-	&__author-name {
+	&__name {
+		font-family: $font-display;
+		font-size: 16px;
 		font-weight: $font-weight-semibold;
-		color: $primary;
-		font-size: $body-size-desktop;
+		color: #ffffff;
+		text-align: left;
 	}
 
-	&__author-role {
-		font-size: $small-size-desktop;
-		color: $muted-foreground;
+	&__role {
+		font-size: 12px;
+		color: rgba(255, 255, 255, 0.7);
 	}
 }
-}
-

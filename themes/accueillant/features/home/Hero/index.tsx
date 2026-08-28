@@ -1,6 +1,4 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight, ChevronDown } from 'lucide-react';
 import './style.scss';
 
 const CLASS_NAME = 'hero';
@@ -17,73 +15,55 @@ type Props = { data: HeroData };
 
 export default function Hero({ data }: Props) {
 	return (
-		<section className={CLASS_NAME}>
-			<div className={`${CLASS_NAME}__wrapper container`}>
-
-				{/* Image encadrée + vagues décoratives (vagues hors du frame pour ne pas être clippées) */}
-				<div className={`${CLASS_NAME}__frame-wrapper`}>
-					<div className={`${CLASS_NAME}__frame`}>
-						<Image
-							src={data.image ?? '/hero.jpg'}
-							alt="Vue de la commune"
-							fill
-							priority
-							sizes="100vw"
-							className={`${CLASS_NAME}__image`}
-						/>
-						<div className={`${CLASS_NAME}__overlay`} />
-
-						{/* Contenu sur l'image */}
-						<div className={`${CLASS_NAME}__content`}>
-							<div className={`${CLASS_NAME}__body`}>
-								<span className={`${CLASS_NAME}__badge`}>
-									<span className={`${CLASS_NAME}__badge-dot`} />
-									Site officiel
-								</span>
-								<p className={`${CLASS_NAME}__title`}>{data.titre}</p>
-							</div>
-							<div className={`${CLASS_NAME}__actions`}>
-								{data.boutonPrincipal && (
-									<a href={data.boutonPrincipal.href ?? '#'} className={`${CLASS_NAME}__cta-dark`}>
-										{data.boutonPrincipal.label} <ArrowRight size={16} />
-									</a>
-								)}
-								{data.boutonSecondaire && (
-									<Link href={data.boutonSecondaire.href ?? '#'} className={`${CLASS_NAME}__cta-ghost`}>
-										{data.boutonSecondaire.label}
-									</Link>
-								)}
-							</div>
+		<header className={CLASS_NAME}>
+			<div className={`${CLASS_NAME}__grid`}>
+				<div className={`${CLASS_NAME}__body`}>
+					<div className={`${CLASS_NAME}__content`}>
+						<div className={`${CLASS_NAME}__eyebrow`}>
+							<span className={`${CLASS_NAME}__eyebrow-line`} />
+							Haute-Vienne · Limousin
 						</div>
-					</div>
+						<h1 className={`${CLASS_NAME}__title`}>{data.titre}</h1>
+						{data.description && <p className={`${CLASS_NAME}__desc`}>{data.description}</p>}
+						<div className={`${CLASS_NAME}__actions`}>
+							<a href={data.boutonPrincipal?.href ?? '#demarches'} className="btn-primary">
+								{data.boutonPrincipal?.label ?? 'Effectuer une démarche'} →
+							</a>
+							<a href={data.boutonSecondaire?.href ?? '#tourisme'} className="btn-secondary">
+								{data.boutonSecondaire?.label ?? 'Découvrir la commune'}
+							</a>
+						</div>
 
-					{/* Vagues décoratives — hors du frame pour ne pas être clippées par overflow:hidden */}
-					<svg className={`${CLASS_NAME}__waves`} viewBox="0 0 200 120" aria-hidden="true">
-						{[0, 1, 2, 3].map((i) => (
-							<path
-								key={i}
-								d={`M0 ${20 + i * 25} Q 50 ${i * 25}, 100 ${20 + i * 25} T 200 ${20 + i * 25}`}
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="3"
-								strokeLinecap="round"
-							/>
-						))}
-					</svg>
+						<dl className={`${CLASS_NAME}__infos`}>
+							<div>
+								<dt>Horaires d'ouverture</dt>
+								<dd>
+									Mardi — Vendredi
+									<span>9 h — 12 h · 14 h — 17 h</span>
+								</dd>
+							</div>
+							<div>
+								<dt>Mairie</dt>
+								<dd>
+									05 55 00 87 26
+									<span>contact@saint-hilaire-bonneval.fr</span>
+								</dd>
+							</div>
+						</dl>
+					</div>
 				</div>
 
-				{/* Sous-ligne */}
-				{data.description && (
-					<div className={`${CLASS_NAME}__sub`}>
-						<p className={`${CLASS_NAME}__sub-text`}>{data.description}</p>
-						<div className={`${CLASS_NAME}__scroll-hint`}>
-							<span className={`${CLASS_NAME}__scroll-line`} />
-							Découvrir
-							<ChevronDown size={14} className={`${CLASS_NAME}__scroll-icon`} />
-						</div>
-					</div>
-				)}
+				<div className={`${CLASS_NAME}__media`}>
+					<Image
+						src={data.image ?? '/village-hero.jpg'}
+						alt="Vue aérienne de la commune"
+						fill
+						priority
+						sizes="(min-width: 1024px) 50vw, 100vw"
+						className={`${CLASS_NAME}__image`}
+					/>
+				</div>
 			</div>
-		</section>
+		</header>
 	);
 }

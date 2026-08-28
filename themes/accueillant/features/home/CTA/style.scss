@@ -1,166 +1,88 @@
 @import '@themes/accueillant/styles/variables';
+.cta {
+	padding: $spacing-6xl 0;
 
-.theme-accueillant {
-$b: 'cta';
+	&__card {
+		display: grid;
+		gap: $spacing-2xl;
+		border-radius: 12px;
+		padding: $spacing-2xl;
+		background-color: $primary;
+		color: #ffffff;
 
-.#{$b} {
-	padding: $section-padding-y-desktop 0;
-
-	@media (max-width: $breakpoint-md) { padding: $section-padding-y-tablet 0; }
-	@media (max-width: $breakpoint-sm) { padding: $section-padding-y-mobile 0; }
-}
-
-.#{$b}__card {
-	position: relative;
-	overflow: hidden;
-	background: $primary;
-	border-radius: 24px;
-	padding: $spacing-4xl $spacing-5xl;
-	display: grid;
-	grid-template-columns: 1fr 1px 1fr;
-	gap: $spacing-5xl;
-	align-items: start;
-	box-shadow: $shadow-elegant;
-
-	@media (max-width: $breakpoint-md) {
-		padding: $spacing-3xl;
-		grid-template-columns: 1fr;
-		gap: $spacing-3xl;
+		@media (min-width: $breakpoint-md + 1) {
+			grid-template-columns: 1.3fr 1fr;
+			align-items: start;
+			padding: $spacing-4xl;
+		}
 	}
 
-	@media (max-width: $breakpoint-sm) {
-		padding: $spacing-2xl $spacing-xl;
+	&__eyebrow {
+		display: inline-block;
+		margin-bottom: $spacing-sm;
+		font-size: $xs-size-desktop;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		color: $sunshine;
+	}
+
+	&__title {
+		font-size: clamp(26px, 3vw, 36px);
+		font-weight: $font-weight-semibold;
+		line-height: $line-height-tight;
+		color: #ffffff;
+	}
+
+	&__desc {
+		margin-top: $spacing-md;
+		max-width: 480px;
+		color: rgba(255, 255, 255, 0.8);
+	}
+
+	&__link {
+		display: inline-flex;
+		margin-top: $spacing-xl;
+		border-radius: 6px;
+		padding: 14px 28px;
+		background-color: $sunshine;
+		color: $foreground;
+		font-weight: $font-weight-semibold;
+		transition: opacity 0.2s $ease-smooth;
+
+		&:hover {
+			opacity: 0.9;
+		}
+	}
+
+	&__infos {
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-lg;
+		font-size: $small-size-desktop;
+
+		div {
+			padding-bottom: $spacing-lg;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+		}
+
+		div:last-child {
+			border-bottom: none;
+			padding-bottom: 0;
+		}
+
+		dt {
+			font-size: $xs-size-desktop;
+			font-weight: $font-weight-semibold;
+			text-transform: uppercase;
+			letter-spacing: 0.14em;
+			color: $sunshine;
+		}
+
+		dd {
+			margin-top: $spacing-sm;
+			font-size: 16px;
+			color: #ffffff;
+		}
 	}
 }
-
-
-/* ── Séparateur vertical ── */
-
-.#{$b}__sep {
-	width: 1px;
-	align-self: stretch;
-	background: $ivory-15;
-
-	@media (max-width: $breakpoint-md) {
-		width: 100%;
-		height: 1px;
-	}
-}
-
-/* ── Texte commun ── */
-
-.#{$b}__eyebrow {
-	font-family: $font-body;
-	font-size: $xs-size-desktop;
-	font-weight: $font-weight-semibold;
-	text-transform: uppercase;
-	letter-spacing: 0.22em;
-	color: $accent;
-}
-
-.#{$b}__title {
-	margin-top: $spacing-sm;
-	font-family: $font-display;
-	font-size: clamp(26px, 3vw, 38px);
-	font-weight: $font-weight-medium;
-	line-height: $line-height-snug;
-	color: $cream;
-
-	em {
-		font-style: italic;
-		font-weight: $font-weight-regular;
-		color: $ivory-75;
-	}
-}
-
-.#{$b}__desc {
-	margin-top: $spacing-lg;
-	color: $ivory-75;
-	font-size: $small-size-desktop;
-	line-height: $line-height-relaxed;
-	max-width: 420px;
-}
-
-.#{$b}__btn {
-	display: inline-flex;
-	align-items: center;
-	gap: $spacing-sm;
-	margin-top: $spacing-2xl;
-	padding: 12px 28px;
-	background-color: $accent;
-	color: $primary;
-	font-family: $font-body;
-	font-size: $small-size-desktop;
-	font-weight: $font-weight-medium;
-	border-radius: 9999px;
-	transition: $transition-smooth;
-	box-shadow: 0 4px 20px $accent-30;
-
-	&:hover { background-color: $accent-hover; color: $primary; }
-}
-
-/* ── Location : photos ── */
-
-.#{$b}__images {
-	position: relative;
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: $spacing-md;
-	margin-top: $spacing-3xl;
-}
-
-.#{$b}__img {
-	border-radius: 12px;
-	aspect-ratio: 1;
-	object-fit: cover;
-	width: 100%;
-	height: auto;
-
-	&--b { margin-top: 32px; }
-}
-
-/* ── Contact : tuiles ── */
-
-.#{$b}__tiles {
-	display: flex;
-	flex-direction: column;
-	gap: $spacing-sm;
-	margin-top: $spacing-2xl;
-}
-
-.#{$b}__tile {
-	display: flex;
-	align-items: center;
-	gap: $spacing-md;
-	padding: $spacing-lg $spacing-xl;
-	background: $ivory-08;
-	border-left: 2px solid $accent;
-	border-radius: 0 8px 8px 0;
-}
-
-.#{$b}__tile-icon {
-	width: 40px;
-	height: 40px;
-	display: grid;
-	place-items: center;
-	flex-shrink: 0;
-	border-radius: 50%;
-	background: $ivory-10;
-	color: $accent;
-}
-
-.#{$b}__tile-label {
-	font-size: $xs-size-desktop;
-	text-transform: uppercase;
-	letter-spacing: 0.18em;
-	color: $ivory-60;
-}
-
-.#{$b}__tile-value {
-	font-weight: $font-weight-medium;
-	margin-top: 2px;
-	color: $cream;
-	font-size: $small-size-desktop;
-}
-}
-

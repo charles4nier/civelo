@@ -1,56 +1,37 @@
-import Image from 'next/image';
 import './style.scss';
 
 const CLASS_NAME = 'mayor-word';
 
-export type MayorWordData = {
-	image?: string;
-	citation: string;
-	nomSignataire?: string;
-	statNombre?: string;
-	statLibelle?: string;
-};
+export type MayorWordData = { citation: string; nomSignataire?: string };
 
-type Props = { data: MayorWordData };
+type Props = { data?: MayorWordData | null; nomCommune?: string };
 
-export default function MayorWord({ data }: Props) {
+const FALLBACK_QUOTE = (
+	<>
+		Saint-Hilaire-Bonneval, c'est l'histoire d'un village qui avance
+		<span className={`${CLASS_NAME}__quote-highlight`}> sans renier ses racines</span> — où la nature dicte le
+		tempo et où les liens se tissent autour de projets partagés.
+	</>
+);
+
+export default function MayorWord({ data, nomCommune }: Props) {
+	const nomSignataire = data?.nomSignataire || 'Monsieur le Maire';
+	const initiale = nomSignataire.trim().charAt(0).toUpperCase() || 'M';
+
 	return (
 		<section className={CLASS_NAME}>
+			<div className={`${CLASS_NAME}__dots`} aria-hidden />
 			<div className={`${CLASS_NAME}__inner container`}>
+				<span className={`${CLASS_NAME}__eyebrow`}>Édito municipal</span>
+				<blockquote className={`${CLASS_NAME}__quote`}>{data?.citation || FALLBACK_QUOTE}</blockquote>
 
-				<div className={`${CLASS_NAME}__image-col`}>
-					<Image
-						src={data.image ?? '/village.jpg'}
-						alt="Le village"
-						width={600}
-						height={750}
-						loading="lazy"
-						className={`${CLASS_NAME}__image`}
-					/>
-					{data.statNombre && (
-						<div className={`${CLASS_NAME}__stat`}>
-							<span className={`${CLASS_NAME}__stat-number`}>{data.statNombre}</span>
-							{data.statLibelle && <span className={`${CLASS_NAME}__stat-label`}>{data.statLibelle}</span>}
-						</div>
-					)}
+				<div className={`${CLASS_NAME}__signature`}>
+					<div className={`${CLASS_NAME}__avatar`}>{initiale}</div>
+					<div>
+						<div className={`${CLASS_NAME}__name`}>{nomSignataire}</div>
+						<div className={`${CLASS_NAME}__role`}>{nomCommune ? `Commune de ${nomCommune}` : 'Commune de Saint-Hilaire-Bonneval'}</div>
+					</div>
 				</div>
-
-				<div className={`${CLASS_NAME}__text-col`}>
-					<p className="eyebrow">Édito municipal</p>
-					<h2 className={`${CLASS_NAME}__title`}>
-						Le mot du <em>Maire</em>
-					</h2>
-					<blockquote className={`${CLASS_NAME}__quote`}>« {data.citation} »</blockquote>
-					{data.nomSignataire && (
-						<div className={`${CLASS_NAME}__author`}>
-							<div className={`${CLASS_NAME}__author-avatar`}>{data.nomSignataire.charAt(0)}</div>
-							<div>
-								<p className={`${CLASS_NAME}__author-name`}>{data.nomSignataire}</p>
-							</div>
-						</div>
-					)}
-				</div>
-
 			</div>
 		</section>
 	);
