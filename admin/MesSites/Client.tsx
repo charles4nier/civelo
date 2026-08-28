@@ -1,8 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Building2, ArrowRight, Settings, Search } from 'lucide-react';
+import { Building2, ArrowRight, Search } from 'lucide-react';
 import CreateTenantButton from '../CreateTenantButton/Client';
+import SiteSettingsMenu from './SiteSettingsMenu';
 import './style.scss';
 
 type Tenant = { id: string; nom: string; domaine: string; theme: string; statutContrat: string; createdAt?: string };
@@ -99,14 +100,7 @@ export default function MesSitesClient({ tenants }: Props) {
 										</div>
 										<ArrowRight size={18} className="mes-sites__card-arrow" aria-hidden="true" />
 									</button>
-									<a
-										href={`/admin/collections/tenants/${t.id}`}
-										className="mes-sites__card-settings"
-										title="Modifier la fiche commune (domaine, thème, statut…)"
-										onClick={(e) => e.stopPropagation()}
-									>
-										<Settings size={15} aria-hidden="true" />
-									</a>
+									<SiteSettingsMenu tenant={{ id: t.id, nom: t.nom, domaine: t.domaine }} />
 								</div>
 							))}
 						</div>
