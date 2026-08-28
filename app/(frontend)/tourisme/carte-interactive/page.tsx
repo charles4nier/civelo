@@ -5,6 +5,7 @@ import { pois as editoFallbackPois, sentiers as editoFallbackSentiers } from '@t
 import AppCarteInteractive from '@themes/app/features/carte';
 import { pois as appFallbackPois, sentiers as appFallbackSentiers } from '@themes/app/features/carte/data';
 import AccueillantCarteInteractive from '@themes/accueillant/features/carte';
+import { pois as accueillantFallbackPois, sentiers as accueillantFallbackSentiers } from '@themes/accueillant/features/carte/data';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getCarteData, getPayloadClient } from '@lib/payload';
 
@@ -28,7 +29,13 @@ export default async function Page({ searchParams }: PageProps) {
 	}
 
 	if (theme === 'accueillant') {
-		return <AccueillantCarteInteractive initialId={id} />;
+		return (
+			<AccueillantCarteInteractive
+				initialId={id}
+				pois={data?.pois ?? accueillantFallbackPois}
+				sentiers={data?.sentiers ?? accueillantFallbackSentiers}
+			/>
+		);
 	}
 
 	return (

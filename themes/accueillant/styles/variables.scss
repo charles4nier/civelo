@@ -24,6 +24,50 @@ $dark:                #2a2438; // muni-dark (fonds sombres : footer, agenda)
 
 $error:               #e0503a;
 
+/* --- Alias/dérivés — ajoutés lors du portage des pages manquantes
+   (structure d'App recolorée en Accueillant, pas un chantier de
+   personnalisation par commune comme sur edito/App : couleurs encore en
+   dur, pas de custom properties CSS ici) --- */
+$forest:              $leaf;
+$cream:               $secondary; // "muni-cream" — même teinte
+$ochre:               $sunshine;
+$accent:              $coral;
+$accent-foreground:   $dark;
+$terracotta:          $coral;
+
+$primary-05:          rgba(46, 139, 87, 0.05);
+$primary-10:          rgba(46, 139, 87, 0.10);
+$primary-20:          rgba(46, 139, 87, 0.20);
+$primary-30:          rgba(46, 139, 87, 0.30);
+$primary-60:          rgba(46, 139, 87, 0.60);
+$primary-70:          rgba(46, 139, 87, 0.70);
+$primary-80:          rgba(46, 139, 87, 0.80);
+$accent-15:           rgba(255, 122, 89, 0.15);
+$accent-20:           rgba(255, 122, 89, 0.20);
+$accent-30:           rgba(255, 122, 89, 0.30);
+$accent-70:           rgba(255, 122, 89, 0.70);
+$accent-hover:        #e85f3f; // $coral assombri
+$primary-dark:        #256b45; // $primary assombri
+$coral-15:            rgba(255, 122, 89, 0.15);
+$forest-10:           rgba(124, 198, 106, 0.10);
+$forest-60:           rgba(124, 198, 106, 0.60);
+$forest-70:           rgba(124, 198, 106, 0.70);
+$leaf-15:              rgba(124, 198, 106, 0.15);
+$sunshine-25:         rgba(255, 201, 77, 0.25);
+$sunshine-50:         rgba(255, 201, 77, 0.50);
+$cream-10:            rgba(255, 246, 229, 0.10);
+$cream-20:            rgba(255, 246, 229, 0.20);
+$cream-30:            rgba(255, 246, 229, 0.30);
+$cream-60:            rgba(255, 246, 229, 0.60);
+$cream-75:            rgba(255, 246, 229, 0.75);
+$cream-80:            rgba(255, 246, 229, 0.80);
+$ivory-08:            rgba(255, 246, 229, 0.08);
+$ivory-10:            rgba(255, 246, 229, 0.10);
+$ivory-15:            rgba(255, 246, 229, 0.15);
+$ivory-60:            rgba(255, 246, 229, 0.60);
+$ivory-75:            rgba(255, 246, 229, 0.75);
+$foreground-80:       rgba(42, 36, 56, 0.80);
+
 /* --- Dégradés --- */
 $gradient-hero:    linear-gradient(180deg, transparent 0%, rgba(42, 36, 56, 0.2) 50%, rgba(42, 36, 56, 0.85) 100%);
 $gradient-primary: linear-gradient(135deg, $primary, $sky);

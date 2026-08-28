@@ -1,7 +1,12 @@
-import ComingSoon from '@themes/accueillant/components/ComingSoon';
+'use client';
 
-type Props = { initialId?: string };
+import dynamic from 'next/dynamic';
+import type { POI, Sentier } from './data';
 
-export default async function CarteInteractivePage(_props: Props) {
-	return <ComingSoon title="Carte interactive" section="Tourisme" sectionHref="/" />;
+const MapClient = dynamic(() => import('./MapClient'), { ssr: false });
+
+type Props = { initialId?: string; pois: POI[]; sentiers: Sentier[] };
+
+export default function CarteInteractivePage({ initialId, pois, sentiers }: Props) {
+	return <MapClient initialId={initialId} pois={pois} sentiers={sentiers} />;
 }

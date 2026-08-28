@@ -1,89 +1,59 @@
-import { CalendarDays } from 'lucide-react';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import './style.scss';
 
 const CLASS_NAME = 'news';
 
-const actus = [
-	{
-		mod: 'coral',
-		date: '12 Mai',
-		tag: 'Conseil municipal',
-		title: 'Compte-rendu de la séance du 5 mai 2026',
-		desc: "Budget primitif, voirie communale et nouveaux aménagements de l'étang.",
-		href: '/mairie/comptes-rendus'
-	},
-	{
-		mod: 'sky',
-		date: '08 Mai',
-		tag: 'Vie locale',
-		title: 'Marché de producteurs : nouvelle saison',
-		desc: 'Tous les samedis matin sur la place du village, de mai à septembre.',
-		href: '/mairie/actualites'
-	}
-];
+export type NewsItemData = {
+	key: string;
+	date: string; // ISO
+	category?: string;
+	title: string;
+	excerpt: string;
+	documentHref?: string;
+};
 
-const agenda = [
-	{ day: '22', month: 'Oct', title: 'Marché des producteurs', place: 'Place de la Mairie · 08h00', mod: 'sun' },
-	{ day: '28', month: 'Oct', title: 'Conseil municipal', place: 'Salle des actes · 19h00', mod: 'sky' },
-	{ day: '05', month: 'Nov', title: 'Loto des associations', place: 'Foyer rural · 14h30', mod: 'coral' }
-];
+type Props = { articles: NewsItemData[] };
 
-export default function News() {
+const DATE_FORMAT = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short' });
+
+export default function News({ articles }: Props) {
 	return (
 		<section id="actualites" className={CLASS_NAME}>
-			<div className="container">
+			<div className={`${CLASS_NAME}__inner container`}>
 				<div className={`${CLASS_NAME}__header`}>
 					<div>
-						<span className="eyebrow">Actualités municipales</span>
-						<h2 className={`${CLASS_NAME}__title`}>Les dernières nouvelles de la commune</h2>
+						<p className="eyebrow">Actualités municipales</p>
+						<h2 className={`${CLASS_NAME}__title`}>
+							Les dernières nouvelles
+							<br />
+							de la commune
+						</h2>
 					</div>
-					<a href="/mairie/actualites" className={`${CLASS_NAME}__all-link`}>
-						Toutes les actualités →
-					</a>
+					<Link href="/mairie/actualites" className="btn-outline">
+						Toutes les actualités <ArrowRight size={14} />
+					</Link>
 				</div>
 
 				<div className={`${CLASS_NAME}__grid`}>
-					{actus.map((a) => (
-						<article key={a.title} className={`${CLASS_NAME}__card`}>
-							<span className={`${CLASS_NAME}__card-accent ${CLASS_NAME}__card-accent--${a.mod}`} />
+					{articles.map((a) => (
+						<article key={a.key} className={`${CLASS_NAME}__card`}>
 							<div className={`${CLASS_NAME}__card-meta`}>
-								<span className={`${CLASS_NAME}__card-date`}>
-									<CalendarDays size={14} />
-									{a.date}
-								</span>
-								<span className={`${CLASS_NAME}__card-dot`}>•</span>
-								<span className={`${CLASS_NAME}__card-tag`}>{a.tag}</span>
+								<span className={`${CLASS_NAME}__card-date`}>{DATE_FORMAT.format(new Date(a.date))}</span>
+								{a.category && (
+									<>
+										<span className={`${CLASS_NAME}__card-dot`} />
+										<span className={`${CLASS_NAME}__card-cat`}>{a.category}</span>
+									</>
+								)}
 							</div>
 							<h3 className={`${CLASS_NAME}__card-title`}>{a.title}</h3>
-							<p className={`${CLASS_NAME}__card-desc`}>{a.desc}</p>
-							<a href={a.href} className={`${CLASS_NAME}__card-link`}>
-								Lire la suite →
-							</a>
+							<p className={`${CLASS_NAME}__card-text`}>{a.excerpt}</p>
+							<Link href={a.documentHref ?? '/mairie/actualites'} className={`${CLASS_NAME}__card-link`}>
+								Lire la suite <ArrowRight size={13} />
+							</Link>
 						</article>
 					))}
-
-					<aside className={`${CLASS_NAME}__agenda`}>
-						<h3 className={`${CLASS_NAME}__agenda-title`}>
-							Prochains <span className={`${CLASS_NAME}__agenda-title-highlight`}>rendez-vous</span>
-						</h3>
-						<ul className={`${CLASS_NAME}__agenda-list`}>
-							{agenda.map((e) => (
-								<li key={e.title} className={`${CLASS_NAME}__agenda-item`}>
-									<div className={`${CLASS_NAME}__agenda-date ${CLASS_NAME}__agenda-date--${e.mod}`}>
-										<span>{e.day}</span>
-										<span>{e.month}</span>
-									</div>
-									<div className={`${CLASS_NAME}__agenda-info`}>
-										<div className={`${CLASS_NAME}__agenda-item-title`}>{e.title}</div>
-										<div className={`${CLASS_NAME}__agenda-place`}>{e.place}</div>
-									</div>
-								</li>
-							))}
-						</ul>
-						<a href="/mairie/actualites" className={`${CLASS_NAME}__agenda-cta`}>
-							Voir tout l'agenda →
-						</a>
-					</aside>
 				</div>
 			</div>
 		</section>

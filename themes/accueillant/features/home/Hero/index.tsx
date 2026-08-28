@@ -1,65 +1,89 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import './style.scss';
 
 const CLASS_NAME = 'hero';
 
-export default function Hero() {
+export type HeroData = {
+	image?: string;
+	titre: string;
+	description?: string;
+	boutonPrincipal?: { label: string; href?: string };
+	boutonSecondaire?: { label: string; href?: string };
+};
+
+type Props = { data: HeroData };
+
+export default function Hero({ data }: Props) {
 	return (
-		<header className={CLASS_NAME}>
-			<div className={`${CLASS_NAME}__grid`}>
-				<div className={`${CLASS_NAME}__body`}>
-					<div className={`${CLASS_NAME}__content`}>
-						<div className={`${CLASS_NAME}__eyebrow`}>
-							<span className={`${CLASS_NAME}__eyebrow-line`} />
-							Haute-Vienne · Limousin
-						</div>
-						<h1 className={`${CLASS_NAME}__title`}>
-							Bienvenue à Saint-Hilaire-Bonneval,{' '}
-							<span className={`${CLASS_NAME}__title-highlight`}>au cœur de la Haute-Vienne</span>.
-						</h1>
-						<p className={`${CLASS_NAME}__desc`}>
-							Entre rivières, forêts et patrimoine vivant, la commune vous accueille. Retrouvez ici vos
-							démarches, l'actualité municipale et toutes les informations utiles à la vie locale.
-						</p>
-						<div className={`${CLASS_NAME}__actions`}>
-							<a href="#demarches" className="btn-primary">
-								Effectuer une démarche →
-							</a>
-							<a href="#tourisme" className="btn-secondary">
-								Découvrir la commune
-							</a>
-						</div>
+		<section className={CLASS_NAME}>
+			<div className={`${CLASS_NAME}__wrapper container`}>
 
-						<dl className={`${CLASS_NAME}__infos`}>
-							<div>
-								<dt>Horaires d'ouverture</dt>
-								<dd>
-									Mardi — Vendredi
-									<span>9 h — 12 h · 14 h — 17 h</span>
-								</dd>
+				{/* Image encadrée + vagues décoratives (vagues hors du frame pour ne pas être clippées) */}
+				<div className={`${CLASS_NAME}__frame-wrapper`}>
+					<div className={`${CLASS_NAME}__frame`}>
+						<Image
+							src={data.image ?? '/hero.jpg'}
+							alt="Vue de la commune"
+							fill
+							priority
+							sizes="100vw"
+							className={`${CLASS_NAME}__image`}
+						/>
+						<div className={`${CLASS_NAME}__overlay`} />
+
+						{/* Contenu sur l'image */}
+						<div className={`${CLASS_NAME}__content`}>
+							<div className={`${CLASS_NAME}__body`}>
+								<span className={`${CLASS_NAME}__badge`}>
+									<span className={`${CLASS_NAME}__badge-dot`} />
+									Site officiel
+								</span>
+								<p className={`${CLASS_NAME}__title`}>{data.titre}</p>
 							</div>
-							<div>
-								<dt>Mairie</dt>
-								<dd>
-									05 55 00 87 26
-									<span>contact@saint-hilaire-bonneval.fr</span>
-								</dd>
+							<div className={`${CLASS_NAME}__actions`}>
+								{data.boutonPrincipal && (
+									<a href={data.boutonPrincipal.href ?? '#'} className={`${CLASS_NAME}__cta-dark`}>
+										{data.boutonPrincipal.label} <ArrowRight size={16} />
+									</a>
+								)}
+								{data.boutonSecondaire && (
+									<Link href={data.boutonSecondaire.href ?? '#'} className={`${CLASS_NAME}__cta-ghost`}>
+										{data.boutonSecondaire.label}
+									</Link>
+								)}
 							</div>
-						</dl>
+						</div>
 					</div>
+
+					{/* Vagues décoratives — hors du frame pour ne pas être clippées par overflow:hidden */}
+					<svg className={`${CLASS_NAME}__waves`} viewBox="0 0 200 120" aria-hidden="true">
+						{[0, 1, 2, 3].map((i) => (
+							<path
+								key={i}
+								d={`M0 ${20 + i * 25} Q 50 ${i * 25}, 100 ${20 + i * 25} T 200 ${20 + i * 25}`}
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="3"
+								strokeLinecap="round"
+							/>
+						))}
+					</svg>
 				</div>
 
-				<div className={`${CLASS_NAME}__media`}>
-					<Image
-						src="/village-hero.jpg"
-						alt="Vue aérienne de Saint-Hilaire-Bonneval et ses étangs au coucher du soleil"
-						fill
-						priority
-						sizes="(min-width: 1024px) 50vw, 100vw"
-						className={`${CLASS_NAME}__image`}
-					/>
-				</div>
+				{/* Sous-ligne */}
+				{data.description && (
+					<div className={`${CLASS_NAME}__sub`}>
+						<p className={`${CLASS_NAME}__sub-text`}>{data.description}</p>
+						<div className={`${CLASS_NAME}__scroll-hint`}>
+							<span className={`${CLASS_NAME}__scroll-line`} />
+							Découvrir
+							<ChevronDown size={14} className={`${CLASS_NAME}__scroll-icon`} />
+						</div>
+					</div>
+				)}
 			</div>
-		</header>
+		</section>
 	);
 }
