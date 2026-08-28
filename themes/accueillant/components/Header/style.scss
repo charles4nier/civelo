@@ -14,7 +14,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: $spacing-lg;
-		padding: $spacing-md 0;
+		padding: calc(#{$spacing-md} + 15px) 0;
 	}
 
 	&__logo {

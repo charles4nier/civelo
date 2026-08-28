@@ -49,6 +49,10 @@
 		&--sky { background-color: $sky; }
 		&--leaf { background-color: $leaf; }
 
+		&--sun {
+			color: $foreground;
+		}
+
 		&--coral,
 		&--sky,
 		&--leaf {
