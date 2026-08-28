@@ -3,5 +3,7 @@ import config from '../payload.config';
 
 const payload = await getPayload({ config });
 const { docs } = await payload.find({ collection: 'tenants', limit: 100, overrideAccess: true });
-console.log(JSON.stringify(docs.map((d: any) => ({ id: d.id, nom: d.nom, domaine: d.domaine, theme: d.theme })), null, 2));
+for (const d of docs as any[]) {
+	console.log(`TENANT id=${d.id} nom=${JSON.stringify(d.nom)} domaine=${d.domaine} theme=${d.theme}`);
+}
 process.exit(0);
