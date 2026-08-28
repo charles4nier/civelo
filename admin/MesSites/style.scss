@@ -250,8 +250,8 @@
 }
 
 .mes-sites__card-name {
-	font-size: 16px;
-	font-weight: 800;
+	font-size: 17px;
+	font-weight: 900;
 	color: var(--theme-text);
 	white-space: nowrap;
 	overflow: hidden;
@@ -276,14 +276,9 @@
 }
 
 .mes-sites__card-theme {
-	font-size: 11px;
-	font-weight: 700;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-	padding: 3px 8px;
-	border-radius: 999px;
-	background: var(--theme-elevation-100);
-	color: var(--theme-elevation-600);
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--theme-elevation-500);
 }
 
 .mes-sites__card-statut {
