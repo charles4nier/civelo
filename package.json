@@ -9,7 +9,10 @@
     "lint": "next lint",
     "migrate": "payload migrate",
     "migrate:create": "payload migrate:create",
-    "test:isolation": "node --env-file=.env node_modules/.bin/vitest run tests/tenant-isolation"
+    "test:isolation": "node --env-file=.env node_modules/.bin/vitest run tests/tenant-isolation",
+    "export-tenant": "node --env-file=.env --experimental-loader=./scripts/_resolve-ts.mjs scripts/export-tenant.ts",
+    "build-tenant-archive": "node --env-file=.env --experimental-loader=./scripts/_resolve-ts.mjs scripts/build-tenant-archive.ts",
+    "test:e2e-archive": "scripts/e2e-archive-test.sh"
   },
   "dependencies": {
     "@payloadcms/db-mongodb": "^3.88.0",

@@ -19,6 +19,24 @@ import { Identite } from './globals/Identite';
 import { BoutonEntete } from './globals/BoutonEntete';
 import { Footer } from './globals/Footer';
 
+// Mode mono-tenant — activé par `SINGLE_TENANT_SLUG`, pour générer une
+// archive autonome d'une seule commune (voir `scripts/export-tenant.ts`).
+// Le plugin reste chargé À L'IDENTIQUE dans les deux modes (mêmes
+// collections, même champ `tenant`, même collection `tenants`) — SEUL le
+// comportement change (plus de sélecteur, plus de filtrage, accès non
+// contraint). Schéma de base garanti identique par construction : rien
+// n'est structurellement retiré/ajouté selon ce mode, seuls des booléens de
+// comportement (`useBaseFilter`/`useTenantAccess`) et le champ `admin` du
+// champ tenant (masqué, pas supprimé) changent.
+const singleTenantSlug = process.env.SINGLE_TENANT_SLUG;
+const isMonoTenant = Boolean(singleTenantSlug);
+
+const tenantScopedCollection = (extra: Record<string, unknown> = {}) => ({
+	...extra,
+	useBaseFilter: !isMonoTenant,
+	useTenantAccess: !isMonoTenant
+});
+
 export default buildConfig({
 	admin: {
 		user: Users.slug,
@@ -98,7 +116,15 @@ export default buildConfig({
 	// l'instant, tous les fichiers vont dans un seul bucket sans
 	// séparation par tenant — à corriger avant qu'une 2ᵉ commune existe.
 	plugins: [
-		s3Storage({
+		// En mode mono-tenant (archive livrable), pas de S3 : le repreneur
+		// n'a ni compte ni identifiants sur notre bucket. Sans ce plugin,
+		// Media/Documents retombent sur le stockage disque local par défaut
+		// de Payload — exactement le dossier `medias/` monté en volume dans
+		// le `docker-compose.yml` de l'archive. N'affecte pas le schéma :
+		// l'adaptateur de stockage ne change où vivent les octets, jamais les
+		// colonnes (filename/mimeType/url... existent quel que soit
+		// l'adaptateur) — reconfirmé par le test d'égalité de schéma.
+		...(isMonoTenant ? [] : [s3Storage({
 			collections: {
 				media: true,
 				documents: true
@@ -113,7 +139,7 @@ export default buildConfig({
 				endpoint: process.env.S3_ENDPOINT,
 				forcePathStyle: true
 			}
-		}),
+		})]),
 		// Étape 4 du plan multi-tenant — plugin officiel, ajoute le champ
 		// `tenant` aux 6 collections listées ci-dessous et le tableau
 		// `tenants` sur Users (`tenantsArrayField`, généré automatiquement via
@@ -127,23 +153,34 @@ export default buildConfig({
 		// qui n'a rien de sensible.
 		multiTenantPlugin({
 			collections: {
-				pages: {},
-				categories: {},
-				media: {},
-				documents: {},
-				pois: {},
-				sentiers: {},
-				identite: { isGlobal: true },
-				'bouton-entete': { isGlobal: true },
-				footer: { isGlobal: true }
+				pages: tenantScopedCollection(),
+				categories: tenantScopedCollection(),
+				media: tenantScopedCollection(),
+				documents: tenantScopedCollection(),
+				pois: tenantScopedCollection(),
+				sentiers: tenantScopedCollection(),
+				identite: tenantScopedCollection({ isGlobal: true }),
+				'bouton-entete': tenantScopedCollection({ isGlobal: true }),
+				footer: tenantScopedCollection({ isGlobal: true })
 			},
 			tenantsSlug: Tenants.slug,
 			// super-admin = transversal (l'équipe) ; admin/éditeur restent
-			// scopés à leur(s) tenant(s) via `Users.tenants`.
-			userHasAccessToAllTenants: (user) => user?.role === 'super-admin',
+			// scopés à leur(s) tenant(s) via `Users.tenants`. En mode
+			// mono-tenant, tout le monde a accès à l'unique tenant existant —
+			// il n'y a rien d'autre à cloisonner.
+			userHasAccessToAllTenants: isMonoTenant ? () => true : (user) => user?.role === 'super-admin',
 			tenantsArrayField: {
 				includeDefaultField: true
-			}
+			},
+			// Sélecteur/filtres de la collection `tenants` elle-même et de
+			// `users` — sans objet à un seul tenant, juste du bruit dans
+			// l'admin de l'archive exportée.
+			useTenantsCollectionAccess: !isMonoTenant,
+			useTenantsListFilter: !isMonoTenant,
+			useUsersTenantFilter: !isMonoTenant,
+			// Masque le champ (jamais choisi à la main dans l'archive), sans le
+			// retirer du schéma — `hidden` reste un champ admin, pas structurel.
+			tenantField: isMonoTenant ? { admin: { hidden: true } } : undefined
 		})
 	],
 	sharp,

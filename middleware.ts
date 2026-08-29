@@ -37,6 +37,18 @@ export const config = {
 };
 
 export default function middleware(request: NextRequest) {
+	// 2026-08-29 — en mode mono-tenant (archive livrable, voir
+	// `payload.config.ts` / `SINGLE_TENANT_SLUG`), tout ce fichier n'a
+	// aucun sens : un seul tenant existe, rien à verrouiller ni de console
+	// super-admin à rediriger vers. Sans cette sortie précoce, un
+	// `SUPER_ADMIN_DOMAIN` oublié dans le `.env` du repreneur (copié depuis
+	// `.env.example` par erreur) redirigerait tout son site public vers
+	// `/admin` — repéré en testant l'archive avec un `.env` de test qui
+	// avait encore cette variable.
+	if (process.env.SINGLE_TENANT_SLUG) {
+		return NextResponse.next();
+	}
+
 	const host = request.headers.get('host')?.split(':')[0] ?? '';
 	const pathname = request.nextUrl.pathname;
 	const superAdminDomain = process.env.SUPER_ADMIN_DOMAIN;

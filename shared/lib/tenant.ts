@@ -20,6 +20,32 @@ export type CurrentTenant = { id: string | number; domaine: string; theme: strin
 
 export const getCurrentTenant = cache(async (payload: Payload): Promise<CurrentTenant | null> => {
 	try {
+		// 2026-08-29 — mode mono-tenant (archive livrable) : un seul tenant
+		// existe, et l'hôte de la requête n'a de toute façon plus aucune
+		// raison de correspondre à son `domaine` d'origine (le repreneur sert
+		// l'archive depuis SON propre nom de domaine, pas le nôtre). Repéré
+		// en testant l'archive : sans ce court-circuit, la résolution par
+		// hôte échouait toujours, et le site retombait silencieusement sur
+		// le contenu statique de repli au lieu des vraies données importées.
+		if (process.env.SINGLE_TENANT_SLUG) {
+			// `headers()` n'est pas utilisé pour la résolution ici (un seul
+			// tenant existe, pas besoin de l'hôte) — mais l'appeler reste
+			// nécessaire : c'est ce qui déclenche la détection "Dynamic API
+			// usage" de Next et empêche la page d'être pré-rendue statique.
+			// Sans lui, l'archive mono-tenant est construite (`next build`)
+			// AVANT que `scripts/import.ts` ne peuple la base — une page
+			// statique fige alors le contenu vide/de repli du moment du build
+			// pour toujours, y compris après un import réussi. Repéré en
+			// testant l'archive en Docker : la page d'accueil apparaissait en
+			// "○ Static" dans le journal de build et resservait le contenu
+			// de repli malgré un import terminé avec succès.
+			await headers();
+			const { docs } = await payload.find({ collection: 'tenants', limit: 1, overrideAccess: true, depth: 0 });
+			const tenant = docs[0] as { id?: string | number; domaine?: string; theme?: string } | undefined;
+			if (!tenant?.id || !tenant.domaine || !tenant.theme) return null;
+			return { id: tenant.id, domaine: tenant.domaine, theme: tenant.theme };
+		}
+
 		const host = (await headers()).get('host');
 		if (!host) return null;
 		// `Tenants.domaine` stocke toujours le nom d'hôte nu (jamais de

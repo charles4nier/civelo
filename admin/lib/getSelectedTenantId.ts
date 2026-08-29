@@ -30,6 +30,13 @@ export async function getSelectedTenantId(): Promise<string | undefined> {
 // effet, `middleware.ts` reverrouille à chaque requête suivante), listant au
 // passage le nom des autres communes dans son menu déroulant.
 export async function isTenantLocked(): Promise<boolean> {
+	// 2026-08-29 — mode mono-tenant (archive livrable) : `middleware.ts`
+	// court-circuite tout son verrouillage pour ce mode (un seul tenant,
+	// rien à verrouiller), donc le cookie `tenant-locked-host` n'est jamais
+	// posé — sans ce cas particulier, un compte super-admin dans l'archive
+	// se serait vu proposer la console "Mes sites" (`admin/Dashboard`),
+	// qui n'a pourtant aucune raison d'exister ici.
+	if (process.env.SINGLE_TENANT_SLUG) return true;
 	const store = await cookies();
 	const marker = store.get('tenant-locked-host')?.value ?? '';
 	return marker !== '' && !marker.endsWith('::none');

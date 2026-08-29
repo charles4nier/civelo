@@ -4,23 +4,23 @@
  * création tant qu'aucun utilisateur n'est déjà connecté — poule et œuf,
  * trouvé en testant l'admin réel). Nécessaire une fois par base fraîche.
  *
- * Usage : node --env-file=.env node_modules/.bin/tsx scripts/create-admin-user.ts <email> <password>
+ * Usage : node --env-file=.env --experimental-loader=./scripts/_resolve-ts.mjs scripts/create-admin-user.ts <email> <password> [prénom] [nom]
  */
 
 import { getPayload } from 'payload';
 import config from '../payload.config';
 
 async function main() {
-	const [email, password] = process.argv.slice(2);
+	const [email, password, prenom, nom] = process.argv.slice(2);
 	if (!email || !password) {
-		console.error('Usage : tsx scripts/create-admin-user.ts <email> <password>');
+		console.error('Usage : node scripts/create-admin-user.ts <email> <password> [prénom] [nom]');
 		process.exit(1);
 	}
 
 	const payload = await getPayload({ config });
 	const user = await payload.create({
 		collection: 'users',
-		data: { email, password, role: 'super-admin' }
+		data: { email, password, role: 'super-admin', prenom: prenom || 'Admin', nom: nom || 'Site' }
 	});
 
 	console.log(`Utilisateur super-admin créé : ${user.email}`);
