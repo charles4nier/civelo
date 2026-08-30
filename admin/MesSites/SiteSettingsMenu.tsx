@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Modal, useModal, Button, toast } from '@payloadcms/ui';
-import { Settings, Trash2, Pencil, ChevronLeft } from 'lucide-react';
+import { Settings, Trash2, Pencil, ChevronLeft, Download } from 'lucide-react';
 import './SiteSettingsMenu.scss';
 
 type Tenant = { id: string; nom: string; domaine: string };
@@ -27,6 +27,7 @@ export default function SiteSettingsMenu({ tenant }: Props) {
 	const [step, setStep] = useState<'menu' | 'confirm-delete'>('menu');
 	const [confirmText, setConfirmText] = useState('');
 	const [submitting, setSubmitting] = useState(false);
+	const [exporting, setExporting] = useState(false);
 
 	function open(e: React.MouseEvent) {
 		e.stopPropagation();
@@ -59,6 +60,38 @@ export default function SiteSettingsMenu({ tenant }: Props) {
 		}
 	}
 
+	// Rapatrie données + médias de ce tenant et assemble l'archive
+	// autonome livrable (voir `scripts/export-tenant.ts` et
+	// `scripts/build-tenant-archive.ts`, orchestrés côté serveur par
+	// `app/(payload)/api/tenant-export/[id]/route.ts`) — argument de
+	// réversibilité contractuel, pas une fonctionnalité annexe.
+	async function handleExport() {
+		setExporting(true);
+		try {
+			const res = await fetch(`/api/tenant-export/${tenant.id}`, { credentials: 'include' });
+			if (!res.ok) {
+				const data = await res.json().catch(() => null);
+				throw new Error(data?.message || "Échec de l'export.");
+			}
+			const blob = await res.blob();
+			const disposition = res.headers.get('Content-Disposition') ?? '';
+			const filename = disposition.match(/filename="([^"]+)"/)?.[1] ?? `${tenant.domaine}.zip`;
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.download = filename;
+			document.body.appendChild(link);
+			link.click();
+			link.remove();
+			URL.revokeObjectURL(url);
+			toast.success('Archive générée et téléchargée.');
+		} catch (err) {
+			toast.error(err instanceof Error ? err.message : "Échec de l'export.");
+		} finally {
+			setExporting(false);
+		}
+	}
+
 	const confirmMatches = confirmText.trim() === tenant.nom;
 
 	return (
@@ -84,6 +117,10 @@ export default function SiteSettingsMenu({ tenant }: Props) {
 									<Pencil size={16} aria-hidden="true" />
 									Modifier les informations
 								</a>
+								<button type="button" className="site-settings-menu__option" onClick={handleExport} disabled={exporting}>
+									<Download size={16} aria-hidden="true" />
+									{exporting ? "Génération de l'archive…" : 'Exporter le site'}
+								</button>
 								<button
 									type="button"
 									className="site-settings-menu__option site-settings-menu__option--danger"
