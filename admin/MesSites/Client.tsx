@@ -1,12 +1,24 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Building2, ArrowRight, Search } from 'lucide-react';
+import { Building2, ArrowRight, Search, Download } from 'lucide-react';
 import CreateTenantButton from '../CreateTenantButton/Client';
 import SiteSettingsMenu from './SiteSettingsMenu';
 import './style.scss';
 
-type Tenant = { id: string; nom: string; domaine: string; theme: string; statutContrat: string; createdAt?: string };
+type Tenant = {
+	id: string;
+	nom: string;
+	domaine: string;
+	theme: string;
+	statutContrat: string;
+	createdAt?: string;
+	derniereExportation?: string | null;
+};
+
+function formatExportDate(iso: string) {
+	return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
 
 const THEME_LABELS: Record<string, string> = { edito: 'Style édito', app: 'App', accueillant: 'Accueillant' };
 const STATUT_LABELS: Record<string, string> = { actif: 'Actif', suspendu: 'Suspendu', resilie: 'Résilié' };
@@ -96,11 +108,22 @@ export default function MesSitesClient({ tenants }: Props) {
 												<span className={`mes-sites__card-statut mes-sites__card-statut--${t.statutContrat}`}>
 													{STATUT_LABELS[t.statutContrat] ?? t.statutContrat}
 												</span>
+												{t.derniereExportation && (
+													<span
+														className="mes-sites__card-export"
+														title={`Dernière archive générée le ${formatExportDate(t.derniereExportation)}`}
+													>
+														<Download size={11} aria-hidden="true" />
+														{formatExportDate(t.derniereExportation)}
+													</span>
+												)}
 											</div>
 										</div>
 										<ArrowRight size={18} className="mes-sites__card-arrow" aria-hidden="true" />
 									</button>
-									<SiteSettingsMenu tenant={{ id: t.id, nom: t.nom, domaine: t.domaine }} />
+									<SiteSettingsMenu
+										tenant={{ id: t.id, nom: t.nom, domaine: t.domaine, derniereExportation: t.derniereExportation ?? null }}
+									/>
 								</div>
 							))}
 						</div>

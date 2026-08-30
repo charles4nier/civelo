@@ -73,6 +73,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 		const zipBuffer = await readFile(zipPath);
 
+		// Ne bloque jamais le téléchargement lui-même si cette mise à jour
+		// échoue -- l'archive est déjà générée avec succès à ce stade, c'est
+		// juste sa trace qui manquerait.
+		await payload
+			.update({ collection: 'tenants', id, data: { derniereExportation: new Date().toISOString() }, overrideAccess: true })
+			.catch((err) => console.warn('[tenant-export] Échec de la mise à jour de derniereExportation.', err));
+
 		return new NextResponse(new Uint8Array(zipBuffer), {
 			status: 200,
 			headers: {

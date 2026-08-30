@@ -115,6 +115,18 @@ export const Tenants: CollectionConfig = {
 				]
 			},
 			"Le statut du contrat de cette commune — une suspension/résiliation suit une procédure contractuelle définie, ne pas couper l'accès directement depuis ce champ sans l'avoir suivie."
+		),
+		withInfo(
+			{
+				name: 'derniereExportation',
+				type: 'date',
+				admin: { readOnly: true, position: 'sidebar' },
+				// Jamais modifiable via un formulaire (admin ou API publique) —
+				// posé uniquement par `/api/tenant-export/[id]` (overrideAccess)
+				// juste après avoir généré l'archive avec succès.
+				access: { update: () => false }
+			},
+			'Date de la dernière archive générée pour ce site (bouton "Exporter le site") — traçabilité de la réversibilité contractuelle, jamais modifiable à la main.'
 		)
 	],
 	hooks: {

@@ -59,7 +59,8 @@ export default async function Dashboard({ payload, user }: ServerProps) {
 			domaine: t.domaine as string,
 			theme: t.theme as string,
 			statutContrat: t.statutContrat as string,
-			createdAt: t.createdAt as string
+			createdAt: t.createdAt as string,
+			derniereExportation: (t.derniereExportation as string | undefined) ?? null
 		}));
 		return <MesSitesClient tenants={tenants} />;
 	}

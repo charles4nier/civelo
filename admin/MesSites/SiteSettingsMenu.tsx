@@ -6,7 +6,11 @@ import { Modal, useModal, Button, toast } from '@payloadcms/ui';
 import { Settings, Trash2, Pencil, ChevronLeft, Download } from 'lucide-react';
 import './SiteSettingsMenu.scss';
 
-type Tenant = { id: string; nom: string; domaine: string };
+type Tenant = { id: string; nom: string; domaine: string; derniereExportation?: string | null };
+
+function formatExportDate(iso: string) {
+	return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
 
 type Props = { tenant: Tenant };
 
@@ -85,6 +89,7 @@ export default function SiteSettingsMenu({ tenant }: Props) {
 			link.remove();
 			URL.revokeObjectURL(url);
 			toast.success('Archive générée et téléchargée.');
+			router.refresh();
 		} catch (err) {
 			toast.error(err instanceof Error ? err.message : "Échec de l'export.");
 		} finally {
@@ -119,7 +124,14 @@ export default function SiteSettingsMenu({ tenant }: Props) {
 								</a>
 								<button type="button" className="site-settings-menu__option" onClick={handleExport} disabled={exporting}>
 									<Download size={16} aria-hidden="true" />
-									{exporting ? "Génération de l'archive…" : 'Exporter le site'}
+									<span>
+										{exporting ? "Génération de l'archive…" : 'Exporter le site'}
+										{!exporting && tenant.derniereExportation && (
+											<span className="site-settings-menu__option-hint">
+												Dernière archive : {formatExportDate(tenant.derniereExportation)}
+											</span>
+										)}
+									</span>
 								</button>
 								<button
 									type="button"
