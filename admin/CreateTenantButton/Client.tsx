@@ -16,11 +16,13 @@ const THEMES = [
 type Props = { isSuperAdminConsole: boolean };
 
 // "Je veux un create qui ouvre une popin qui permet de générer un nouveau
-// tenant." Crée uniquement la fiche commune (le domaine doit déjà être
-// enregistré côté DNS + ajouté comme domaine personnalisé Scalingo — ça,
-// impossible à automatiser depuis ce formulaire, ça reste une étape à part).
-// Les 18 pages génériques se posent automatiquement via le hook
-// `afterChange` de cette collection — rien à faire ici pour ça.
+// tenant." Crée la fiche commune, dont les 18 pages génériques se posent
+// automatiquement via le hook `afterChange` de cette collection — rien à
+// faire ici pour ça. Le domaine est ensuite ajouté comme domaine
+// personnalisé Scalingo via un appel séparé (`/api/tenant-domain/[id]`,
+// voir `lib/scalingoDomains.ts`) : seule la configuration DNS chez le
+// registraire de la commune reste hors de portée d'une automatisation —
+// personne d'autre que la commune ne peut la faire à sa place.
 export default function CreateTenantButton({ isSuperAdminConsole }: Props) {
 	const { openModal, closeModal } = useModal();
 	const router = useRouter();
@@ -53,7 +55,32 @@ export default function CreateTenantButton({ isSuperAdminConsole }: Props) {
 			if (!res.ok) {
 				throw new Error(data?.errors?.[0]?.message || data?.message || 'Échec de la création.');
 			}
-			toast.success(`« ${nom} » créé, avec ses 18 pages générées automatiquement.`);
+
+			// Séparé de la création elle-même : le seed des 18 pages (hook
+			// `afterChange` de `Tenants.ts`) est déjà fiable et silencieux ;
+			// l'enregistrement du domaine peut échouer pour des raisons hors
+			// de notre contrôle (jeton API absent, domaine déjà pris ailleurs,
+			// limite des 20 domaines...) et l'admin doit le savoir clairement
+			// plutôt que de découvrir plus tard que le domaine ne répond pas.
+			const newTenantId = data?.doc?.id;
+			let domainMessage = '';
+			if (newTenantId) {
+				try {
+					const domainRes = await fetch(`/api/tenant-domain/${newTenantId}`, { method: 'POST', credentials: 'include' });
+					const domainData = await domainRes.json();
+					if (domainData.status === 'created' || domainData.status === 'already-exists') {
+						domainMessage = ` Domaine à pointer en CNAME vers ${domainData.cnameTarget}.`;
+					} else if (domainData.status === 'not-configured') {
+						domainMessage = ' Enregistrement automatique du domaine désactivé (SCALINGO_API_TOKEN absent) — à faire à la main.';
+					} else {
+						domainMessage = ` Domaine à ajouter à la main (échec auto : ${domainData.message ?? 'inconnu'}).`;
+					}
+				} catch {
+					domainMessage = ' Domaine à ajouter à la main (échec de la requête).';
+				}
+			}
+
+			toast.success(`« ${nom} » créé, avec ses 18 pages générées automatiquement.${domainMessage}`);
 			setNom('');
 			setDomaine('');
 			setTheme('edito');
@@ -76,8 +103,8 @@ export default function CreateTenantButton({ isSuperAdminConsole }: Props) {
 				<div className="create-tenant__panel">
 					<h2 className="create-tenant__title">Créer un nouveau site</h2>
 					<p className="create-tenant__hint">
-						Le domaine doit déjà pointer vers Scalingo (DNS + domaine personnalisé ajouté séparément avant ou après
-						cette étape) — ce formulaire crée seulement la fiche commune ; ses 18 pages sont générées automatiquement.
+						Ses 18 pages sont générées automatiquement, et le domaine est ajouté automatiquement à l'appli Scalingo — il
+						ne reste que la configuration DNS chez le registraire de la commune (CNAME donné après création).
 					</p>
 
 					<form onSubmit={handleSubmit} className="create-tenant__form">
