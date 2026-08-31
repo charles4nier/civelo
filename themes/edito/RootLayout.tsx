@@ -39,7 +39,7 @@ export default function RootLayout({ navLinks, identite, boutonEntete, footer, c
 				<main id="contenu" tabIndex={-1}>
 					{children}
 				</main>
-				<Footer identite={identite} data={footer} />
+				<Footer identite={identite} navLinks={navLinks} data={footer} />
 				<FloatingButtons />
 			</body>
 		</html>

@@ -28,9 +28,10 @@
 		gap: $spacing-4xl;
 
 		@media (min-width: $breakpoint-sm + 1) {
-			// Décision 61 — colonne "Découvrir" retirée (liens "#" qui ne
-			// menaient nulle part) : 2 colonnes au lieu de 3.
-			grid-template-columns: 2fr 1fr;
+			// La colonne "Découvrir" (liens "#" qui ne menaient nulle part)
+			// avait été retirée à une époque où le site n'avait aucun vrai
+			// contenu — restaurée avec de vrais liens (`navLinks`).
+			grid-template-columns: 2fr 1fr 1fr;
 		}
 	}
 
@@ -139,9 +140,11 @@
 	/* ---- Address ---- */
 
 	&__address {
+		// Pas de bordure ici : `__col-title` en a déjà une (border-bottom),
+		// juste au-dessus dans la même colonne — en ajouter une seconde ici
+		// créait un doublon visuel (deux lignes quasi collées) dès que la
+		// colonne n'avait pas de liens entre le titre et l'adresse.
 		margin-top: $spacing-xl;
-		padding-top: $spacing-md;
-		border-top: 1px solid $background-10;
 		display: flex;
 		flex-direction: column;
 		gap: $spacing-sm;

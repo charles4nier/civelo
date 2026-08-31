@@ -4,12 +4,21 @@ import './style.scss';
 
 const CLASS_NAME = 'footer';
 
+type SubLink = { label: string; href: string };
+type NavLink = { label: string; href: string; children?: SubLink[] };
+
 type Props = {
 	// Décision 61 — identité (logo/titre) partagée avec le Header (un seul
 	// global `Identite`, plus de resaisie) ; le reste vient du global
 	// `Footer` (lib/payload.ts, `getFooterData`), avec repli sur les mêmes
 	// valeurs qu'avant si Payload est injoignable.
 	identite: { titre: string; sousTitre?: string; logoUrl: string };
+	// Les colonnes de liens ("La mairie" / "Découvrir") avaient été retirées
+	// (voir historique) : c'étaient des liens "#" qui ne menaient nulle
+	// part. Réintroduites ici avec de VRAIS liens — même `navLinks` que le
+	// Header (lib/payload.ts, `getNavLinks`), déjà résolu une fois par
+	// `app/layout.tsx` et redescendu ici en prop, pas de second appel.
+	navLinks: NavLink[];
 	data: {
 		description: string;
 		adresse?: string;
@@ -23,8 +32,12 @@ type Props = {
 	};
 };
 
-export default function Footer({ identite, data }: Props) {
+export default function Footer({ identite, navLinks, data }: Props) {
 	const year = new Date().getFullYear();
+	// Mêmes libellés que `MENU_SECTIONS` (lib/payload.ts) — stables, pas
+	// éditables par tenant, donc sûrs à faire correspondre par le texte.
+	const mairieLinks = navLinks.find((l) => l.label === 'Votre mairie')?.children ?? [];
+	const decouvrirLinks = navLinks.find((l) => l.label === 'Tourisme & découverte')?.children ?? [];
 
 	return (
 		<footer className={CLASS_NAME}>
@@ -76,6 +89,15 @@ export default function Footer({ identite, data }: Props) {
 						<h4 className={`${CLASS_NAME}__col-title`}>
 							La mairie
 						</h4>
+						{mairieLinks.length > 0 && (
+							<ul className={`${CLASS_NAME}__col-links`}>
+								{mairieLinks.map((link) => (
+									<li key={link.href}>
+										<a href={link.href}>{link.label}</a>
+									</li>
+								))}
+							</ul>
+						)}
 						<div className={`${CLASS_NAME}__address`}>
 							{data.adresse && (
 								<div className={`${CLASS_NAME}__address-item`}>
@@ -111,6 +133,21 @@ export default function Footer({ identite, data }: Props) {
 							)}
 						</div>
 					</div>
+
+					{decouvrirLinks.length > 0 && (
+						<div className={`${CLASS_NAME}__col`}>
+							<h4 className={`${CLASS_NAME}__col-title`}>
+								Découvrir
+							</h4>
+							<ul className={`${CLASS_NAME}__col-links`}>
+								{decouvrirLinks.map((link) => (
+									<li key={link.href}>
+										<a href={link.href}>{link.label}</a>
+									</li>
+								))}
+							</ul>
+						</div>
+					)}
 				</div>
 
 				<div className={`${CLASS_NAME}__bottom`}>
