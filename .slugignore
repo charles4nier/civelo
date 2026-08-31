@@ -1,0 +1,9 @@
+# Exclu de l'image finale déployée (voir doc.scalingo.com/platform/app/slugignore)
+# — jamais de la source poussée par git, régénéré à chaque build sur
+# l'infra Scalingo elle-même. `.next/cache` est le cache webpack
+# incrémental (accélère les rebuilds LOCAUX successifs) : aucune utilité à
+# l'exécution, mais pesait à lui seul ~1.9 Go localement — largement
+# suffisant pour faire dépasser la limite de 2048 Mo de Scalingo une fois
+# ajouté au reste de l'image (repéré le 2026-08-31 après l'ajout de
+# Sentry, qui a fait basculer l'image de ~1.6 Go à 2.4 Go).
+/.next/cache
