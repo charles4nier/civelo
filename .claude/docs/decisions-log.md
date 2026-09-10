@@ -1,3 +1,11 @@
+# Journal des décisions produit (archive)
+
+> **Archive chronologique, conservée verbatim.** Append-only : 97 entrées numérotées, certaines annulées ou amendées par des entrées ultérieures (ex. 22 → 49, 35 → 36, 82 → 84). Ne se lit pas en entier — c'est une référence pour retrouver le *pourquoi* d'une décision et son historique.
+>
+> Pour l'état **actuel** du modèle de contenu : [`content-model.md`](content-model.md). Pour l'architecture : [`architecture.md`](architecture.md). Pour l'opérationnel : [`operations.md`](operations.md).
+
+---
+
 # Chantier Payload — rendre le site contributable
 
 Objectif : passer d'un contenu hydraté/en dur (le template actuel) à un site où le client (mairie) peut créer et gérer ses propres pages, via Payload CMS. Le dev (toi) fournit des **gabarits**, le client les remplit.
