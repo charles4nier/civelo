@@ -1,0 +1,299 @@
+@import '@themes/classique/styles/variables';
+
+.theme-classique {
+$b: 'numeros';
+
+/* ========================
+   Hero
+   ======================== */
+
+.#{$b}__hero {
+	position: relative;
+	padding-top: 160px;
+	padding-bottom: $spacing-6xl;
+	padding-left: $spacing-lg;
+	padding-right: $spacing-lg;
+	overflow: hidden;
+	background: $gradient-primary;
+	color: #ffffff;
+	text-align: center;
+
+	@media (min-width: $breakpoint-md) {
+		padding-left: $spacing-5xl;
+		padding-right: $spacing-5xl;
+	}
+}
+
+.#{$b}__hero-blur {
+	position: absolute;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	filter: blur(80px);
+	pointer-events: none;
+
+	&--top {
+		top: -96px;
+		right: -96px;
+		background: $sunshine-25;
+	}
+
+	&--bottom {
+		bottom: -128px;
+		left: -96px;
+		background: $primary-30;
+	}
+}
+
+.#{$b}__hero-content {
+	position: relative;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.#{$b}__breadcrumb {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.8);
+	margin-bottom: $spacing-lg;
+
+	a:hover { color: #ffffff; }
+	svg { flex-shrink: 0; }
+}
+
+.#{$b}__eyebrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.28em;
+	color: $sunshine;
+}
+
+.#{$b}__title {
+	font-family: $font-display;
+	font-size: clamp(36px, 6vw, 64px);
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-tight;
+	color: #ffffff;
+	margin-top: $spacing-md;
+}
+
+.#{$b}__divider {
+	width: 80px;
+	height: 4px;
+	background: $sunshine;
+	margin: $spacing-lg auto 0;
+}
+
+.#{$b}__subtitle {
+	margin-top: $spacing-3xl;
+	font-size: $body-size-desktop;
+	color: rgba(255, 255, 255, 0.85);
+	line-height: $line-height-relaxed;
+}
+
+/* ========================
+   Section
+   ======================== */
+
+.#{$b}__section {
+	padding-top: $section-padding-y-desktop;
+	padding-bottom: $section-padding-y-desktop;
+}
+
+.#{$b}__inner {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-7xl;
+}
+
+/* ========================
+   Blocs
+   ======================== */
+
+.#{$b}__block-eyebrow {
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	color: $coral;
+}
+
+.#{$b}__block-title {
+	font-family: $font-display;
+	font-size: $h2-size-desktop;
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-snug;
+	margin-top: $spacing-sm;
+	color: $foreground;
+}
+
+.#{$b}__block-divider {
+	width: 64px;
+	height: 4px;
+	background: $coral;
+	margin-top: $spacing-md;
+	margin-bottom: $spacing-4xl;
+}
+
+/* ========================
+   Numéros d'urgence
+   ======================== */
+
+.#{$b}__urgences {
+	display: grid;
+	gap: 2px;
+}
+
+.#{$b}__urgence {
+	display: flex;
+	align-items: center;
+	gap: $spacing-xl;
+	padding: $spacing-lg $spacing-2xl;
+	background: #ffffff;
+	border: 1px solid $border;
+	border-left: 4px solid $border;
+	text-decoration: none;
+	transition: $transition-smooth;
+
+	&:hover {
+		box-shadow: $shadow-soft;
+		transform: translateX(4px);
+	}
+
+	&--red {
+		border-left-color: $coral;
+
+		.#{$b}__urgence-number {
+			color: $coral;
+		}
+	}
+
+	&--blue {
+		border-left-color: $primary;
+
+		.#{$b}__urgence-number {
+			color: $primary;
+		}
+	}
+
+	&--muted {
+		border-left-color: $border;
+
+		.#{$b}__urgence-number {
+			color: $foreground;
+		}
+	}
+}
+
+.#{$b}__urgence-number {
+	font-family: $font-display;
+	font-size: clamp(28px, 4vw, 40px);
+	font-weight: $font-weight-semibold;
+	line-height: 1;
+	min-width: 80px;
+	flex-shrink: 0;
+}
+
+.#{$b}__urgence-info {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.#{$b}__urgence-label {
+	font-size: $body-size-desktop;
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+}
+
+.#{$b}__urgence-desc {
+	font-size: $small-size-desktop;
+	color: $muted-foreground;
+}
+
+.#{$b}__urgence-icon {
+	flex-shrink: 0;
+	color: $muted-foreground;
+	opacity: 0;
+	transition: opacity 0.2s;
+
+	.#{$b}__urgence:hover & {
+		opacity: 1;
+	}
+}
+
+/* ========================
+   Numéros locaux
+   ======================== */
+
+.#{$b}__locaux {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.#{$b}__local {
+	display: flex;
+	align-items: center;
+	gap: $spacing-xl;
+	padding: $spacing-xl $spacing-2xl;
+	background: #ffffff;
+	border: 1px solid $border;
+
+	@media (max-width: $breakpoint-sm) {
+		flex-wrap: wrap;
+	}
+}
+
+.#{$b}__local-icon {
+	flex-shrink: 0;
+	width: 44px;
+	height: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: $leaf-15;
+	color: $leaf;
+}
+
+.#{$b}__local-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.#{$b}__local-label {
+	font-size: $body-size-desktop;
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+}
+
+.#{$b}__local-detail {
+	font-size: $small-size-desktop;
+	color: $muted-foreground;
+	margin-top: 3px;
+}
+
+.#{$b}__local-number {
+	font-family: $font-display;
+	font-size: clamp(18px, 2vw, 22px);
+	font-weight: $font-weight-semibold;
+	color: $leaf;
+	white-space: nowrap;
+	text-decoration: none;
+	transition: color 0.15s;
+
+	&:hover {
+		color: $primary;
+	}
+}
+}
+

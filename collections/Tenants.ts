@@ -60,7 +60,8 @@ export const Tenants: CollectionConfig = {
 				options: [
 					{ label: 'Style édito', value: 'edito' },
 					{ label: 'App', value: 'app' },
-					{ label: 'Accueillant', value: 'accueillant' }
+					{ label: 'Accueillant', value: 'accueillant' },
+					{ label: 'Classique', value: 'classique' }
 				]
 			},
 			'La structure de page utilisée par le site de cette commune.'

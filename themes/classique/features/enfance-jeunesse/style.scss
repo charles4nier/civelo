@@ -1,0 +1,299 @@
+@import '@themes/classique/styles/variables';
+
+.theme-classique {
+$b: 'enfance';
+
+/* ========================
+   Hero
+   ======================== */
+
+.#{$b}__hero {
+	position: relative;
+	padding-top: 160px;
+	padding-bottom: $spacing-6xl;
+	padding-left: $spacing-lg;
+	padding-right: $spacing-lg;
+	overflow: hidden;
+	background: $gradient-primary;
+	color: #ffffff;
+	text-align: center;
+
+	@media (min-width: $breakpoint-md) {
+		padding-left: $spacing-5xl;
+		padding-right: $spacing-5xl;
+	}
+}
+
+.#{$b}__hero-blur {
+	position: absolute;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	filter: blur(80px);
+	pointer-events: none;
+
+	&--top {
+		top: -96px;
+		right: -96px;
+		background: $coral-15;
+	}
+
+	&--bottom {
+		bottom: -128px;
+		left: -96px;
+		background: $primary-30;
+	}
+}
+
+.#{$b}__hero-content {
+	position: relative;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.#{$b}__breadcrumb {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.8);
+	margin-bottom: $spacing-lg;
+
+	a:hover { color: #ffffff; }
+}
+
+.#{$b}__eyebrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.28em;
+	color: $sunshine;
+}
+
+.#{$b}__title {
+	font-family: $font-display;
+	font-size: clamp(36px, 6vw, 64px);
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-tight;
+	color: #ffffff;
+	margin-top: $spacing-md;
+}
+
+.#{$b}__divider {
+	width: 80px;
+	height: 4px;
+	background: $sunshine;
+	margin: $spacing-lg auto 0;
+}
+
+.#{$b}__subtitle {
+	margin-top: $spacing-3xl;
+	font-size: $body-size-desktop;
+	color: rgba(255, 255, 255, 0.85);
+	line-height: $line-height-relaxed;
+}
+
+/* ========================
+   Section annuaire
+   ======================== */
+
+.#{$b}__section {
+	padding-top: $section-padding-y-desktop;
+	padding-bottom: $section-padding-y-desktop;
+}
+
+.#{$b}__header {
+	margin-bottom: $spacing-4xl;
+}
+
+.#{$b}__header-eyebrow {
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	color: $primary;
+}
+
+.#{$b}__header-title {
+	font-family: $font-display;
+	font-size: $h2-size-desktop;
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-snug;
+	margin-top: $spacing-sm;
+	color: $foreground;
+}
+
+.#{$b}__header-divider {
+	width: 64px;
+	height: 4px;
+	background: $coral;
+	margin-top: $spacing-md;
+}
+
+/* ========================
+   Filtres
+   ======================== */
+
+.#{$b}__filters {
+	position: sticky;
+	top: 80px;
+	z-index: 10;
+	background: $background;
+	padding-top: $spacing-lg;
+	padding-bottom: $spacing-lg;
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	padding-left: max(#{$container-padding-x-desktop}, calc((100vw - #{$container-max-width}) / 2 + #{$container-padding-x-desktop}));
+	padding-right: max(#{$container-padding-x-desktop}, calc((100vw - #{$container-max-width}) / 2 + #{$container-padding-x-desktop}));
+	margin-bottom: $spacing-3xl;
+	border-bottom: 1px solid transparent;
+	transition: border-color 0.2s ease, background 0.3s ease, box-shadow 0.3s ease;
+
+	@media (max-width: $breakpoint-md) {
+		padding-left: $container-padding-x-tablet;
+		padding-right: $container-padding-x-tablet;
+	}
+
+	@media (max-width: $breakpoint-sm) {
+		padding-left: $container-padding-x-mobile;
+		padding-right: $container-padding-x-mobile;
+	}
+
+	&--stuck {
+		background: $gradient-warm;
+		border-bottom-color: $coral-40;
+		box-shadow: 0 4px 24px -8px $sunshine-25;
+	}
+}
+
+.#{$b}__filters-toggle {
+	display: none;
+
+	@media (max-width: $breakpoint-md) {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+		width: 100%;
+		padding: 10px 16px;
+		border: 1px solid $border;
+		border-radius: 999px;
+		font-size: 13px;
+		font-weight: $font-weight-medium;
+		color: $foreground;
+		background: transparent;
+		cursor: pointer;
+		transition: $transition-smooth;
+
+		&:hover {
+			border-color: $primary;
+			color: $primary;
+		}
+	}
+}
+
+.#{$b}__filters-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 5px;
+	border-radius: 999px;
+	background: $primary;
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: $font-weight-bold;
+}
+
+.#{$b}__filters-arrow {
+	margin-left: auto;
+	color: $muted-foreground;
+	transition: transform 0.25s $ease-smooth;
+
+	&--open { transform: rotate(180deg); }
+}
+
+.#{$b}__filters-panel {
+	@media (max-width: $breakpoint-md) {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 0.3s $ease-smooth;
+		margin-top: $spacing-sm;
+
+		&--open { grid-template-rows: 1fr; }
+	}
+
+	@media (min-width: $breakpoint-md + 1) { display: block; }
+}
+
+.#{$b}__filters-panel-inner {
+	overflow: hidden;
+
+	@media (min-width: $breakpoint-md + 1) {
+		display: flex;
+		flex-wrap: wrap;
+		gap: $spacing-sm;
+	}
+}
+
+.#{$b}__filters-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: $spacing-sm;
+}
+
+.#{$b}__filter {
+	display: inline-flex;
+	align-items: center;
+	gap: $spacing-sm;
+	padding: 8px 16px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: $font-weight-medium;
+	border: 1px solid $border;
+	background: $secondary;
+	color: $foreground-80;
+	cursor: pointer;
+	transition: $transition-smooth;
+
+	&:hover {
+		border-color: $primary;
+		color: $primary;
+	}
+
+	&--active {
+		background: $foreground;
+		color: $background;
+		border-color: $foreground;
+
+		.#{$b}__filter-count { color: rgba(255, 255, 255, 0.6); }
+
+		&:hover { color: $background; }
+	}
+}
+
+.#{$b}__filter-count {
+	font-size: 10px;
+	font-weight: $font-weight-semibold;
+	color: $muted-foreground;
+}
+
+/* ========================
+   Grille de cartes
+   ======================== */
+
+.#{$b}__grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: $spacing-xl;
+
+	@media (min-width: $breakpoint-sm) { grid-template-columns: 1fr 1fr; }
+	@media (min-width: $breakpoint-md) { grid-template-columns: repeat(3, 1fr); }
+}
+}
+

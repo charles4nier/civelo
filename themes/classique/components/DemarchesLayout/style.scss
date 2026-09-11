@@ -1,0 +1,374 @@
+@import '@themes/classique/styles/variables';
+
+.theme-classique {
+$b: 'demarches';
+
+/* ========================
+   Hero
+   ======================== */
+
+.#{$b}__hero {
+	position: relative;
+	padding-top: 160px;
+	padding-bottom: $spacing-6xl;
+	padding-left: $spacing-lg;
+	padding-right: $spacing-lg;
+	overflow: hidden;
+	background: $gradient-primary;
+	color: #ffffff;
+	text-align: center;
+
+	@media (min-width: $breakpoint-md) {
+		padding-left: $spacing-5xl;
+		padding-right: $spacing-5xl;
+	}
+}
+
+.#{$b}__hero-blur {
+	position: absolute;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	filter: blur(80px);
+	pointer-events: none;
+
+	&--top {
+		top: -96px;
+		right: -96px;
+		background: $sunshine-25;
+	}
+
+	&--bottom {
+		bottom: -128px;
+		left: -96px;
+		background: $primary-30;
+	}
+}
+
+.#{$b}__hero-content {
+	position: relative;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.#{$b}__breadcrumb {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.8);
+	margin-bottom: $spacing-lg;
+
+	a:hover {
+		color: #ffffff;
+	}
+
+	svg {
+		flex-shrink: 0;
+	}
+}
+
+.#{$b}__eyebrow {
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.28em;
+	color: $sunshine;
+}
+
+.#{$b}__title {
+	font-family: $font-display;
+	font-size: clamp(36px, 6vw, 64px);
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-tight;
+	color: #ffffff;
+	margin-top: $spacing-md;
+}
+
+.#{$b}__divider {
+	width: 80px;
+	height: 4px;
+	background: $sunshine;
+	margin: $spacing-lg auto 0;
+}
+
+.#{$b}__subtitle {
+	margin-top: $spacing-3xl;
+	font-size: $body-size-desktop;
+	color: rgba(255, 255, 255, 0.85);
+	line-height: $line-height-relaxed;
+}
+
+/* ========================
+   Section
+   ======================== */
+
+.#{$b}__section {
+	padding-top: $section-padding-y-desktop;
+	padding-bottom: $section-padding-y-desktop;
+}
+
+.#{$b}__header {
+	margin-bottom: $spacing-4xl;
+}
+
+.#{$b}__header-eyebrow {
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	color: $primary;
+}
+
+.#{$b}__header-title {
+	font-family: $font-display;
+	font-size: $h2-size-desktop;
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-snug;
+	margin-top: $spacing-sm;
+	color: $foreground;
+}
+
+.#{$b}__header-divider {
+	width: 64px;
+	height: 4px;
+	background: $coral;
+	margin-top: $spacing-md;
+}
+
+.#{$b}__body {
+	padding-bottom: $section-padding-y-desktop;
+}
+
+/* ========================
+   Liste accordéons
+   ======================== */
+
+.#{$b}__list {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.#{$b}__item {
+	border: 1px solid $border;
+	background: #ffffff;
+	transition: box-shadow 0.2s;
+
+	&--open {
+		box-shadow: $shadow-soft;
+	}
+}
+
+.#{$b}__item-header {
+	display: flex;
+	align-items: center;
+	gap: $spacing-lg;
+	width: 100%;
+	padding: $spacing-xl $spacing-2xl;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	text-align: left;
+	transition: background 0.15s;
+
+	&:hover {
+		background: $secondary;
+	}
+
+	.#{$b}__item--open & {
+		background: $secondary;
+		border-bottom: 1px solid $border;
+	}
+}
+
+.#{$b}__item-icon {
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: $leaf-15;
+	color: $leaf;
+
+	.#{$b}__item--open & {
+		background: $leaf;
+		color: #ffffff;
+	}
+}
+
+.#{$b}__item-meta {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	min-width: 0;
+}
+
+.#{$b}__item-cat {
+	font-size: 10px;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	color: $muted-foreground;
+}
+
+.#{$b}__item-title {
+	font-family: $font-display;
+	font-size: 17px;
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+	line-height: $line-height-snug;
+}
+
+.#{$b}__item-summary {
+	font-size: $small-size-desktop;
+	color: $foreground-80;
+	line-height: $line-height-snug;
+
+	@media (max-width: $breakpoint-sm) {
+		display: none;
+	}
+}
+
+.#{$b}__item-chevron {
+	flex-shrink: 0;
+	color: $muted-foreground;
+	transition: transform 0.3s $ease-smooth;
+
+	&--open { transform: rotate(180deg); }
+}
+
+/* ========================
+   Corps de l'accordéon
+   ======================== */
+
+.#{$b}__item-body {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows 0.3s $ease-smooth;
+
+	&--open {
+		grid-template-rows: 1fr;
+	}
+}
+
+.#{$b}__item-body-inner {
+	overflow: hidden;
+
+	p, ul, li {
+		font-size: $small-size-desktop;
+		color: $foreground-80;
+		line-height: $line-height-relaxed;
+	}
+
+	p { margin-bottom: $spacing-md; }
+	p:last-of-type { margin-bottom: 0; }
+
+	ul {
+		margin: 0 0 $spacing-md $spacing-lg;
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-xs;
+	}
+
+	strong { color: $foreground; }
+
+	> * {
+		padding: $spacing-2xl $spacing-2xl 0;
+		&:last-child { padding-bottom: $spacing-2xl; }
+	}
+}
+
+/* ========================
+   Liens externes
+   ======================== */
+
+.#{$b}__links {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-sm;
+	padding-top: $spacing-lg !important;
+	margin-top: $spacing-md;
+	border-top: 1px solid $border;
+}
+
+.#{$b}__ext-link {
+	display: inline-flex;
+	align-items: center;
+	gap: $spacing-sm;
+	font-size: $small-size-desktop;
+	font-weight: $font-weight-medium;
+	color: $primary;
+	transition: gap 0.15s;
+
+	&:hover { gap: $spacing-md; }
+}
+
+.#{$b}__note {
+	display: flex;
+	align-items: center;
+	gap: $spacing-sm;
+	padding: $spacing-md $spacing-lg !important;
+	background: $secondary;
+	font-size: 12px !important;
+	color: $muted-foreground !important;
+
+	svg { flex-shrink: 0; color: $leaf; }
+}
+
+/* ========================
+   CTA bas de page
+   ======================== */
+
+.#{$b}__cta {
+	margin-top: $spacing-5xl;
+	background: $leaf-15;
+	border-left: 4px solid $leaf;
+	padding: $spacing-3xl;
+	box-shadow: $shadow-soft;
+	display: grid;
+	gap: $spacing-lg;
+	align-items: center;
+
+	@media (min-width: $breakpoint-sm) {
+		grid-template-columns: 1fr auto;
+		padding: $spacing-3xl $spacing-4xl;
+	}
+}
+
+.#{$b}__cta-eyebrow {
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	color: $leaf;
+}
+
+.#{$b}__cta-title {
+	font-family: $font-display;
+	font-size: clamp(18px, 2vw, 24px);
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-snug;
+	margin-top: $spacing-sm;
+	color: $foreground;
+}
+
+.#{$b}__cta-desc {
+	margin-top: $spacing-sm;
+	font-size: $small-size-desktop;
+	color: $foreground-80;
+	line-height: $line-height-relaxed;
+}
+
+.#{$b}__cta-btn {
+	align-self: flex-start;
+
+	@media (min-width: $breakpoint-sm) {
+		align-self: center;
+	}
+}
+}
+

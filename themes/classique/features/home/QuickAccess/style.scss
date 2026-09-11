@@ -1,0 +1,97 @@
+@import '@themes/classique/styles/variables';
+
+.theme-classique {
+.quick-access {
+	&__header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: $spacing-md;
+	}
+
+	&__title {
+		font-size: 20px;
+		font-weight: $font-weight-bold;
+	}
+
+	&__list {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		margin-top: $spacing-lg;
+	}
+
+	&__item {
+		display: flex;
+		align-items: center;
+		gap: $spacing-md;
+		padding: 14px $spacing-md;
+		background-color: $card;
+		border: 1px solid $border;
+		border-radius: 16px;
+		box-shadow: $shadow-soft;
+		transition: $transition-smooth;
+
+		&:hover {
+			box-shadow: $shadow-elegant;
+			transform: translateY(-2px);
+		}
+	}
+
+	&__item-icon {
+		display: grid;
+		flex-shrink: 0;
+		place-items: center;
+		width: 40px;
+		height: 40px;
+		background-color: $background;
+		border: 1px solid $border;
+		border-radius: 12px;
+		color: $foreground;
+	}
+
+	&__item-text {
+		display: block;
+		min-width: 0;
+	}
+
+	&__item-title {
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-bold;
+	}
+
+	&__item-desc {
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		margin-top: 2px;
+		font-size: 12px;
+		color: $muted-foreground;
+	}
+
+	&__cta {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		margin-top: 4px;
+		padding: 12px $spacing-md;
+		background-color: $primary;
+		color: $primary-foreground;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		border-radius: 999px;
+		transition: $transition-smooth;
+
+		&:hover {
+			background-color: $coral;
+		}
+	}
+}
+
+}

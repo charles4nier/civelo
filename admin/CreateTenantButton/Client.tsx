@@ -10,7 +10,8 @@ const MODAL_SLUG = 'create-tenant';
 const THEMES = [
 	{ value: 'edito', label: 'Style édito' },
 	{ value: 'app', label: 'App' },
-	{ value: 'accueillant', label: 'Accueillant' }
+	{ value: 'accueillant', label: 'Accueillant' },
+	{ value: 'classique', label: 'Classique' }
 ];
 
 type Props = { isSuperAdminConsole: boolean };

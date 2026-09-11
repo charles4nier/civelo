@@ -1,0 +1,96 @@
+@import '@themes/classique/styles/variables';
+
+.theme-classique {
+.cta-block {
+	padding-block: $section-padding-y-desktop;
+
+	@media (max-width: $breakpoint-sm) {
+		padding-block: $section-padding-y-mobile;
+	}
+
+	&__card {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: $spacing-3xl;
+		padding: $spacing-xl;
+		background-color: $background;
+		border: 1px solid $border;
+		border-radius: 24px;
+		box-shadow: $shadow-soft;
+
+		@media (min-width: $breakpoint-sm) {
+			padding: $spacing-3xl;
+		}
+
+		@media (min-width: $breakpoint-md) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	&__title {
+		font-size: $h2-size-desktop;
+		font-weight: $font-weight-bold;
+	}
+
+	&__desc {
+		max-width: 420px;
+		margin-top: $spacing-md;
+		font-size: $small-size-desktop;
+		line-height: $line-height-relaxed;
+		color: $muted-foreground;
+	}
+
+	&__btn {
+		display: inline-flex;
+		align-items: center;
+		margin-top: $spacing-xl;
+		padding: 14px $spacing-xl;
+		background-color: $primary;
+		color: $primary-foreground;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		border-radius: 999px;
+		transition: $transition-smooth;
+
+		&:hover {
+			background-color: $coral;
+		}
+	}
+
+	&__contacts {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: $spacing-md;
+
+		@media (min-width: $breakpoint-xs) {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	&__contact-item {
+		padding: $spacing-lg;
+		background-color: $card;
+		border: 1px solid $border;
+		border-radius: 16px;
+	}
+
+	&__contact-label {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+		font-size: $xs-size-desktop;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: $muted-foreground;
+	}
+
+	&__contact-value {
+		margin-top: $spacing-sm;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		white-space: pre-line;
+	}
+}
+
+}

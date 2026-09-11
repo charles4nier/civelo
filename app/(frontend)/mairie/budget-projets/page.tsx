@@ -3,6 +3,7 @@ import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoBudgetProjetsPage from '@themes/edito/features/budget-projets';
 import AppBudgetProjetsPage from '@themes/app/features/budget-projets';
 import AccueillantBudgetProjetsPage from '@themes/accueillant/features/budget-projets';
+import ClassiqueBudgetProjetsPage from '@themes/classique/features/budget-projets';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -15,6 +16,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoBudgetProjetsPage, app: AppBudgetProjetsPage, accueillant: AccueillantBudgetProjetsPage });
+	const Component = pickTheme(theme, { edito: StyleEditoBudgetProjetsPage, app: AppBudgetProjetsPage, accueillant: AccueillantBudgetProjetsPage, classique: ClassiqueBudgetProjetsPage });
 	return <Component />;
 }

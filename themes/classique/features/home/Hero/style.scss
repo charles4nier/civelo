@@ -1,0 +1,110 @@
+@import '@themes/classique/styles/variables';
+
+.theme-classique {
+.hero-classique {
+	background-color: $card;
+	border-bottom: 1px solid $border;
+	padding-block: $spacing-4xl;
+
+	@media (min-width: $breakpoint-md) {
+		padding-block: $spacing-6xl;
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: $spacing-3xl;
+		align-items: center;
+
+		@media (min-width: $breakpoint-md) {
+			grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+		}
+	}
+
+	&__eyebrow {
+		font-size: $xs-size-desktop;
+		font-weight: $font-weight-bold;
+		text-transform: uppercase;
+		letter-spacing: 0.22em;
+		color: $muted-foreground;
+	}
+
+	&__title {
+		margin-top: $spacing-md;
+		font-size: $h1-size-desktop;
+		line-height: $line-height-tight;
+		font-weight: $font-weight-bold;
+		letter-spacing: -0.01em;
+	}
+
+	&__desc {
+		max-width: 440px;
+		margin-top: $spacing-lg;
+		font-size: $body-size-desktop;
+		line-height: $line-height-relaxed;
+		color: $muted-foreground;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: $spacing-md;
+		margin-top: $spacing-xl;
+	}
+
+	&__btn-primary {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-sm;
+		padding: 14px $spacing-xl;
+		background-color: $primary;
+		color: $primary-foreground;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		border-radius: 999px;
+		transition: $transition-smooth;
+
+		&:hover {
+			background-color: $coral;
+		}
+	}
+
+	&__btn-secondary {
+		display: inline-flex;
+		align-items: center;
+		padding: 14px $spacing-xl;
+		background-color: transparent;
+		color: $foreground;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		border: 1px solid $border;
+		border-radius: 999px;
+		transition: $transition-smooth;
+
+		&:hover {
+			background-color: $secondary;
+		}
+	}
+
+	&__image-wrap {
+		position: relative;
+		height: 224px;
+		border-radius: 20px;
+		overflow: hidden;
+
+		@media (min-width: $breakpoint-sm) {
+			height: 288px;
+		}
+
+		@media (min-width: $breakpoint-md) {
+			height: 420px;
+		}
+	}
+
+	&__image {
+		object-fit: cover;
+	}
+}
+
+}

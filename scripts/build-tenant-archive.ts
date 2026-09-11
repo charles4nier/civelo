@@ -30,7 +30,7 @@ function parseArgs(): Args {
 	return args;
 }
 
-const THEMES = ['edito', 'app', 'accueillant'] as const;
+const THEMES = ['edito', 'app', 'accueillant', 'classique'] as const;
 type Theme = (typeof THEMES)[number];
 
 // Fichiers/dossiers jamais livrés — infra interne, scripts qui parlent à
@@ -107,7 +107,7 @@ async function stripThemeDispatch(destDir: string, keep: Theme) {
 		let content = await readFile(file, 'utf-8');
 		if (!content.includes('pickTheme(theme')) continue;
 
-		const importLineRe = /^import .* from '@themes\/(edito|app|accueillant)\/[^']*';\n/gm;
+		const importLineRe = /^import .* from '@themes\/(edito|app|accueillant|classique)\/[^']*';\n/gm;
 		const importsByTheme: Partial<Record<Theme, string>> = {};
 		for (const match of content.matchAll(importLineRe)) {
 			const theme = match[1] as Theme;
@@ -142,8 +142,8 @@ async function stripThemeDispatch(destDir: string, keep: Theme) {
 async function stripCarteInteractive(destDir: string, keep: Theme) {
 	const file = path.join(destDir, 'app', '(frontend)', 'tourisme', 'carte-interactive', 'page.tsx');
 	if (!(await pathExists(file))) return;
-	const label = { edito: 'StyleEdito', app: 'App', accueillant: 'Accueillant' }[keep];
-	const varPrefix = { edito: 'edito', app: 'app', accueillant: 'accueillant' }[keep];
+	const label = { edito: 'StyleEdito', app: 'App', accueillant: 'Accueillant', classique: 'Classique' }[keep];
+	const varPrefix = { edito: 'edito', app: 'app', accueillant: 'accueillant', classique: 'classique' }[keep];
 	const content = `import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/edito/config/seo';
 import ${label}CarteInteractive from '@themes/${keep}/features/carte';
@@ -428,7 +428,9 @@ async function zipArchive(buildRoot: string, archiveName: string): Promise<strin
 async function main() {
 	const { export: exportDir, theme, slug } = parseArgs();
 	if (!exportDir || !theme || !slug) {
-		console.error('Usage: build-tenant-archive.ts --export=<dossier exporté> --theme=<edito|app|accueillant> --slug=<identifiant archive>');
+		console.error(
+			'Usage: build-tenant-archive.ts --export=<dossier exporté> --theme=<edito|app|accueillant|classique> --slug=<identifiant archive>'
+		);
 		process.exit(1);
 	}
 	if (!THEMES.includes(theme as Theme)) {

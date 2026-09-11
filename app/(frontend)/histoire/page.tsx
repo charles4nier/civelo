@@ -3,6 +3,7 @@ import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoHistoirePage from '@themes/edito/features/histoire';
 import AppHistoirePage from '@themes/app/features/histoire';
 import AccueillantHistoirePage from '@themes/accueillant/features/histoire';
+import ClassiqueHistoirePage from '@themes/classique/features/histoire';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -16,6 +17,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoHistoirePage, app: AppHistoirePage, accueillant: AccueillantHistoirePage });
+	const Component = pickTheme(theme, { edito: StyleEditoHistoirePage, app: AppHistoirePage, accueillant: AccueillantHistoirePage, classique: ClassiqueHistoirePage });
 	return <Component />;
 }
