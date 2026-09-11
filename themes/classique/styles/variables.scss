@@ -3,13 +3,16 @@
    ========================= */
 
 // Direction "épuré/intemporel" (par opposition à edito/institutionnel,
-// accueillant/coloré, app/prestige) : une seule teinte de base (navy neutre,
-// inspirée de saint-hilaire-digital-hub), pas de palette arc-en-ciel par
-// catégorie — les couleurs "d'accent" (coral/sunshine/leaf/terracotta/sky/
-// berry, utilisées ailleurs pour distinguer des catégories de contenu) sont
-// ici volontairement neutralisées vers des variantes de gris/navy : les
-// badges de catégorie se distinguent par leur texte, pas par un camaïeu de
-// couleurs vives — cohérent avec l'intention minimaliste du thème.
+// accueillant/coloré, app/prestige) : une base neutre (navy, inspirée de
+// saint-hilaire-digital-hub) + UN SEUL accent chaud (ambre/laiton) réutilisé
+// partout où edito distingue plusieurs teintes (coral/sunshine/leaf/
+// terracotta/sky/berry) — pas de palette arc-en-ciel par catégorie, mais pas
+// non plus de survol/accent dans la même teinte que le texte : un premier
+// essai purement monochrome (accent = simple variante de luminosité du
+// navy) rendait les états de survol quasi invisibles ("fade" — retour
+// utilisateur réel après vérification en navigateur). Un accent doré sobre
+// résout ce problème de contraste tout en restant cohérent avec
+// "intemporel" (laiton/bronze, pas une couleur vive).
 //
 // Même mécanique de personnalisation par tenant que les autres thèmes
 // (custom properties CSS avec repli, teintes alpha dérivées) — voir le
@@ -28,12 +31,12 @@ $input:               var(--color-input, oklch(0.929 0.013 255.508));
 $primary:             var(--color-primary, oklch(0.26 0.062 262));
 $primary-foreground:  var(--color-primary-foreground, oklch(0.99 0.003 247.858));
 $primary-glow:        var(--color-primary-glow, oklch(0.40 0.05 262));
-$coral:               var(--color-coral, oklch(0.20 0.05 262));
-$sunshine:            var(--color-sunshine, oklch(0.955 0.017 250));
-$leaf:                var(--color-leaf, oklch(0.42 0.045 262));
-$terracotta:          var(--color-terracotta, oklch(0.42 0.045 262));
-$sky:                 var(--color-sky, oklch(0.42 0.045 262));
-$berry:               var(--color-berry, oklch(0.42 0.045 262));
+$coral:               var(--color-coral, oklch(0.64 0.13 72));
+$sunshine:            var(--color-sunshine, oklch(0.92 0.05 80));
+$leaf:                var(--color-leaf, oklch(0.64 0.13 72));
+$terracotta:          var(--color-terracotta, oklch(0.64 0.13 72));
+$sky:                 var(--color-sky, oklch(0.64 0.13 72));
+$berry:               var(--color-berry, oklch(0.64 0.13 72));
 
 $error:               var(--color-error, oklch(0.577 0.245 27.325));
 

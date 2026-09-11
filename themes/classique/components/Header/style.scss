@@ -37,6 +37,7 @@
 
 		.header__logo-name {
 			color: $foreground;
+			font-weight: $font-weight-bold;
 			text-shadow: none;
 		}
 
@@ -45,7 +46,8 @@
 		}
 
 		.header__nav-link {
-			color: $foreground-80;
+			color: $foreground;
+			font-weight: $font-weight-semibold;
 
 			&:hover {
 				color: $coral;
