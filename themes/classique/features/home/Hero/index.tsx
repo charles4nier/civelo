@@ -17,32 +17,38 @@ type Props = { data: HeroData };
 export default function Hero({ data }: Props) {
 	return (
 		<section className={CLASS_NAME}>
-			<Image
-				src={data.image}
-				alt=""
-				fill
-				priority
-				sizes="100vw"
-				className={`${CLASS_NAME}__image`}
-			/>
-			<div className={`${CLASS_NAME}__overlay`} />
+			<div className="container">
+				<div className={`${CLASS_NAME}__grid`}>
+					<div className={`${CLASS_NAME}__body`}>
+						<p className={`${CLASS_NAME}__eyebrow`}>Bienvenue sur</p>
+						<h1 className={`${CLASS_NAME}__title`}>{data.titre}</h1>
+						{data.description && <p className={`${CLASS_NAME}__desc`}>{data.description}</p>}
+						<div className={`${CLASS_NAME}__actions`}>
+							{data.boutonPrincipal && (
+								<a href={data.boutonPrincipal.href ?? '#'} className={`${CLASS_NAME}__btn-primary`}>
+									{data.boutonPrincipal.label}
+									<ArrowRight size={16} aria-hidden="true" />
+								</a>
+							)}
+							{data.boutonSecondaire && (
+								<a href={data.boutonSecondaire.href ?? '#'} className={`${CLASS_NAME}__btn-secondary`}>
+									{data.boutonSecondaire.label}
+								</a>
+							)}
+						</div>
+					</div>
 
-			<div className={`container ${CLASS_NAME}__content`}>
-				<p className={`${CLASS_NAME}__eyebrow`}>Bienvenue sur</p>
-				<h1 className={`${CLASS_NAME}__title`}>{data.titre}</h1>
-				{data.description && <p className={`${CLASS_NAME}__desc`}>{data.description}</p>}
-				<div className={`${CLASS_NAME}__actions`}>
-					{data.boutonPrincipal && (
-						<a href={data.boutonPrincipal.href ?? '#'} className={`${CLASS_NAME}__btn-primary`}>
-							{data.boutonPrincipal.label}
-							<ArrowRight size={16} aria-hidden="true" />
-						</a>
-					)}
-					{data.boutonSecondaire && (
-						<a href={data.boutonSecondaire.href ?? '#'} className={`${CLASS_NAME}__btn-secondary`}>
-							{data.boutonSecondaire.label}
-						</a>
-					)}
+					<div className={`${CLASS_NAME}__image-wrap`}>
+						<Image
+							src={data.image}
+							alt=""
+							fill
+							priority
+							sizes="(max-width: 1024px) 100vw, 55vw"
+							className={`${CLASS_NAME}__image`}
+						/>
+						<div className={`${CLASS_NAME}__fade`} />
+					</div>
 				</div>
 			</div>
 		</section>

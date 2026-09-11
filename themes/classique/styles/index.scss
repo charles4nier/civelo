@@ -11,13 +11,22 @@
 	}
 }
 
-.theme-classique {
+// En dehors du wrapper `.theme-classique` : cette classe est portée par
+// <html> lui-même, donc `.theme-classique html { ... }` ne peut jamais
+// matcher (html n'est jamais son propre descendant) — ce bug (présent tel
+// quel dans les autres thèmes, copié ici par le scaffolding initial) rendait
+// le reset box-sizing totalement inopérant : `*, *::before, *::after {
+// box-sizing: inherit }` hérite alors du box-sizing par défaut du
+// navigateur (content-box) au lieu de border-box, et un padding + une width
+// explicite s'additionnent au lieu de se contenir — exactement ce qui
+// causait le débordement horizontal du header.
 html {
 	box-sizing: border-box;
 	-webkit-text-size-adjust: 100%;
 	scroll-behavior: smooth;
 }
 
+.theme-classique {
 html,
 body {
 	overflow-x: clip;
@@ -197,6 +206,10 @@ p {
 	max-width: $container-max-width;
 	padding: 0 $container-padding-x-desktop;
 	margin: 0 auto;
+
+	@media (min-width: $breakpoint-xl) {
+		max-width: 1800px;
+	}
 }
 
 /* =========================

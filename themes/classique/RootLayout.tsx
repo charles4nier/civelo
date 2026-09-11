@@ -3,7 +3,6 @@ import '@themes/classique/styles/index.scss';
 
 import Header from '@themes/classique/components/Header';
 import Footer from '@themes/classique/components/Footer';
-import FloatingButtons from '@themes/classique/components/FloatingButtons';
 import type { RootLayoutProps } from '../registry';
 
 // Une seule police pour tout le thème (voir styles/variables.scss) — pas de
@@ -33,7 +32,6 @@ export default function RootLayout({ navLinks, identite, boutonEntete, footer, c
 					{children}
 				</main>
 				<Footer identite={identite} navLinks={navLinks} data={footer} />
-				<FloatingButtons />
 			</body>
 		</html>
 	);

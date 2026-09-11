@@ -41,6 +41,27 @@ $b: 'floating';
 		bottom: 20px;
 		right: 16px;
 	}
+
+	// Logées dans la barre du header (Classique) plutôt qu'en colonne
+	// flottante — mêmes boutons/mêmes modales, disposition seulement.
+	&--inline {
+		position: static;
+		flex-direction: row;
+		gap: 8px;
+		border-radius: 0;
+
+		.#{$b}__btn {
+			width: 38px;
+			height: 38px;
+			box-shadow: none;
+
+			&:hover {
+				transform: none;
+				box-shadow: none;
+				filter: brightness(0.94);
+			}
+		}
+	}
 }
 
 .#{$b}__btn {

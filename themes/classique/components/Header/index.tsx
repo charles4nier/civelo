@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
+import FloatingButtons from '@themes/classique/components/FloatingButtons';
 import './style.scss';
 
 const CLASS_NAME = 'header';
@@ -204,7 +205,7 @@ export default function Header({ navLinks, identite, bouton }: Props) {
 	return (
 		<>
 			<header className={`${CLASS_NAME} scrolled`}>
-				<div className={`${CLASS_NAME}__inner container`}>
+				<div className={`${CLASS_NAME}__topbar container`}>
 					<Link href="/" className={`${CLASS_NAME}__logo`}>
 						<div className={`${CLASS_NAME}__logo-badge`}>
 							<Image
@@ -226,13 +227,8 @@ export default function Header({ navLinks, identite, bouton }: Props) {
 						</div>
 					</Link>
 
-					<nav className={`${CLASS_NAME}__nav`} aria-label="Menu principal">
-						{navLinks.map((link) => (
-							<DropdownItem key={link.label} link={link} />
-						))}
-					</nav>
-
 					<div className={`${CLASS_NAME}__actions`}>
+						<FloatingButtons inline />
 						<Link
 							href={bouton.href}
 							className={`${CLASS_NAME}__cta`}
@@ -255,6 +251,14 @@ export default function Header({ navLinks, identite, bouton }: Props) {
 						</button>
 					</div>
 				</div>
+
+				<nav className={`${CLASS_NAME}__navbar`} aria-label="Menu principal">
+					<div className={`${CLASS_NAME}__nav container`}>
+						{navLinks.map((link) => (
+							<DropdownItem key={link.label} link={link} />
+						))}
+					</div>
+				</nav>
 			</header>
 
 			{mounted &&

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Clock, MapPin, ArrowRight } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 import './style.scss';
 
 const CLASS_NAME = 'agenda-block';
@@ -34,10 +34,6 @@ export default function Agenda({ events }: Props) {
 		<div className={CLASS_NAME}>
 			<div className={`${CLASS_NAME}__header`}>
 				<h2 className={`${CLASS_NAME}__title`}>Agenda</h2>
-				<Link href="/agenda" className={`${CLASS_NAME}__link`}>
-					Voir tous les événements
-					<ArrowRight size={14} aria-hidden="true" />
-				</Link>
 			</div>
 
 			<div className={`${CLASS_NAME}__card`}>

@@ -290,7 +290,15 @@ function BotModal({ onClose, closing, titleId, closeButtonRef, modalRef }: Modal
 const FOCUSABLE_SELECTOR =
 	'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export default function FloatingButtons() {
+type Props = {
+	// Classique loge ces boutons dans la barre du header (à la place d'une
+	// recherche) plutôt qu'en colonne flottante bas-droite — même
+	// composant, même logique de modales/accessibilité, seule la
+	// disposition du déclencheur change.
+	inline?: boolean;
+};
+
+export default function FloatingButtons({ inline = false }: Props) {
 	const [activeModal, setActiveModal] = useState<Modal>(null);
 	const [isClosing, setIsClosing] = useState(false);
 	const pathname = usePathname();
@@ -434,7 +442,7 @@ export default function FloatingButtons() {
 			)}
 
 			<div
-				className={`${CLASS_NAME}__buttons`}
+				className={`${CLASS_NAME}__buttons ${inline ? `${CLASS_NAME}__buttons--inline` : ''}`}
 				ref={buttonsRowRef}
 				id="actions-rapides"
 				tabIndex={-1}
