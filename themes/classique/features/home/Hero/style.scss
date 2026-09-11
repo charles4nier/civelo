@@ -2,23 +2,39 @@
 
 .theme-classique {
 .hero-classique {
-	background-color: $card;
-	border-bottom: 1px solid $border;
-	padding-block: $spacing-4xl;
+	position: relative;
+	width: 100%;
+	height: 100vh;
+	min-height: 560px;
+	max-height: 900px;
+	overflow: hidden;
 
-	@media (min-width: $breakpoint-md) {
-		padding-block: $spacing-6xl;
+	&__image {
+		object-fit: cover;
 	}
 
-	&__grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: $spacing-3xl;
-		align-items: center;
+	// Un seul dégradé sombre (navy, pas de blanc) pour garder le texte
+	// lisible sur la photo — pas de fondu vers le fond de page comme dans
+	// la mise en page en deux colonnes essayée précédemment.
+	&__overlay {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			to top,
+			color-mix(in oklch, $foreground 85%, transparent),
+			color-mix(in oklch, $foreground 35%, transparent) 55%,
+			color-mix(in oklch, $foreground 10%, transparent)
+		);
+	}
 
-		@media (min-width: $breakpoint-md) {
-			grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-		}
+	&__content {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		height: 100%;
+		flex-direction: column;
+		justify-content: flex-end;
+		padding-bottom: $spacing-6xl;
 	}
 
 	&__eyebrow {
@@ -26,23 +42,25 @@
 		font-weight: $font-weight-bold;
 		text-transform: uppercase;
 		letter-spacing: 0.22em;
-		color: $muted-foreground;
+		color: rgba(255, 255, 255, 0.7);
 	}
 
 	&__title {
+		max-width: 760px;
 		margin-top: $spacing-md;
 		font-size: $h1-size-desktop;
 		line-height: $line-height-tight;
 		font-weight: $font-weight-bold;
 		letter-spacing: -0.01em;
+		color: #ffffff;
 	}
 
 	&__desc {
-		max-width: 440px;
+		max-width: 520px;
 		margin-top: $spacing-lg;
 		font-size: $body-size-desktop;
 		line-height: $line-height-relaxed;
-		color: $muted-foreground;
+		color: rgba(255, 255, 255, 0.85);
 	}
 
 	&__actions {
@@ -58,27 +76,10 @@
 		align-items: center;
 		gap: $spacing-sm;
 		padding: 14px $spacing-xl;
-		background-color: $primary;
-		color: $primary-foreground;
-		font-size: $small-size-desktop;
-		font-weight: $font-weight-semibold;
-		border-radius: 999px;
-		transition: $transition-smooth;
-
-		&:hover {
-			background-color: $coral;
-		}
-	}
-
-	&__btn-secondary {
-		display: inline-flex;
-		align-items: center;
-		padding: 14px $spacing-xl;
-		background-color: transparent;
+		background-color: #ffffff;
 		color: $foreground;
 		font-size: $small-size-desktop;
 		font-weight: $font-weight-semibold;
-		border: 1px solid $border;
 		border-radius: 999px;
 		transition: $transition-smooth;
 
@@ -87,23 +88,30 @@
 		}
 	}
 
-	&__image-wrap {
-		position: relative;
-		height: 224px;
-		border-radius: 20px;
-		overflow: hidden;
+	&__btn-secondary {
+		display: inline-flex;
+		align-items: center;
+		padding: 14px $spacing-xl;
+		background-color: transparent;
+		color: #ffffff;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		border: 1px solid rgba(255, 255, 255, 0.4);
+		border-radius: 999px;
+		transition: $transition-smooth;
 
-		@media (min-width: $breakpoint-sm) {
-			height: 288px;
-		}
-
-		@media (min-width: $breakpoint-md) {
-			height: 420px;
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.15);
 		}
 	}
 
-	&__image {
-		object-fit: cover;
+	@media (max-width: $breakpoint-sm) {
+		height: 85vh;
+		min-height: 480px;
+
+		&__content {
+			padding-bottom: $spacing-4xl;
+		}
 	}
 }
 
