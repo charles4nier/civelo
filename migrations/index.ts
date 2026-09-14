@@ -2,6 +2,7 @@ import * as migration_20260831_092241_baseline from './20260831_092241_baseline'
 import * as migration_20260831_092500_fk_cascade_fix from './20260831_092500_fk_cascade_fix';
 import * as migration_20260911_101156_ajoute_theme_classique from './20260911_101156_ajoute_theme_classique';
 import * as migration_20260914_153219_renomme_theme_app_en_moderne from './20260914_153219_renomme_theme_app_en_moderne';
+import * as migration_20260914_181940_cascade_suppression_tenant from './20260914_181940_cascade_suppression_tenant';
 
 export const migrations = [
   {
@@ -23,5 +24,10 @@ export const migrations = [
     up: migration_20260914_153219_renomme_theme_app_en_moderne.up,
     down: migration_20260914_153219_renomme_theme_app_en_moderne.down,
     name: '20260914_153219_renomme_theme_app_en_moderne'
+  },
+  {
+    up: migration_20260914_181940_cascade_suppression_tenant.up,
+    down: migration_20260914_181940_cascade_suppression_tenant.down,
+    name: '20260914_181940_cascade_suppression_tenant'
   },
 ];
