@@ -51,6 +51,10 @@ Pour le détail du *pourquoi* de chaque décision produit : [`decisions-log.md`]
 | ~2026-09 | **Footer** : colonnes de liens de menu restaurées (vrais liens `navLinks`, plus des `#`), fix de la double bordure `__address`. |
 | ~2026-09 | **Briefing commercial** pour l'assistant de l'associé (`civelo-briefing-commercial.md`, racine `Documents/perso/`) : présentation technique simple + argument souveraineté, règle « jamais “SaaS” face au client ». |
 | 2026-09-10 | **Réorganisation de la doc** : `.claude/docs/` (architecture / content-model / operations / decisions-log / roadmap), `CLAUDE.md` racine réduit à un index, `ARCHITECTURE.md` supprimé. |
+| 2026-09-14 | **4ᵉ thème `classique`** : scaffolding + Accueil sur mesure inspiré de saint-hilaire-digital-hub, migration d'enum, wiring Payload/admin. |
+| 2026-09-14 | **Thème `app` renommé `moderne`** (dossier, `ThemeName`, select Payload, scripts) via `ALTER TYPE ... RENAME VALUE` — aucun tenant ne l'utilisait en prod, migration sans risque de donnée. Contenu de l'ancien tenant `app` supprimé (orphelin, `tenant_id` à `NULL`) retrouvé et rattaché au nouveau tenant `moderne.civelo.fr`. |
+| 2026-09-14 | **FK `tenant_id` passées en `CASCADE`** sur `pages`/`media`/`documents`/`pois`/`sentiers`/`categories`/`identite`/`footer`/`bouton_entete` (étaient en `SET NULL`, écrit à la main comme `fk_cascade_fix` — le générateur Payload ne permet pas ce choix). Supprimer un tenant de test ne laissera plus de contenu orphelin s'accumuler. 74 pages orphelines déjà accumulées nettoyées (tunnel `db-tunnel` + `DELETE` manuel, l'action automatisée étant bloquée par le garde-fou "Cloud Storage Mass Delete"). |
+| 2026-09-14 | Conteneur web remonté en taille **L** (1 Go) après un nouveau pic mémoire à 99 %. |
 
 ---
 
@@ -58,6 +62,7 @@ Pour le détail du *pourquoi* de chaque décision produit : [`decisions-log.md`]
 
 ### Prioritaire
 
+- **Mode brouillon / preview (jugé indispensable par l'utilisateur, 2026-09-14).** Payload le gère nativement (`versions: { drafts: true }`) — permettrait à une secrétaire de préparer une actu/page sans la publier tout de suite, et de la prévisualiser avant publication. Coût réel : toutes les fonctions de `lib/payload.ts` qui servent le site public devront filtrer explicitement "publié uniquement", plus une vraie route de prévisualisation (token/cookie, pas juste un bouton). Commencer petit — `Pages` seul — plutôt que tout activer d'un coup.
 - **Email / SMTP transactionnel.** Le formulaire de contact n'envoie rien aujourd'hui. Choisir un fournisseur (Mailgun / Brevo / …), **pas** une boîte Gmail perso (limites d'envoi, risque de suspension). Brancher l'adaptateur email de Payload + le formulaire de contact des 3 thèmes.
 - **Finaliser la routine Sentry.** Attacher le connecteur MCP Sentry (`be646c17-f74e-401a-a501-5c8b14339202`, `https://mcp.sentry.dev/mcp`) au trigger `trig_01QTnxSYqd4scm3GtPhp3vYj` et réécrire son prompt pour lire Sentry via MCP au lieu du curl direct (bloqué par l'egress du cloud). Se pilote côté claude.ai/routines.
 
