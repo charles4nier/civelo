@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoNumerosUtilesPage from '@themes/edito/features/numeros-utiles';
-import AppNumerosUtilesPage from '@themes/app/features/numeros-utiles';
+import ModerneNumerosUtilesPage from '@themes/moderne/features/numeros-utiles';
 import AccueillantNumerosUtilesPage from '@themes/accueillant/features/numeros-utiles';
 import ClassiqueNumerosUtilesPage from '@themes/classique/features/numeros-utiles';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
@@ -16,6 +16,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoNumerosUtilesPage, app: AppNumerosUtilesPage, accueillant: AccueillantNumerosUtilesPage, classique: ClassiqueNumerosUtilesPage });
+	const Component = pickTheme(theme, { edito: StyleEditoNumerosUtilesPage, moderne: ModerneNumerosUtilesPage, accueillant: AccueillantNumerosUtilesPage, classique: ClassiqueNumerosUtilesPage });
 	return <Component />;
 }

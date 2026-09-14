@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoHomePage from '@themes/edito/features/home';
-import AppHomePage from '@themes/app/features/home';
+import ModerneHomePage from '@themes/moderne/features/home';
 import AccueillantHomePage from '@themes/accueillant/features/home';
 import ClassiqueHomePage from '@themes/classique/features/home';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
@@ -17,6 +17,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoHomePage, app: AppHomePage, accueillant: AccueillantHomePage, classique: ClassiqueHomePage });
+	const Component = pickTheme(theme, { edito: StyleEditoHomePage, moderne: ModerneHomePage, accueillant: AccueillantHomePage, classique: ClassiqueHomePage });
 	return <Component />;
 }

@@ -59,7 +59,7 @@ export const Tenants: CollectionConfig = {
 				access: { update: isSuperAdminField },
 				options: [
 					{ label: 'Style édito', value: 'edito' },
-					{ label: 'App', value: 'app' },
+					{ label: 'Moderne', value: 'moderne' },
 					{ label: 'Accueillant', value: 'accueillant' },
 					{ label: 'Classique', value: 'classique' }
 				]

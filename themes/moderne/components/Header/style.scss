@@ -1,0 +1,349 @@
+@import '@themes/moderne/styles/variables';
+
+.theme-moderne {
+.header {
+	position: sticky;
+	top: 0;
+	z-index: 30;
+	background: $background-95;
+	backdrop-filter: blur(4px); /* backdrop-blur-sm */
+
+	&__inner {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		padding-top: $spacing-lg;
+		padding-bottom: $spacing-md;
+	}
+
+	// ─── Gauche ────────────────────────────────────────────────────
+	&__left {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+	}
+
+	&__menu-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-sm;
+		padding: 8px 8px 8px 16px; /* pl-4 pr-2 py-2 */
+		background: $foreground; /* bg-foreground */
+		color: $background;
+		border-radius: 9999px;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
+		transition: opacity 0.2s;
+		cursor: pointer;
+		border: none;
+
+		&:hover { opacity: 0.88; }
+	}
+
+	&__menu-icon {
+		display: grid;
+		place-items: center;
+		width: 32px; /* size-8 */
+		height: 32px;
+		border-radius: 50%;
+		background: $background-15; /* bg-background/15 */
+	}
+
+	&__icon-btn {
+		display: grid;
+		place-items: center;
+		width: 44px; /* size-11 */
+		height: 44px;
+		border-radius: 50%;
+		background: $muted;
+		color: $foreground;
+		cursor: pointer;
+		border: none;
+		transition: background 0.15s;
+
+		&:hover { background: $secondary; }
+	}
+
+	&__lang-btn {
+		display: none;
+		align-items: center;
+		gap: 6px;
+		padding: 0 12px;
+		height: 44px; /* h-11 */
+		border-radius: 9999px;
+		background: $muted;
+		color: $foreground;
+		font-family: $font-body;
+		font-size: $xs-size-desktop;
+		font-weight: $font-weight-medium;
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		cursor: pointer;
+		border: none;
+		transition: background 0.15s;
+
+		&:hover { background: $secondary; }
+
+		@media (min-width: $breakpoint-xs) {
+			display: inline-flex;
+		}
+	}
+
+	// ─── Logo centré ───────────────────────────────────────────────
+	&__logo {
+		justify-self: center;
+		text-align: center;
+		line-height: 1;
+		color: $primary;
+
+		&:hover { opacity: 0.8; }
+	}
+
+	&__logo-name {
+		display: block;
+		font-family: $font-display;
+		font-size: 20px; /* text-xl */
+		font-weight: $font-weight-medium;
+		letter-spacing: -0.01em;
+
+		@media (min-width: $breakpoint-sm) {
+			font-size: 24px; /* md:text-2xl */
+		}
+	}
+
+	&__logo-sub {
+		display: block;
+		margin-top: 4px;
+		font-family: $font-body;
+		font-size: 10px; /* text-[10px] */
+		text-transform: uppercase;
+		letter-spacing: 0.3em;
+		color: $forest-70; /* text-forest/70 */
+	}
+
+	// ─── Droite ────────────────────────────────────────────────────
+	&__right {
+		justify-self: end;
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+	}
+
+	&__cta {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-sm;
+		padding: 10px 20px;
+		background: $accent;
+		color: $primary;
+		border-radius: 9999px;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
+		box-shadow: 0 4px 6px -1px $accent-30;
+		transition: background 0.15s;
+
+		&:hover { background: $accent-hover; }
+
+		@media (max-width: $breakpoint-sm) { display: none; }
+	}
+
+	&__burger {
+		display: none;
+		align-items: center;
+		justify-content: center;
+		padding: 8px;
+		color: $foreground;
+		background: none;
+		border: none;
+		cursor: pointer;
+		transition: color 0.15s;
+
+		&:hover { color: $primary; }
+
+		@media (max-width: $breakpoint-md) { display: flex; }
+	}
+
+	// ─── Overlay + Drawer mobile ───────────────────────────────────
+	&__overlay {
+		position: fixed;
+		inset: 0;
+		background: $primary-50;
+		backdrop-filter: blur(4px);
+		z-index: 40;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.3s ease;
+
+		&--visible {
+			opacity: 1;
+			pointer-events: auto;
+		}
+	}
+
+	&__drawer {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: min(360px, 85vw);
+		background: $background;
+		z-index: 50;
+		display: flex;
+		flex-direction: column;
+		transform: translateX(100%);
+		transition: transform 0.4s $ease-smooth;
+		// Ombre du tiroir mobile — variante assombrie de $foreground, usage
+		// unique (pas de variable dédiée dans variables.scss pour un seul
+		// endroit) mais dérivée pareil, pour rester tenant-réactive.
+		box-shadow: -8px 0 40px oklch(from #{$foreground} calc(l - 0.08) calc(c + 0.01) h / 0.15);
+
+		&--open { transform: translateX(0); }
+
+		@media (min-width: $breakpoint-md + 1) { display: none; }
+	}
+
+	&__drawer-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: $spacing-xl;
+		flex-shrink: 0;
+	}
+
+	&__drawer-logo {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		color: $primary;
+	}
+
+	&__drawer-logo-name {
+		font-family: $font-display;
+		font-size: 16px;
+		font-weight: $font-weight-medium;
+	}
+
+	&__drawer-logo-sub {
+		font-size: $xs-size-desktop;
+		text-transform: uppercase;
+		letter-spacing: 0.22em;
+		color: $muted-foreground;
+	}
+
+	&__drawer-close {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: $muted-foreground;
+		background: none;
+		border: none;
+		cursor: pointer;
+		transition: color 0.15s;
+		flex-shrink: 0;
+
+		&:hover { color: $foreground; }
+	}
+
+	&__drawer-body {
+		flex: 1;
+		overflow-y: auto;
+	}
+
+	&__mobile-group {
+		border-bottom: 1px solid $border;
+
+		&:first-child { border-top: 1px solid $border; }
+	}
+
+	&__mobile-link {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 16px $spacing-xl;
+		font-family: $font-body;
+		font-size: $body-size-desktop;
+		font-weight: $font-weight-medium;
+		color: $foreground;
+		background: none;
+		border: none;
+		text-align: left;
+		cursor: pointer;
+		transition: background 0.15s, color 0.15s;
+
+		&:hover { background: $muted; color: $primary; }
+	}
+
+	&__mobile-chevron {
+		color: $muted-foreground;
+		flex-shrink: 0;
+		transition: transform 0.3s $ease-smooth;
+
+		&--open { transform: rotate(180deg); }
+	}
+
+	/* Accordion via grid-template-rows */
+	&__mobile-sub {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 0.3s $ease-smooth;
+
+		&--open { grid-template-rows: 1fr; }
+	}
+
+	&__mobile-sub-inner {
+		overflow: hidden;
+		background: $muted;
+	}
+
+	&__mobile-sublink {
+		display: flex;
+		align-items: center;
+		gap: $spacing-md;
+		padding: 13px $spacing-xl 13px ($spacing-xl + 8px);
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
+		color: $foreground-80;
+		border-top: 1px solid $border;
+		transition: color 0.15s, background 0.15s;
+
+		&:hover { color: $primary; background: $secondary; }
+	}
+
+	&__mobile-sublink-dot {
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: $accent;
+		flex-shrink: 0;
+	}
+
+	&__drawer-footer {
+		padding: $spacing-xl;
+		border-top: 1px solid $border;
+		flex-shrink: 0;
+	}
+
+	&__drawer-cta {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		padding: 14px;
+		background: $primary;
+		color: $cream;
+		border-radius: 9999px;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
+		text-align: center;
+		transition: opacity 0.15s;
+
+		&:hover { opacity: 0.88; }
+	}
+}
+}
+

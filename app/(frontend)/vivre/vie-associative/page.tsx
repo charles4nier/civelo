@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoVieAssociativePage from '@themes/edito/features/vie-associative';
-import AppVieAssociativePage from '@themes/app/features/vie-associative';
+import ModerneVieAssociativePage from '@themes/moderne/features/vie-associative';
 import AccueillantVieAssociativePage from '@themes/accueillant/features/vie-associative';
 import ClassiqueVieAssociativePage from '@themes/classique/features/vie-associative';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
@@ -16,6 +16,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoVieAssociativePage, app: AppVieAssociativePage, accueillant: AccueillantVieAssociativePage, classique: ClassiqueVieAssociativePage });
+	const Component = pickTheme(theme, { edito: StyleEditoVieAssociativePage, moderne: ModerneVieAssociativePage, accueillant: AccueillantVieAssociativePage, classique: ClassiqueVieAssociativePage });
 	return <Component />;
 }

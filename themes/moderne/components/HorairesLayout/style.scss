@@ -1,0 +1,126 @@
+@import '@themes/moderne/styles/variables';
+
+.theme-moderne {
+$b: 'horaires-layout';
+
+.#{$b}__section {
+	padding: $spacing-6xl $spacing-lg;
+
+	@media (min-width: $breakpoint-md) {
+		padding: $spacing-7xl $spacing-5xl;
+	}
+}
+
+.#{$b}__block {
+	max-width: 720px;
+
+	& + & {
+		margin-top: $spacing-6xl;
+	}
+}
+
+.#{$b}__block-eyebrow {
+	font-family: $font-body;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-regular;
+	text-transform: uppercase;
+	letter-spacing: 0.3em;
+	color: $forest-70;
+}
+
+.#{$b}__block-title {
+	font-family: $font-display;
+	font-size: $h3-size-desktop;
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+	margin-top: $spacing-sm;
+}
+
+.#{$b}__block-divider {
+	width: 64px;
+	height: 3px;
+	background-color: $accent;
+	margin: $spacing-md 0 $spacing-2xl;
+}
+
+.#{$b}__table {
+	border: 1px solid $border;
+	border-radius: 16px;
+	overflow: hidden;
+	background: $card;
+}
+
+.#{$b}__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: $spacing-md $spacing-lg;
+	font-family: $font-body;
+	font-size: $body-size-desktop;
+
+	&:not(:last-child) {
+		border-bottom: 1px solid $border;
+	}
+
+	&--closed {
+		.#{$b}__row-hours {
+			color: $muted-foreground;
+		}
+	}
+}
+
+.#{$b}__row-day {
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+}
+
+.#{$b}__row-hours {
+	color: $foreground-80;
+}
+
+.#{$b}__closures {
+	display: flex;
+	align-items: flex-start;
+	gap: $spacing-md;
+	margin-top: $spacing-xl;
+	padding: $spacing-md $spacing-lg;
+	background: $accent-15;
+	border-radius: 12px;
+}
+
+.#{$b}__closures-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	background: $accent-30;
+	color: $accent-foreground;
+}
+
+.#{$b}__closures-title {
+	font-family: $font-body;
+	font-size: $small-size-desktop;
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+	margin-bottom: 2px;
+}
+
+.#{$b}__closures-list {
+	font-family: $font-body;
+	font-size: $small-size-desktop;
+	color: $foreground-80;
+}
+
+.#{$b}__contacts {
+	display: grid;
+	gap: $spacing-lg;
+	grid-template-columns: 1fr;
+
+	@media (min-width: $breakpoint-sm) {
+		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	}
+}
+}

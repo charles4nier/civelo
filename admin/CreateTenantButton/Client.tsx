@@ -9,7 +9,7 @@ const MODAL_SLUG = 'create-tenant';
 
 const THEMES = [
 	{ value: 'edito', label: 'Style édito' },
-	{ value: 'app', label: 'App' },
+	{ value: 'moderne', label: 'Moderne' },
 	{ value: 'accueillant', label: 'Accueillant' },
 	{ value: 'classique', label: 'Classique' }
 ];

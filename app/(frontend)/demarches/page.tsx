@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoDemarchesPage from '@themes/edito/features/demarches';
-import AppDemarchesPage from '@themes/app/features/demarches';
+import ModerneDemarchesPage from '@themes/moderne/features/demarches';
 import AccueillantDemarchesPage from '@themes/accueillant/features/demarches';
 import ClassiqueDemarchesPage from '@themes/classique/features/demarches';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
@@ -17,6 +17,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoDemarchesPage, app: AppDemarchesPage, accueillant: AccueillantDemarchesPage, classique: ClassiqueDemarchesPage });
+	const Component = pickTheme(theme, { edito: StyleEditoDemarchesPage, moderne: ModerneDemarchesPage, accueillant: AccueillantDemarchesPage, classique: ClassiqueDemarchesPage });
 	return <Component />;
 }

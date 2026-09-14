@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoCarteInteractive from '@themes/edito/features/carte';
 import { pois as editoFallbackPois, sentiers as editoFallbackSentiers } from '@themes/edito/features/carte/data';
-import AppCarteInteractive from '@themes/app/features/carte';
-import { pois as appFallbackPois, sentiers as appFallbackSentiers } from '@themes/app/features/carte/data';
+import ModerneCarteInteractive from '@themes/moderne/features/carte';
+import { pois as moderneFallbackPois, sentiers as moderneFallbackSentiers } from '@themes/moderne/features/carte/data';
 import AccueillantCarteInteractive from '@themes/accueillant/features/carte';
 import { pois as accueillantFallbackPois, sentiers as accueillantFallbackSentiers } from '@themes/accueillant/features/carte/data';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
@@ -24,8 +24,8 @@ export default async function Page({ searchParams }: PageProps) {
 	const payload = await getPayloadClient();
 	const [theme, data] = await Promise.all([getCurrentTheme(payload), getCarteData()]);
 
-	if (theme === 'app') {
-		return <AppCarteInteractive initialId={id} pois={data?.pois ?? appFallbackPois} sentiers={data?.sentiers ?? appFallbackSentiers} />;
+	if (theme === 'moderne') {
+		return <ModerneCarteInteractive initialId={id} pois={data?.pois ?? moderneFallbackPois} sentiers={data?.sentiers ?? moderneFallbackSentiers} />;
 	}
 
 	if (theme === 'accueillant') {

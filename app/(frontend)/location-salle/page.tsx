@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoLocationSallePage from '@themes/edito/features/location-salle';
-import AppLocationSallePage from '@themes/app/features/location-salle';
+import ModerneLocationSallePage from '@themes/moderne/features/location-salle';
 import AccueillantLocationSallePage from '@themes/accueillant/features/location-salle';
 import ClassiqueLocationSallePage from '@themes/classique/features/location-salle';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
@@ -17,6 +17,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoLocationSallePage, app: AppLocationSallePage, accueillant: AccueillantLocationSallePage, classique: ClassiqueLocationSallePage });
+	const Component = pickTheme(theme, { edito: StyleEditoLocationSallePage, moderne: ModerneLocationSallePage, accueillant: AccueillantLocationSallePage, classique: ClassiqueLocationSallePage });
 	return <Component />;
 }

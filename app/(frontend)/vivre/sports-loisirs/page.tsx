@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { generatePageMetadata } from '@themes/edito/config/seo';
 import StyleEditoSportsLoisirsPage from '@themes/edito/features/sports-loisirs';
-import AppSportsLoisirsPage from '@themes/app/features/sports-loisirs';
+import ModerneSportsLoisirsPage from '@themes/moderne/features/sports-loisirs';
 import AccueillantSportsLoisirsPage from '@themes/accueillant/features/sports-loisirs';
 import ClassiqueSportsLoisirsPage from '@themes/classique/features/sports-loisirs';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
@@ -16,6 +16,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoSportsLoisirsPage, app: AppSportsLoisirsPage, accueillant: AccueillantSportsLoisirsPage, classique: ClassiqueSportsLoisirsPage });
+	const Component = pickTheme(theme, { edito: StyleEditoSportsLoisirsPage, moderne: ModerneSportsLoisirsPage, accueillant: AccueillantSportsLoisirsPage, classique: ClassiqueSportsLoisirsPage });
 	return <Component />;
 }

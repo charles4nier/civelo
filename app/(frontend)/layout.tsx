@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { defaultMetadata } from '@themes/edito/config/seo';
 import StyleEditoRootLayout from '@themes/edito/RootLayout';
-import AppRootLayout from '@themes/app/RootLayout';
+import ModerneRootLayout from '@themes/moderne/RootLayout';
 import AccueillantRootLayout from '@themes/accueillant/RootLayout';
 import ClassiqueRootLayout from '@themes/classique/RootLayout';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
@@ -39,7 +39,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
 
 	const RootLayout = pickTheme(theme, {
 		edito: StyleEditoRootLayout,
-		app: AppRootLayout,
+		moderne: ModerneRootLayout,
 		accueillant: AccueillantRootLayout,
 		classique: ClassiqueRootLayout
 	});
