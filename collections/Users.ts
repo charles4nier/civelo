@@ -1,4 +1,4 @@
-import type { Access, CollectionConfig } from 'payload';
+import type { Access, CollectionConfig, PayloadRequest } from 'payload';
 import { getTenantAccess, getUserTenantIDs } from '@payloadcms/plugin-multi-tenant/utilities';
 import { isSuperAdminField } from './access';
 import { withInfo } from './Pages';
@@ -18,6 +18,34 @@ const scopedToOwnTenants: Access = ({ req }) => {
 	return getTenantAccess({ fieldName: 'tenants.tenant', user: req.user as never });
 };
 
+// Bug de conception signale le 2026-09-15 : rien n'empechait un
+// super-admin de creer un AUTRE super-admin depuis le back-office
+// verrouille d'une commune (pas seulement depuis la console dediee), ni
+// de le rattacher explicitement a une commune precise via `tenants`. Un
+// super-admin est cense etre lie a `admin.civelo.fr` et avoir un acces
+// global de par son role (voir `access.create`/`access.update`
+// ci-dessous) — jamais scope a une commune. Les deux garde-fous
+// ci-dessous imposent cette regle au niveau des donnees, pas seulement
+// de l'UI.
+const isOnSuperAdminConsole = (req: PayloadRequest): boolean => {
+	const domaine = process.env.SUPER_ADMIN_DOMAIN;
+	if (!domaine) return false;
+	const host = req.headers.get('host')?.split(':')[0] ?? '';
+	return host === domaine;
+};
+
+const findHomeTenantId = async (req: PayloadRequest) => {
+	const domaine = process.env.SUPER_ADMIN_DOMAIN;
+	if (!domaine) return undefined;
+	const { docs } = await req.payload.find({
+		collection: 'tenants',
+		where: { domaine: { equals: domaine } },
+		limit: 1,
+		overrideAccess: true
+	});
+	return docs[0]?.id as string | number | undefined;
+};
+
 export const Users: CollectionConfig = {
 	slug: 'users',
 	auth: true,
@@ -34,19 +62,22 @@ export const Users: CollectionConfig = {
 	// l'équipe (`domaine` = `SUPER_ADMIN_DOMAIN`) quand rien n'est choisi.
 	hooks: {
 		beforeChange: [
-			async ({ data, operation, req }) => {
+			async ({ data, operation, req, originalDoc }) => {
+				const effectiveRole = data.role ?? originalDoc?.role;
+				// Un super-admin reste TOUJOURS rattache au tenant "maison", quoi
+				// qu'on ait soumis dans `tenants` (create ou update) — voir le
+				// commentaire sur `isOnSuperAdminConsole` plus haut. Ecrase donc
+				// systematiquement, pas seulement quand `tenants` est vide.
+				if (effectiveRole === 'super-admin') {
+					const homeTenantId = await findHomeTenantId(req);
+					if (homeTenantId !== undefined) data.tenants = [{ tenant: homeTenantId }];
+					return data;
+				}
+
 				if (operation !== 'create') return data;
 				if (Array.isArray(data.tenants) && data.tenants.length > 0) return data;
-				const domaine = process.env.SUPER_ADMIN_DOMAIN;
-				if (!domaine) return data;
-				const { docs } = await req.payload.find({
-					collection: 'tenants',
-					where: { domaine: { equals: domaine } },
-					limit: 1,
-					overrideAccess: true
-				});
-				const homeTenant = docs[0];
-				if (homeTenant) data.tenants = [{ tenant: homeTenant.id }];
+				const homeTenantId = await findHomeTenantId(req);
+				if (homeTenantId !== undefined) data.tenants = [{ tenant: homeTenantId }];
 				return data;
 			}
 		]
@@ -59,7 +90,13 @@ export const Users: CollectionConfig = {
 		// pour une commune qui n'est pas la sienne.
 		create: ({ req, data }) => {
 			if (!req.user) return false;
-			if (req.user.role === 'super-admin') return true;
+			if (req.user.role === 'super-admin') {
+				// Cf. `isOnSuperAdminConsole` : creer un compte super-admin n'est
+				// permis que depuis la console dediee, jamais depuis le
+				// back-office verrouille d'une commune (meme par un super-admin).
+				if (data?.role === 'super-admin' && !isOnSuperAdminConsole(req)) return false;
+				return true;
+			}
 			if (req.user.role !== 'admin') return false;
 			// Payload évalue aussi cette fonction SANS `data` (ex.
 			// `getAccessResults` avec `fetchData: false`) pour décider
@@ -77,7 +114,12 @@ export const Users: CollectionConfig = {
 		},
 		update: ({ req, data, id }) => {
 			if (!req.user) return false;
-			if (req.user.role === 'super-admin') return true;
+			if (req.user.role === 'super-admin') {
+				// Même règle que sur `create` : promouvoir quelqu'un super-admin
+				// n'est permis que depuis la console dédiée.
+				if (data?.role === 'super-admin' && !isOnSuperAdminConsole(req)) return false;
+				return true;
+			}
 			if (req.user.role === 'admin') {
 				// data?.role absent = pas de changement de rôle demandé, autorisé
 				if (data?.role && data.role !== 'editeur') return false;
