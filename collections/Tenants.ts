@@ -1,7 +1,26 @@
-import type { CollectionConfig } from 'payload';
-import { isSuperAdmin, isLoggedIn, isSuperAdminField } from './access';
+import type { Access, CollectionConfig } from 'payload';
+import { getUserTenantIDs } from '@payloadcms/plugin-multi-tenant/utilities';
+import { isSuperAdmin, isSuperAdminField } from './access';
 import { withInfo } from './Pages';
 import { seedDefaultPagesForTenant } from '../lib/seedDefaultPages';
+
+// Bug de securite reel signale le 2026-09-15 : `read`/`update` etaient de
+// simples `isLoggedIn`, donc n'importe quel admin/editeur d'une commune
+// pouvait lire ET modifier la fiche tenant de n'importe quelle AUTRE
+// commune (blason/coordonnees n'ont aucun verrou de champ, contrairement a
+// nom/domaine/theme/statutContrat) — et le picker "tenants" du formulaire
+// de creation d'utilisateur listait donc toutes les communes clientes.
+// Le plugin multi-tenant ne filtre PAS automatiquement les relations vers
+// la collection `tenants` elle-meme (verifie dans son code source,
+// addFilterOptionsToFields.js : son filtrage auto ne s'applique qu'aux
+// relations vers les collections "tenant-enabled" comme pages/media,
+// jamais vers tenants). Meme pattern que `scopedToOwnTenants` dans
+// Users.ts, reutilise a l'identique.
+const scopedToOwnTenant: Access = ({ req }) => {
+	if (!req.user) return false;
+	if (req.user.role === 'super-admin') return true;
+	return { id: { in: getUserTenantIDs(req.user as never) } };
+};
 
 // Étape 3 du plan multi-tenant — collection pivot (une ligne par commune
 // cliente). Registrée dans `payload.config.ts` en dehors de la config du
@@ -23,7 +42,13 @@ export const Tenants: CollectionConfig = {
 		defaultColumns: ['nom', 'domaine', 'statutContrat'],
 		components: {
 			beforeList: ['/admin/CreateTenantButton']
-		}
+		},
+		// Un admin/editeur normal n'a jamais besoin de cette collection au
+		// quotidien (verifie : admin/Dashboard ne renvoie que vers
+		// pages/identite/footer, deja scopes par le plugin) — la retirer du
+		// menu pour tout le monde sauf super-admin, coherent avec le fait
+		// qu'il ne devrait meme pas savoir qu'un autre tenant existe.
+		hidden: ({ user }) => user?.role !== 'super-admin'
 	},
 	access: {
 		// Jamais public — contrairement à Pages/Media/etc. Une lecture
@@ -33,8 +58,8 @@ export const Tenants: CollectionConfig = {
 		// tenant via un appel serveur (`overrideAccess: true`), pas via
 		// cette règle.
 		create: isSuperAdmin,
-		read: isLoggedIn,
-		update: isLoggedIn,
+		read: scopedToOwnTenant,
+		update: scopedToOwnTenant,
 		delete: isSuperAdmin
 	},
 	fields: [
