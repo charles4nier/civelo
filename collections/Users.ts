@@ -61,6 +61,14 @@ export const Users: CollectionConfig = {
 			if (!req.user) return false;
 			if (req.user.role === 'super-admin') return true;
 			if (req.user.role !== 'admin') return false;
+			// Payload évalue aussi cette fonction SANS `data` (ex.
+			// `getAccessResults` avec `fetchData: false`) pour décider
+			// d'afficher le bouton "Créer nouveau" — sans ce cas, un admin
+			// mairie légitime ne voyait jamais ce bouton (bug réel constaté
+			// le 2026-09-15) car `getUserTenantIDs(undefined)` renvoie
+			// toujours `[]`. La vraie validation reste faite plus bas,
+			// contre les données réellement soumises à la création.
+			if (!data) return true;
 			if (data?.role && data.role !== 'editeur') return false;
 
 			const adminTenantIds = getUserTenantIDs(req.user as never);
