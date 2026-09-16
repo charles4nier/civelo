@@ -33,14 +33,14 @@ export default async function AdminNav({ payload }: ServerProps) {
 
 	const hideTenantSelector = await isTenantLocked();
 
-	// 2026-08-28 — sur la console super-admin (domaine non verrouillé), la
-	// marque reste "Civelo Admin" quel que soit le tenant actuellement
-	// sélectionné via le sélecteur (bug signalé : rester sur "Commune A"
-	// après être revenu sur "Mes sites", juste parce que le cookie de
-	// sélection persiste). Seul un domaine VERROUILLÉ (une vraie commune)
-	// doit afficher le nom de son propre tenant.
+	// Résolu dès qu'un tenant est sélectionné (verrouillé OU choisi depuis
+	// "Mes sites" sur la console super-admin) — c'est au CLIENT de décider
+	// s'il faut l'afficher ou retomber sur "Civelo Admin" (voir
+	// `Client.tsx` : sur la racine `/admin`, toujours "Mes sites"/"Civelo
+	// Admin" même si le cookie a persisté, pour ne pas reproduire le bug du
+	// 28/08 où rester sur "Commune A" après être revenu sur "Mes sites").
 	let siteName = 'Civelo Admin';
-	if (hideTenantSelector && tenantId) {
+	if (tenantId) {
 		try {
 			const tenant = await payload.findByID({ collection: 'tenants', id: tenantId, depth: 0 });
 			if (tenant?.nom) siteName = String(tenant.nom);

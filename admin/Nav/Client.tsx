@@ -242,8 +242,21 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 	// alors qu'il n'a de sens que sur la console super-admin dédiée
 	// (`SUPER_ADMIN_DOMAIN`, non verrouillée). `hideTenantSelector` (déjà
 	// calculé pour masquer le sélecteur de tenant, même raison) sert aussi ici.
+	//
+	// Bug réel du 2026-09-16 — corrigé : ce calcul ne regardait que le
+	// domaine, jamais la page courante. Résultat : après avoir cliqué sur un
+	// site depuis "Mes sites" (bascule de tenant par cookie, on reste sur
+	// `admin.civelo.fr`, voir `admin/MesSites/Client.tsx`), la section "Mon
+	// site" restait masquée et la marque affichait toujours "Civelo Admin" —
+	// on ne voyait jamais les pages de la commune choisie. `isOnDashboardRoot`
+	// distingue les deux : sur la racine `/admin` (grille "Mes sites"), on
+	// masque "Mon site" comme avant ; sur toute AUTRE route (ex.
+	// `/admin/collections/pages`), un tenant sélectionné doit se comporter
+	// comme un domaine verrouillé.
 	const isSuperAdmin = user?.role === 'super-admin';
-	const isSuperAdminConsole = isSuperAdmin && !hideTenantSelector;
+	const isOnDashboardRoot = pathname === base || pathname === `${base}/`;
+	const isSuperAdminConsole = isSuperAdmin && !hideTenantSelector && isOnDashboardRoot;
+	const displaySiteName = !hideTenantSelector && isOnDashboardRoot ? 'Civelo Admin' : siteName;
 
 	// Décision — "Mes sites" en entrée principale, pas un lien de plus sous
 	// "Paramètres" (où vivait l'ancien lien "Communes") : c'est le point
@@ -277,8 +290,8 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 				<style>{'.tenant-selector { display: none; }'}</style>
 			)}
 			<div className="admin-nav__brand">
-				<span className="admin-nav__brand-mark">{brandMark(siteName)}</span>
-				<span className="admin-nav__brand-name">{siteName}</span>
+				<span className="admin-nav__brand-mark">{brandMark(displaySiteName)}</span>
+				<span className="admin-nav__brand-name">{displaySiteName}</span>
 			</div>
 
 			<div className="admin-nav__body">
