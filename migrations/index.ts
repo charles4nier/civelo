@@ -4,6 +4,7 @@ import * as migration_20260911_101156_ajoute_theme_classique from './20260911_10
 import * as migration_20260914_153219_renomme_theme_app_en_moderne from './20260914_153219_renomme_theme_app_en_moderne';
 import * as migration_20260914_181940_cascade_suppression_tenant from './20260914_181940_cascade_suppression_tenant';
 import * as migration_20260916_060953_ajoute_drafts_pages from './20260916_060953_ajoute_drafts_pages';
+import * as migration_20260916_194420_ajoute_variante_tenant from './20260916_194420_ajoute_variante_tenant';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260916_060953_ajoute_drafts_pages.up,
     down: migration_20260916_060953_ajoute_drafts_pages.down,
-    name: '20260916_060953_ajoute_drafts_pages'
+    name: '20260916_060953_ajoute_drafts_pages',
+  },
+  {
+    up: migration_20260916_194420_ajoute_variante_tenant.up,
+    down: migration_20260916_194420_ajoute_variante_tenant.down,
+    name: '20260916_194420_ajoute_variante_tenant'
   },
 ];

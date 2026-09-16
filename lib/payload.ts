@@ -55,6 +55,25 @@ async function requireTenant(payload: Awaited<ReturnType<typeof getPayloadClient
 	return tenant;
 }
 
+// Variante de disposition de la page d'accueil ("defaut"/"tourisme",
+// `Tenants.variante`) — pour l'instant seul le thème édito en tient compte
+// (voir `themes/edito/features/home/index.tsx`). Même pattern de repli que
+// `getCurrentTheme()` (`shared/lib/theme.ts`) : jamais d'exception qui
+// casserait le rendu, retombe sur la variante par défaut.
+export type Variant = 'defaut' | 'tourisme';
+export const DEFAULT_VARIANT: Variant = 'defaut';
+
+export async function getCurrentVariant(): Promise<Variant> {
+	try {
+		const payload = await getPayloadClient();
+		const tenant = await getCurrentTenant(payload);
+		return tenant?.variante === 'tourisme' ? 'tourisme' : DEFAULT_VARIANT;
+	} catch (err) {
+		console.warn('[payload] getCurrentVariant() : base injoignable, repli sur la variante par défaut.', err);
+		return DEFAULT_VARIANT;
+	}
+}
+
 // Mode brouillon/preview (roadmap 2026-09-14) — reflète le Draft Mode posé
 // par `app/(payload)/api/preview` (jamais activable autrement qu'en passant
 // par cette route, qui revérifie l'utilisateur et le tenant). Utilisé par
@@ -904,6 +923,18 @@ type PayloadAccueil = {
 		lienPoi?: PayloadPoiRelation;
 		lienSentier?: PayloadPoiRelation;
 	}[];
+	// Variante « tourisme » (`Tenants.variante`) — slideshow de mise en avant,
+	// nombre de diapositives libre (pas de min/maxRows côté Pages.ts).
+	slideshow?: {
+		image?: PayloadUpload;
+		etiquette?: string;
+		titre: string;
+		description?: string;
+		badgeNombre?: string;
+		badgeLibelle?: string;
+		boutonLabel?: string;
+		lien?: PayloadPageRelation;
+	}[];
 	// Décision 50 — plus de sous-groupe `coordonnees` : mis à plat directement.
 	cta?: PayloadContactGroup & { titre?: string; description?: string; boutonLabel?: string };
 };
@@ -986,7 +1017,18 @@ export async function getAccueilData() {
 					href: id ? `/tourisme/carte-interactive?id=${id}` : '/tourisme/carte-interactive'
 				};
 			}),
-			cta: accueil.cta
+			slideshow: (accueil.slideshow ?? []).map((s, i) => ({
+			key: String(i),
+			image: uploadUrl(s.image, '/saint-hilaire-bonneval-village.jpg'),
+			etiquette: s.etiquette,
+			titre: s.titre,
+			description: s.description,
+			badgeNombre: s.badgeNombre,
+			badgeLibelle: s.badgeLibelle,
+			boutonLabel: s.boutonLabel,
+			href: resolvePageHref(s.lien)
+		})),
+		cta: accueil.cta
 				? {
 						titre: accueil.cta.titre,
 						description: accueil.cta.description,

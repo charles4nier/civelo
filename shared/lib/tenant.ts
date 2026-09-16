@@ -16,7 +16,7 @@ import type { Payload } from 'payload';
 //
 // `cache()` (React) déduplique les appels sur une même requête — le layout
 // à lui seul fait déjà 4 lectures qui en dépendront toutes.
-export type CurrentTenant = { id: string | number; domaine: string; theme: string };
+export type CurrentTenant = { id: string | number; domaine: string; theme: string; variante?: string };
 
 export const getCurrentTenant = cache(async (payload: Payload): Promise<CurrentTenant | null> => {
 	try {
@@ -41,9 +41,9 @@ export const getCurrentTenant = cache(async (payload: Payload): Promise<CurrentT
 			// de repli malgré un import terminé avec succès.
 			await headers();
 			const { docs } = await payload.find({ collection: 'tenants', limit: 1, overrideAccess: true, depth: 0 });
-			const tenant = docs[0] as { id?: string | number; domaine?: string; theme?: string } | undefined;
+			const tenant = docs[0] as { id?: string | number; domaine?: string; theme?: string; variante?: string } | undefined;
 			if (!tenant?.id || !tenant.domaine || !tenant.theme) return null;
-			return { id: tenant.id, domaine: tenant.domaine, theme: tenant.theme };
+			return { id: tenant.id, domaine: tenant.domaine, theme: tenant.theme, variante: tenant.variante };
 		}
 
 		const host = (await headers()).get('host');
@@ -66,10 +66,10 @@ export const getCurrentTenant = cache(async (payload: Payload): Promise<CurrentT
 			limit: 1
 		});
 
-		const tenant = docs[0] as { id?: string | number; domaine?: string; theme?: string } | undefined;
+		const tenant = docs[0] as { id?: string | number; domaine?: string; theme?: string; variante?: string } | undefined;
 		if (!tenant?.id || !tenant.domaine || !tenant.theme) return null;
 
-		return { id: tenant.id, domaine: tenant.domaine, theme: tenant.theme };
+		return { id: tenant.id, domaine: tenant.domaine, theme: tenant.theme, variante: tenant.variante };
 	} catch (err) {
 		console.warn('[tenant] getCurrentTenant() : résolution impossible.', err);
 		return null;

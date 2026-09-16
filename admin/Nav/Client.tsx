@@ -19,7 +19,8 @@ import {
 	Fingerprint,
 	PanelTop,
 	PanelBottom,
-	Images
+	Images,
+	LayoutTemplate
 } from 'lucide-react';
 import './style.scss';
 import './global-overrides.scss';
@@ -148,7 +149,7 @@ function NavGroup({ section, base, pathname }: { section: NavSection; base: stri
 	);
 }
 
-type Props = { pages: NavPage[]; siteName: string; hideTenantSelector: boolean };
+type Props = { pages: NavPage[]; siteName: string; hideTenantSelector: boolean; tenantId: string | null };
 
 // Décision — sigle affiché dans le badge de marque (ex. "Saint-Hilaire-
 // Bonneval" → "SB") : 2 premières initiales des mots du nom, ou les 2
@@ -159,7 +160,7 @@ function brandMark(name: string): string {
 	return name.slice(0, 2).toUpperCase();
 }
 
-export default function AdminNavClient({ pages, siteName, hideTenantSelector }: Props) {
+export default function AdminNavClient({ pages, siteName, hideTenantSelector, tenantId }: Props) {
 	const pathname = usePathname();
 	const base = useAdminBase();
 	const router = useRouter();
@@ -266,9 +267,25 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 	// (voir `admin/Dashboard/index.tsx`).
 	const mesSites: NavLinkItem = { kind: 'link', label: 'Mes sites', href: '', icon: Building2, exact: true };
 
+	// "Type de site" (thème + variante, `collections/Tenants.ts`) — réservé au
+	// super-admin, même raison que l'ancien lien "Communes" (voir plus haut) :
+	// nom/domaine/thème/variante sont des leviers commerciaux/techniques, pas
+	// des réglages qu'un admin/éditeur de commune doit voir. Affiché
+	// uniquement une fois SUR le site d'une commune (`!isSuperAdminConsole`,
+	// même garde que "Mon site" juste au-dessus) — sur la console "Mes sites",
+	// il n'y a pas UN tenant précis à éditer. Pointe directement vers la
+	// fiche du tenant verrouillé/sélectionné plutôt que vers la liste
+	// complète de la collection (qu'un super-admin sur ce domaine n'a de
+	// toute façon aucune raison de parcourir ici).
+	const typeDeSite: NavLinkItem | null =
+		isSuperAdmin && !isSuperAdminConsole && tenantId
+			? { kind: 'link', label: 'Type de site', href: `/collections/tenants/${tenantId}`, icon: LayoutTemplate }
+			: null;
+
 	const parametres: NavSection = {
 		label: 'Paramètres',
 		items: [
+			...(typeDeSite ? [typeDeSite] : []),
 			{ kind: 'link', label: 'Catégories', href: '/collections/categories', icon: Tags },
 			{ kind: 'link', label: 'Icônes', href: '/collections/icones', icon: Shapes },
 			{ kind: 'link', label: 'Médias', href: '/collections/media', icon: Images },

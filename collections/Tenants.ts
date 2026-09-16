@@ -93,6 +93,20 @@ export const Tenants: CollectionConfig = {
 		),
 		withInfo(
 			{
+				name: 'variante',
+				type: 'select',
+				required: true,
+				defaultValue: 'defaut',
+				access: { update: isSuperAdminField },
+				options: [
+					{ label: 'Par défaut', value: 'defaut' },
+					{ label: 'Tourisme', value: 'tourisme' }
+				]
+			},
+			"La disposition de la page d'accueil de cette commune. Pour l'instant, seul le thème « Style édito » en tient compte."
+		),
+		withInfo(
+			{
 				name: 'palette',
 				type: 'select',
 				required: true,

@@ -1,10 +1,12 @@
 import Hero, { type HeroData } from './Hero';
 import QuickAccess, { type QuickAccessItemData, type NextEventData } from './QuickAccess';
 import Discover, { type DiscoverCardData } from './Discover';
+import Slideshow, { type SlideshowItemData } from './Slideshow';
+import Agenda from './Agenda';
 import MayorWord, { type MayorWordData } from './MayorWord';
 import News, { type NewsItemData } from './News';
 import CTA, { type CTAData } from './CTA';
-import { getAccueilData, getAgendaItems, getActualitesItems, pickHomeActus } from '@lib/payload';
+import { getAccueilData, getAgendaItems, getActualitesItems, pickHomeActus, getCurrentVariant } from '@lib/payload';
 import { events as fallbackEvents } from '@themes/edito/features/agenda/data';
 
 const fallbackHero: HeroData = {
@@ -76,6 +78,45 @@ const fallbackDiscoverCards: DiscoverCardData[] = [
 	}
 ];
 
+// Section « Diaporama » (variante tourisme et défaut, cf. plus bas) — 3
+// diapositives de repli si aucune n'est saisie côté Payload.
+const fallbackSlideshow: SlideshowItemData[] = [
+	{
+		key: 'fete-remparts',
+		image: '/saint-hilaire-bonneval-village.jpg',
+		etiquette: 'Grande manifestation',
+		titre: 'Fête des Remparts',
+		description:
+			'Le week-end des 12 et 13 juillet, le village remonte le temps : artisanat, costumes, animations et repas champêtre au cœur du bourg. Un rendez-vous à ne pas manquer.',
+		badgeNombre: '12 & 13',
+		badgeLibelle: 'Juillet · Rendez-vous au village',
+		boutonLabel: 'Voir le programme',
+		href: '/agenda'
+	},
+	{
+		key: 'commerces',
+		image: '/saint-hilaire-bonneval-hero.jpg',
+		etiquette: 'Vivre au village',
+		titre: 'Commerces & hébergements',
+		description:
+			'Restaurants, boulangerie, épicerie, artisans, gîtes et chambres d’hôtes : au cœur du bourg, tout ce qu’il faut pour goûter la vie du village — de passage ou pour tout un séjour.',
+		boutonLabel: 'Découvrir les commerces',
+		href: '/commerces'
+	},
+	{
+		key: 'carte-interactive',
+		image: '/saint-hilaire-bonneval-lake.jpg',
+		etiquette: 'Explorez le territoire',
+		titre: 'La carte interactive',
+		description:
+			'Étangs, sentiers balisés, patrimoine et points d’intérêt : suivez la carte interactive pour préparer vos balades et explorer chaque recoin de la commune.',
+		badgeNombre: '40 km',
+		badgeLibelle: 'De sentiers balisés à explorer',
+		boutonLabel: 'Ouvrir la carte interactive',
+		href: '/tourisme/carte-interactive'
+	}
+];
+
 const fallbackCTA: CTAData = {
 	titre: 'Nous contacter',
 	description:
@@ -114,10 +155,11 @@ const fallbackNews: NewsItemData[] = [
 ];
 
 export default async function HomePage() {
-	const [accueil, agendaItems, actualiteItems] = await Promise.all([
+	const [accueil, agendaItems, actualiteItems, variant] = await Promise.all([
 		getAccueilData(),
 		getAgendaItems('agenda'),
-		getActualitesItems('mairie/actualites')
+		getActualitesItems('mairie/actualites'),
+		getCurrentVariant()
 	]);
 
 	const today = new Date(new Date().toDateString());
@@ -137,17 +179,49 @@ export default async function HomePage() {
 			}))
 		: fallbackNews;
 
+	const quickAccessItems = accueil?.quickAccessItems?.length ? accueil.quickAccessItems : fallbackQuickAccess;
+	const discoverCards = accueil?.discoverCards?.length ? accueil.discoverCards : fallbackDiscoverCards;
+	const slides = accueil?.slideshow?.length ? accueil.slideshow : fallbackSlideshow;
+
+	const hero = <Hero data={accueil?.hero ?? fallbackHero} />;
+	const slideshow = slides.length > 0 ? <Slideshow slides={slides} /> : null;
+	const news = <News articles={newsArticles} />;
+	const mayorWord = <MayorWord data={accueil?.mayorWord ?? fallbackMayorWord} />;
+	const discover = <Discover cards={discoverCards} />;
+	const cta = <CTA data={accueil?.cta ?? fallbackCTA} />;
+
+	// Variante tourisme (`Tenants.variante`, pour l'instant uniquement gérée
+	// par le thème édito) — mêmes blocs que la variante par défaut, disposés
+	// différemment. Le Hero ne change jamais, quelle que soit la variante. Le
+	// diaporama est 2ᵉ bloc en tourisme, 3ᵉ en défaut (le Hero n'est jamais
+	// compté comme un bloc). L'agenda n'est plus intégré à « L'essentiel en un
+	// clic » (`QuickAccess`) : il devient son propre bloc, sous les dernières
+	// actualités municipales — `QuickAccess` ne reçoit donc pas `nextEvent`
+	// dans cette variante, pour ne pas l'afficher deux fois.
+	if (variant === 'tourisme') {
+		return (
+			<>
+				{hero}
+				{discover}
+				{slideshow}
+				{news}
+				{nextEvent && <Agenda event={nextEvent} />}
+				{mayorWord}
+				<QuickAccess items={quickAccessItems} />
+				{cta}
+			</>
+		);
+	}
+
 	return (
 		<>
-			<Hero data={accueil?.hero ?? fallbackHero} />
-			<QuickAccess
-				items={accueil?.quickAccessItems?.length ? accueil.quickAccessItems : fallbackQuickAccess}
-				nextEvent={nextEvent}
-			/>
-			<News articles={newsArticles} />
-			<MayorWord data={accueil?.mayorWord ?? fallbackMayorWord} />
-			<Discover cards={accueil?.discoverCards?.length ? accueil.discoverCards : fallbackDiscoverCards} />
-			<CTA data={accueil?.cta ?? fallbackCTA} />
+			{hero}
+			<QuickAccess items={quickAccessItems} nextEvent={nextEvent} />
+			{news}
+			{slideshow}
+			{mayorWord}
+			{discover}
+			{cta}
 		</>
 	);
 }

@@ -49,5 +49,7 @@ export default async function AdminNav({ payload }: ServerProps) {
 		}
 	}
 
-	return <AdminNavClient pages={pages} siteName={siteName} hideTenantSelector={hideTenantSelector} />;
+	return (
+		<AdminNavClient pages={pages} siteName={siteName} hideTenantSelector={hideTenantSelector} tenantId={tenantId ?? null} />
+	);
 }

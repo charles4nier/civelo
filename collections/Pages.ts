@@ -1066,6 +1066,42 @@ export const Pages: CollectionConfig = {
 					]
 				},
 				{
+					// Variante « tourisme » (`Tenants.variante`) — slideshow de mise
+					// en avant sur l'accueil. Pas de min/maxRows : nombre de
+					// diapositives libre, contrairement à `quickAccessItems`/
+					// `discoverCards` (verrouillés à 3 par construction).
+					name: 'slideshow',
+					type: 'array',
+					label: 'Section Diaporama',
+					labels: { singular: 'Diapositive', plural: 'Diapositives' },
+					admin: {
+						description:
+							"Met en avant un événement, un lieu ou un service en grand format sur l'accueil. Autant de diapositives que vous voulez."
+					},
+					fields: [
+						withInfo({ name: 'image', type: 'upload', relationTo: 'media' }, 'L\'image de cette diapositive.'),
+						withInfo(
+							{ name: 'etiquette', type: 'text' },
+							'Un petit texte au-dessus du titre de la diapositive (optionnel, ex. "Grande manifestation").'
+						),
+						withInfo({ name: 'titre', type: 'text', required: true }, 'Le titre de cette diapositive.'),
+						withInfo({ name: 'description', type: 'textarea' }, 'Le texte de cette diapositive.'),
+						withInfo(
+							{ name: 'badgeNombre', type: 'text' },
+							'Le chiffre mis en avant dans le badge (optionnel, ex. "12 & 13" ou "40 km").'
+						),
+						withInfo(
+							{ name: 'badgeLibelle', type: 'text' },
+							'Ce que ce chiffre représente (optionnel, ex. "Juillet · Rendez-vous au village").'
+						),
+						withInfo({ name: 'boutonLabel', type: 'text' }, 'Le texte du bouton de cette diapositive.'),
+						withInfo(
+							{ name: 'lien', type: 'relationship', relationTo: 'pages' },
+							'La page vers laquelle le bouton de cette diapositive redirige.'
+						)
+					]
+				},
+				{
 					name: 'cta',
 					type: 'group',
 					label: 'Section contact',

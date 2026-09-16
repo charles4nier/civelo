@@ -14,6 +14,16 @@ const THEMES = [
 	{ value: 'classique', label: 'Classique' }
 ];
 
+// Disposition de la page d'accueil (`Tenants.variante`) — pour l'instant
+// seul le thème « Style édito » en tient compte (voir
+// themes/edito/features/home/index.tsx), les autres thèmes l'ignorent
+// silencieusement. Pensé pour grandir : ajouter une variante = une ligne ici
+// + une option dans le `select` de Tenants.ts.
+const VARIANTES = [
+	{ value: 'defaut', label: 'Par défaut' },
+	{ value: 'tourisme', label: 'Tourisme' }
+];
+
 type Props = { isSuperAdminConsole: boolean };
 
 // "Je veux un create qui ouvre une popin qui permet de générer un nouveau
@@ -31,6 +41,7 @@ export default function CreateTenantButton({ isSuperAdminConsole }: Props) {
 	const [nom, setNom] = useState('');
 	const [domaine, setDomaine] = useState('');
 	const [theme, setTheme] = useState('edito');
+	const [variante, setVariante] = useState('defaut');
 	const [submitting, setSubmitting] = useState(false);
 
 	// Deux gardes combinées, même raison que le lien "Communes" de la nav
@@ -50,7 +61,7 @@ export default function CreateTenantButton({ isSuperAdminConsole }: Props) {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
-				body: JSON.stringify({ nom, domaine, theme })
+				body: JSON.stringify({ nom, domaine, theme, variante })
 			});
 			const data = await res.json();
 			if (!res.ok) {
@@ -85,6 +96,7 @@ export default function CreateTenantButton({ isSuperAdminConsole }: Props) {
 			setNom('');
 			setDomaine('');
 			setTheme('edito');
+			setVariante('defaut');
 			closeModal(MODAL_SLUG);
 			router.refresh();
 		} catch (err) {
@@ -135,6 +147,17 @@ export default function CreateTenantButton({ isSuperAdminConsole }: Props) {
 								{THEMES.map((t) => (
 									<option key={t.value} value={t.value}>
 										{t.label}
+									</option>
+								))}
+							</select>
+						</label>
+
+						<label className="create-tenant__field">
+							<span>Variante</span>
+							<select value={variante} onChange={(e) => setVariante(e.target.value)}>
+								{VARIANTES.map((v) => (
+									<option key={v.value} value={v.value}>
+										{v.label}
 									</option>
 								))}
 							</select>
