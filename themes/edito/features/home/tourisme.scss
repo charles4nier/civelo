@@ -25,14 +25,22 @@
 	}
 
 	// ---- Alternance de fond ----
-	// Actualités, L'essentiel en un clic et Nous contacter partagent le même
-	// fond légèrement teinté que Découvrir (déjà sur `$secondary-40`) ; les
-	// autres blocs (Diaporama, Mot du Maire, Agenda) restent sur le fond
-	// clair de base.
+	// Reprend le duo blanc/beige de saint-hilaire-discovery (une vraie
+	// alternance à deux tons, pas une simple teinte translucide) : Découvrir,
+	// Actualités, L'essentiel en un clic et Nous contacter sur le beige de
+	// base du thème (`$background`) ; Diaporama et Mot du Maire en blanc
+	// franc (`$card`). L'Agenda garde son bandeau vert, hors de cette
+	// alternance.
+	.discover,
 	.news,
 	.quick-access,
 	.cta {
-		background-color: $secondary-40;
+		background-color: $background;
+	}
+
+	.slideshow,
+	.mayor-word {
+		background-color: $card;
 	}
 
 	// ---- Cartes Découvrir ----
