@@ -113,8 +113,14 @@
 		font-family: $font-body;
 		font-size: $small-size-desktop;
 		font-weight: $font-weight-medium;
-		color: $sunshine;
+		color: #ffffff;
 		transition: $transition-smooth;
+
+		// La flèche seule en corail — le texte reste blanc (`currentColor`
+		// hérité par défaut sur l'icône Lucide, surchargé ici pour elle).
+		svg {
+			color: $coral;
+		}
 	}
 
 	/* ---- Responsive ---- */

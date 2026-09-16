@@ -24,6 +24,12 @@
 		font-size: 55px;
 	}
 
+	// Le titre plus large (55px) déborde plus vite sur 2 lignes à la largeur
+	// par défaut (560px, `News/style.scss`) — un peu plus de place ici.
+	.news__header-text {
+		max-width: 700px;
+	}
+
 	// ---- Alternance de fond ----
 	// Reprend le duo blanc/beige de saint-hilaire-discovery (une vraie
 	// alternance à deux tons, pas une simple teinte translucide) : Découvrir,
