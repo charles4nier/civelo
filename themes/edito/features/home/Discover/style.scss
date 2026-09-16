@@ -114,6 +114,9 @@
 		font-size: $small-size-desktop;
 		font-weight: $font-weight-medium;
 		color: #ffffff;
+		text-transform: uppercase;
+		text-decoration: underline;
+		text-underline-offset: 3px;
 		transition: $transition-smooth;
 
 		// La flèche seule en corail — le texte reste blanc (`currentColor`
