@@ -16,15 +16,22 @@
 	&__image {
 		position: relative;
 		min-height: 480px;
-		padding: 0 $spacing-xl $spacing-xl 0;
+	}
+
+	// Décale l'image du coin bas-droit du conteneur (effet de profondeur,
+	// badge en débord) — posé ici plutôt que sur l'`<img>` lui-même : `fill`
+	// de `next/image` pose `inset: 0` en style INLINE sur l'`<img>`, qui
+	// gagnerait toujours contre une règle `inset` ciblant `img` en CSS. En
+	// isolant le décalage sur ce `<div>` intermédiaire (que `fill` se
+	// contente de remplir à 100 %), il s'applique réellement.
+	&__image-inner {
+		position: absolute;
+		inset: 0 $spacing-xl $spacing-xl 0;
+		overflow: hidden;
+		box-shadow: $shadow-elegant;
 
 		img {
-			position: absolute;
-			inset: 0 $spacing-xl $spacing-xl 0;
-			width: calc(100% - #{$spacing-xl});
-			height: calc(100% - #{$spacing-xl});
 			object-fit: cover;
-			box-shadow: $shadow-elegant;
 			opacity: 0;
 			transition: opacity 0.7s ease;
 
@@ -119,6 +126,15 @@
 
 	/* ---- Colonne texte ---- */
 
+	// `fade-up-edito` (keyframe partagé, `themes/edito/styles/index.scss`) —
+	// rejoué à chaque changement de diapositive grâce au `key={current.key}`
+	// côté React qui remonte ce bloc. Durée raccourcie par rapport au Hero
+	// (.8s) : à .45s, le texte suit le rythme de rotation des diapositives
+	// (5s) sans sembler traîner derrière le fondu de l'image.
+	&__text {
+		animation: fade-up-edito 0.45s $ease-smooth both;
+	}
+
 	&__title {
 		font-family: $font-display;
 		font-size: clamp(28px, 3vw, 40px);
@@ -155,13 +171,10 @@
 
 		&__image {
 			min-height: 360px;
-			padding: 0 $spacing-md $spacing-lg 0;
+		}
 
-			img {
-				inset: 0 $spacing-md $spacing-lg 0;
-				width: calc(100% - #{$spacing-md});
-				height: calc(100% - #{$spacing-lg});
-			}
+		&__image-inner {
+			inset: 0 $spacing-md $spacing-lg 0;
 		}
 
 		&__badge {

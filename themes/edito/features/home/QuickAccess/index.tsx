@@ -21,6 +21,15 @@ export type NextEventData = {
 type Props = {
 	items: QuickAccessItemData[];
 	nextEvent?: NextEventData | null;
+	// Le chevauchement `-80px` (voir style.scss) est calibré pour flotter
+	// par-dessus le bas du Hero (grande photo sombre en pleine largeur) —
+	// c'est le seul cas où ce bloc suit directement le Hero (variante
+	// défaut). En variante tourisme, il suit `MayorWord` (section claire,
+	// padding normal) : le même chevauchement mordrait dans le padding bas
+	// de `MayorWord` sans jamais l'atteindre visuellement, laissant un
+	// grand vide entre les deux. `overlapPrevious: false` désactive ce
+	// chevauchement dans ce cas.
+	overlapPrevious?: boolean;
 };
 
 const monthShort = [
@@ -38,11 +47,11 @@ const monthShort = [
 	'DÉC.'
 ];
 
-export default function QuickAccess({ items, nextEvent }: Props) {
+export default function QuickAccess({ items, nextEvent, overlapPrevious = true }: Props) {
 	const nextEventDate = nextEvent ? new Date(nextEvent.date) : null;
 
 	return (
-		<section id="demarches" className={CLASS_NAME}>
+		<section id="demarches" className={`${CLASS_NAME}${overlapPrevious ? '' : ` ${CLASS_NAME}--flush`}`}>
 			<div className="container">
 				<div className={`${CLASS_NAME}__card`}>
 					<div className={`${CLASS_NAME}__header`}>

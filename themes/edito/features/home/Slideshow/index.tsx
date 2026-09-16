@@ -53,19 +53,30 @@ export default function Slideshow({ slides }: Props) {
 					onMouseEnter={() => setPaused(true)}
 					onMouseLeave={() => setPaused(false)}
 				>
-					{slides.map((slide, i) => (
-						<Image
-							key={slide.key}
-							src={slide.image}
-							alt={slide.titre}
-							fill
-							sizes="(max-width: 1024px) 100vw, 50vw"
-							loading={i === 0 ? undefined : 'lazy'}
-							priority={i === 0}
-							className={i === active ? 'is-active' : ''}
-							aria-hidden={i !== active}
-						/>
-					))}
+					{/* Wrapper dédié pour le décalage bas-droite (effet de profondeur,
+					    badge en débord) : `next/image` en mode `fill` pose `inset: 0`
+					    en style INLINE sur le <img> lui-même (priorité sur toute règle
+					    CSS ciblant `img`), donc un `inset` personnalisé sur l'`<img>`
+					    ne peut jamais s'appliquer. En le posant ici, sur un `<div>`
+					    intermédiaire que `fill` se contente de remplir à 100 %, le
+					    décalage fonctionne réellement — bug réel du 2026-09-16 : le
+					    badge et les contrôles se retrouvaient plaqués contre le bord
+					    réel de l'image (aucune marge), au lieu de déborder proprement. */}
+					<div className={`${CLASS_NAME}__image-inner`}>
+						{slides.map((slide, i) => (
+							<Image
+								key={slide.key}
+								src={slide.image}
+								alt={slide.titre}
+								fill
+								sizes="(max-width: 1024px) 100vw, 50vw"
+								loading={i === 0 ? undefined : 'lazy'}
+								priority={i === 0}
+								className={i === active ? 'is-active' : ''}
+								aria-hidden={i !== active}
+							/>
+						))}
+					</div>
 
 					{(current.badgeNombre || current.badgeLibelle) && (
 						<div className={`${CLASS_NAME}__badge`}>
@@ -99,6 +110,10 @@ export default function Slideshow({ slides }: Props) {
 					)}
 				</div>
 
+				{/* `key={current.key}` force le remontage à chaque changement de
+				    diapositive : c'est ce qui rejoue l'animation d'entrée
+				    (`.slideshow__text`, keyframe `fade-up-edito` partagé du thème)
+				    à chaque fois plutôt qu'une seule fois au premier rendu. */}
 				<div className={`${CLASS_NAME}__text`} key={current.key}>
 					{current.etiquette && <p className="eyebrow">{current.etiquette}</p>}
 					<h2 className={`${CLASS_NAME}__title`}>{current.titre}</h2>

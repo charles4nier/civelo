@@ -7,6 +7,13 @@
 	z-index: 20;
 	padding-bottom: 0;
 
+	// Variante tourisme (`Tenants.variante`) — ce bloc suit `MayorWord`, pas
+	// le Hero (voir le commentaire de `overlapPrevious` côté `index.tsx`) :
+	// pas de chevauchement, un espacement de section normal à la place.
+	&--flush {
+		margin-top: 0;
+	}
+
 	&__card {
 		background-color: $card;
 		box-shadow: $shadow-elegant;

@@ -207,7 +207,7 @@ export default async function HomePage() {
 				{news}
 				{nextEvent && <Agenda event={nextEvent} />}
 				{mayorWord}
-				<QuickAccess items={quickAccessItems} />
+				<QuickAccess items={quickAccessItems} overlapPrevious={false} />
 				{cta}
 			</>
 		);
