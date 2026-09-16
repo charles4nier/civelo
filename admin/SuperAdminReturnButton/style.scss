@@ -1,0 +1,24 @@
+@import '@themes/edito/styles/variables';
+
+.super-admin-return {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 100;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #fff;
+	background: $terracotta;
+	border-radius: 999px;
+	padding: 10px 16px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+	text-decoration: none;
+	white-space: nowrap;
+
+	&:hover {
+		filter: brightness(1.08);
+	}
+}

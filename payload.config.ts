@@ -62,7 +62,11 @@ export default buildConfig({
 				dashboard: {
 					Component: '/admin/Dashboard'
 				}
-			}
+			},
+			// Bouton flottant "revenir à admin.civelo.fr" pour un super-admin
+			// sur le back-office verrouillé d'une commune (voir
+			// `admin/SuperAdminReturnButton` — ne s'affiche jamais ailleurs).
+			actions: ['/admin/SuperAdminReturnButton']
 		}
 	},
 	i18n: {

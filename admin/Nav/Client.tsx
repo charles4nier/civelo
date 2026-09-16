@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Link, useAuth, useConfig } from '@payloadcms/ui';
 import {
 	FileText,
@@ -162,7 +162,18 @@ function brandMark(name: string): string {
 export default function AdminNavClient({ pages, siteName, hideTenantSelector }: Props) {
 	const pathname = usePathname();
 	const base = useAdminBase();
+	const router = useRouter();
 	const { user, logOut } = useAuth();
+
+	// Bug signalé le 2026-09-16 — `logOut()` seul ne redirige nulle part
+	// (contrairement à la vue "Logout" native de Payload, qui fait le
+	// `router.push` elle-même après coup) : la sidebar restait affichée sur
+	// une session déjà expirée. On reproduit ici le même comportement que
+	// cette vue native.
+	const handleLogout = async () => {
+		await logOut();
+		router.push(`${base}/login`);
+	};
 	// `useAuth` peuple `photo` (relation `media`) par défaut (profondeur REST
 	// par défaut) — objet {url} si renseignée, sinon absente/non peuplée.
 	const photo = (user as { photo?: { url?: string } | string } | undefined)?.photo;
@@ -307,7 +318,7 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector }: 
 						)}
 						<span className="admin-nav__user-email">{user.email as string}</span>
 					</div>
-					<button type="button" className="admin-nav__logout" onClick={() => logOut()}>
+					<button type="button" className="admin-nav__logout" onClick={handleLogout}>
 						<LogOut size={15} aria-hidden="true" />
 					</button>
 				</div>
