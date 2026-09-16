@@ -77,5 +77,15 @@ export async function GET(request: NextRequest) {
 	}
 
 	(await draftMode()).enable();
-	return NextResponse.redirect(new URL(path, request.url));
+
+	// `request.url`/`request.nextUrl.origin` reflètent l'adresse interne du
+	// conteneur derrière le proxy de Scalingo (ex. `localhost:26200`), pas le
+	// domaine public — même piège déjà documenté et corrigé dans
+	// `api/lock-tenant/route.ts`. `host` vient du Host HTTP réel (celui sur
+	// lequel `getCurrentTenant` a déjà résolu ce tenant juste au-dessus), pas
+	// de `request.nextUrl`.
+	const host = request.headers.get('host') ?? '';
+	const forwardedProto = request.headers.get('x-forwarded-proto');
+	const origin = forwardedProto ? `${forwardedProto}://${host}` : request.nextUrl.origin;
+	return NextResponse.redirect(new URL(path, origin));
 }
