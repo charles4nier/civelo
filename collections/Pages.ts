@@ -133,12 +133,19 @@ export const boutonFields = (prefix: string, label: string): Field[] => [
 // Mode brouillon/preview (roadmap 2026-09-14) — le bouton "Aperçu" doit
 // ouvrir le VRAI domaine de la commune, en Next.js Draft Mode. Le `token` que
 // Payload propose de base est le JWT de session (valide 2h par défaut, cf.
-// `payload/dist/collections/config/defaults.js`) — trop puissant/trop long à
-// faire transiter dans une URL (logs d'accès, donnerait un accès complet à
-// l'API à quiconque l'intercepterait). On signe donc ici un jeton dédié,
-// minimal (juste l'id de la page et de l'utilisateur), expirant en 2 minutes
-// — revérifié intégralement côté serveur par `app/(payload)/api/preview`
+// `payload/dist/collections/config/defaults.js`) — trop puissant à faire
+// transiter dans une URL (donnerait un accès complet à l'API à quiconque
+// l'intercepterait), quelle que soit sa durée. On signe donc ici un jeton
+// dédié, minimal (juste l'id de la page et de l'utilisateur, rien d'autre) —
+// revérifié intégralement côté serveur par `app/(payload)/api/preview`
 // (jamais fait confiance à ces seules données, juste à leur fraîcheur).
+// Expire en 1h, pas 2 minutes comme au premier jet : ce lien est généré au
+// CHARGEMENT de la page d'édition (`admin.preview` s'exécute au rendu de la
+// vue, pas au clic sur le bouton — vérifié dans le code de Payload) donc une
+// expiration trop courte rendait le bouton inutilisable dès qu'on passait
+// plus de 2 minutes à éditer avant de cliquer (signalé le 2026-09-16). Une
+// heure reste très supérieure au risque : ce jeton ne permet RIEN d'autre que
+// voir CETTE page précise en brouillon, contrairement au JWT de session.
 const generatePreviewURL: NonNullable<CollectionConfig['admin']>['preview'] = async (doc, { req }) => {
 	if (!doc?.id || !req.user) return null;
 
@@ -161,7 +168,7 @@ const generatePreviewURL: NonNullable<CollectionConfig['admin']>['preview'] = as
 	const path = doc.gabarit === 'accueil' ? '/' : `/${doc.slug ?? ''}`;
 	const token = await new SignJWT({ pageId: doc.id, purpose: 'page-preview', userId: req.user.id })
 		.setProtectedHeader({ alg: 'HS256' })
-		.setExpirationTime('2m')
+		.setExpirationTime('1h')
 		.sign(new TextEncoder().encode(secret));
 
 	return `https://${domaine}/api/preview?token=${encodeURIComponent(token)}&path=${encodeURIComponent(path)}`;

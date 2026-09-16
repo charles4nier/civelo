@@ -8,7 +8,7 @@ import { getCurrentTenant } from '@shared/lib/tenant';
 // Bouton "Aperçu" de `collections/Pages.ts` (mode brouillon, roadmap
 // 2026-09-14) — ouvre le VRAI domaine de la commune, en Next.js Draft Mode.
 // Le jeton reçu ici est dédié à cet usage (signé par `generatePreviewURL`
-// dans `Pages.ts`, expire en 2 minutes), jamais le JWT de session complet
+// dans `Pages.ts`, expire en 1h), jamais le JWT de session complet
 // (2h par défaut) — pour limiter la casse si ce lien fuite (logs d'accès,
 // copié-collé...). On ne fait confiance à rien de ce qu'il contient au-delà
 // de sa fraîcheur : l'utilisateur et le tenant sont rechargés et revérifiés
