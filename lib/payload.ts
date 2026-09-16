@@ -1,4 +1,5 @@
 import { getPayload } from 'payload';
+import { draftMode } from 'next/headers';
 import config from '../payload.config';
 import type { AnnuaireCardData } from '@themes/edito/components/AnnuaireLayout';
 import type { ContactItem, IconVariant } from '@themes/edito/components/ContactCard';
@@ -52,6 +53,17 @@ async function requireTenant(payload: Awaited<ReturnType<typeof getPayloadClient
 	const tenant = await getCurrentTenant(payload);
 	if (!tenant) throw new Error('Tenant introuvable pour ce domaine.');
 	return tenant;
+}
+
+// Mode brouillon/preview (roadmap 2026-09-14) — reflète le Draft Mode posé
+// par `app/(payload)/api/preview` (jamais activable autrement qu'en passant
+// par cette route, qui revérifie l'utilisateur et le tenant). Utilisé par
+// toutes les fonctions ci-dessous qui lisent `pages` : en dehors d'un aperçu,
+// `pages` a `versions.drafts` activé donc Payload continue de renvoyer la
+// dernière version PUBLIÉE de lui-même, sans que ce booléen n'ait besoin
+// d'être vrai.
+async function isPreviewing() {
+	return (await draftMode()).isEnabled;
 }
 
 // Menu figé, tel qu'il existait avant Payload — sert de filet de sécurité
@@ -118,6 +130,7 @@ export async function getNavLinks() {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { tenant: { equals: tenant.id } },
 			limit: 0,
 			pagination: false,
@@ -149,6 +162,7 @@ export async function getPageBySlug(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			limit: 1
 		});
@@ -216,6 +230,7 @@ export async function getAnnuaireItems(slug: string): Promise<AnnuaireCardData[]
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
@@ -261,6 +276,7 @@ export async function getAgendaItems(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
@@ -306,6 +322,7 @@ export async function getActualitesItems(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
@@ -349,6 +366,7 @@ export async function getDocumentItems(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
@@ -398,6 +416,7 @@ export async function getBudgetProjetItems(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
@@ -448,6 +467,7 @@ export async function getDemarchesItems(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
@@ -489,6 +509,7 @@ export async function getTrombinoscopeData(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 1,
 			limit: 1
@@ -532,6 +553,7 @@ export async function getEditorialData(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
@@ -571,6 +593,7 @@ export async function getCatalogueLieuxItems(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			limit: 1
 		});
@@ -607,6 +630,7 @@ export async function getContactData(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 1,
 			limit: 1
@@ -691,6 +715,7 @@ export async function getNumerosUtilesData(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 1,
 			limit: 1
@@ -757,6 +782,7 @@ export async function getHorairesData(slug: string) {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1
@@ -900,6 +926,7 @@ export async function getAccueilData() {
 		const tenant = await requireTenant(payload);
 		const { docs } = await payload.find({
 			collection: 'pages',
+			draft: await isPreviewing(),
 			where: { and: [{ gabarit: { equals: 'accueil' } }, { tenant: { equals: tenant.id } }] },
 			depth: 2,
 			limit: 1

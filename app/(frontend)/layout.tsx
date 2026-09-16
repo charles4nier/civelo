@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from 'next';
+import { draftMode } from 'next/headers';
 import { defaultMetadata } from '@themes/edito/config/seo';
 import StyleEditoRootLayout from '@themes/edito/RootLayout';
 import ModerneRootLayout from '@themes/moderne/RootLayout';
 import AccueillantRootLayout from '@themes/accueillant/RootLayout';
 import ClassiqueRootLayout from '@themes/classique/RootLayout';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
+import PreviewBanner from '@shared/components/PreviewBanner';
 import { getNavLinks, getIdentiteData, getBoutonEnteteData, getFooterData, getPayloadClient } from '../../lib/payload';
 
 // Layout racine (`<html>`/`<body>`) — un seul existe dans l'app, il n'y a
@@ -29,12 +31,13 @@ export const viewport: Viewport = {
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
 	const payload = await getPayloadClient();
-	const [theme, navLinks, identite, boutonEntete, footer] = await Promise.all([
+	const [theme, navLinks, identite, boutonEntete, footer, isPreviewing] = await Promise.all([
 		getCurrentTheme(payload),
 		getNavLinks(),
 		getIdentiteData(),
 		getBoutonEnteteData(),
-		getFooterData()
+		getFooterData(),
+		draftMode().then((d) => d.isEnabled)
 	]);
 
 	const RootLayout = pickTheme(theme, {
@@ -46,6 +49,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
 
 	return (
 		<RootLayout navLinks={navLinks} identite={identite} boutonEntete={boutonEntete} footer={footer}>
+			{isPreviewing && <PreviewBanner />}
 			{children}
 		</RootLayout>
 	);

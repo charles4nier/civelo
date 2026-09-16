@@ -1,4 +1,5 @@
-import type { CollectionConfig, Field } from 'payload';
+import type { CollectionConfig, Field, PayloadRequest } from 'payload';
+import { SignJWT } from 'jose';
 import { isSuperAdmin, isLoggedIn, isSuperAdminField } from './access';
 
 // Décision 19 — une seule collection pour tous les gabarits (multi-instances
@@ -129,6 +130,43 @@ export const boutonFields = (prefix: string, label: string): Field[] => [
 	)
 ];
 
+// Mode brouillon/preview (roadmap 2026-09-14) — le bouton "Aperçu" doit
+// ouvrir le VRAI domaine de la commune, en Next.js Draft Mode. Le `token` que
+// Payload propose de base est le JWT de session (valide 2h par défaut, cf.
+// `payload/dist/collections/config/defaults.js`) — trop puissant/trop long à
+// faire transiter dans une URL (logs d'accès, donnerait un accès complet à
+// l'API à quiconque l'intercepterait). On signe donc ici un jeton dédié,
+// minimal (juste l'id de la page et de l'utilisateur), expirant en 2 minutes
+// — revérifié intégralement côté serveur par `app/(payload)/api/preview`
+// (jamais fait confiance à ces seules données, juste à leur fraîcheur).
+const generatePreviewURL: NonNullable<CollectionConfig['admin']>['preview'] = async (doc, { req }) => {
+	if (!doc?.id || !req.user) return null;
+
+	const tenant = doc.tenant as { domaine?: string; id?: unknown } | number | string | null | undefined;
+	const tenantId = typeof tenant === 'object' && tenant !== null ? tenant.id : tenant;
+	if (!tenantId) return null;
+
+	let domaine = typeof tenant === 'object' && tenant !== null ? tenant.domaine : undefined;
+	if (!domaine) {
+		const tenantDoc = await req.payload
+			.findByID({ collection: 'tenants', id: tenantId as number | string, overrideAccess: true })
+			.catch(() => null);
+		domaine = tenantDoc?.domaine as string | undefined;
+	}
+	if (!domaine) return null;
+
+	const secret = process.env.PAYLOAD_SECRET;
+	if (!secret) return null;
+
+	const path = doc.gabarit === 'accueil' ? '/' : `/${doc.slug ?? ''}`;
+	const token = await new SignJWT({ pageId: doc.id, purpose: 'page-preview', userId: req.user.id })
+		.setProtectedHeader({ alg: 'HS256' })
+		.setExpirationTime('2m')
+		.sign(new TextEncoder().encode(secret));
+
+	return `https://${domaine}/api/preview?token=${encodeURIComponent(token)}&path=${encodeURIComponent(path)}`;
+};
+
 export const Pages: CollectionConfig = {
 	slug: 'pages',
 	// Décision 5 — réordonnancement par glisser-déposer plutôt qu'un champ
@@ -139,9 +177,18 @@ export const Pages: CollectionConfig = {
 	// globale (voir le commentaire sur le champ `slug` ci-dessous). `tenant`
 	// est le nom par défaut du champ ajouté par le plugin multi-tenant.
 	indexes: [{ fields: ['tenant', 'slug'], unique: true }],
+	// Mode brouillon (roadmap 2026-09-14) — enregistrer une page sans la
+	// publier ne touche jamais la ligne "courante" tant qu'on ne publie pas
+	// (confirmé dans `payload/dist/collections/operations/utilities/
+	// update.js` : `isSavingDraft` évite l'écriture de la table de base, une
+	// nouvelle version va dans `_pages_v`) — donc aucune des ~14 fonctions de
+	// `lib/payload.ts` qui lisent `pages` sans `draft: true` n'a besoin de
+	// changer pour continuer à montrer la dernière version PUBLIÉE.
+	versions: { drafts: { autosave: false } },
 	admin: {
 		useAsTitle: 'title',
-		defaultColumns: ['title', 'gabarit', 'menu']
+		defaultColumns: ['title', 'gabarit', 'menu'],
+		preview: generatePreviewURL
 	},
 	access: {
 		// Décision 13 — création/suppression de page réservées au super-admin.
