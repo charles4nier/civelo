@@ -912,6 +912,7 @@ type PayloadAccueil = {
 		image?: PayloadUpload;
 		citation: string;
 		nomSignataire?: string;
+		afficherEncart?: boolean;
 		statNombre?: string;
 		statLibelle?: string;
 	};
@@ -923,6 +924,7 @@ type PayloadAccueil = {
 		lienPoi?: PayloadPoiRelation;
 		lienSentier?: PayloadPoiRelation;
 	}[];
+	afficherSlideshow?: boolean;
 	// Variante « tourisme » (`Tenants.variante`) — slideshow de mise en avant,
 	// nombre de diapositives libre (pas de min/maxRows côté Pages.ts).
 	slideshow?: {
@@ -995,6 +997,11 @@ export async function getAccueilData() {
 						image: uploadUrl(accueil.mayorWord.image, '/saint-hilaire-bonneval-village.jpg'),
 						citation: accueil.mayorWord.citation,
 						nomSignataire: accueil.mayorWord.nomSignataire,
+						// Champ ajouté après coup (2026-09-16) : les pages existantes n'ont
+						// pas encore cette valeur en base tant qu'elles n'ont pas été
+						// resauvegardées — `!== false` plutôt que la valeur brute pour ne
+						// pas masquer l'encart de tout le monde le jour de la migration.
+						afficherEncart: accueil.mayorWord.afficherEncart !== false,
 						statNombre: accueil.mayorWord.statNombre,
 						statLibelle: accueil.mayorWord.statLibelle
 					}
@@ -1017,7 +1024,8 @@ export async function getAccueilData() {
 					href: id ? `/tourisme/carte-interactive?id=${id}` : '/tourisme/carte-interactive'
 				};
 			}),
-			slideshow: (accueil.slideshow ?? []).map((s, i) => ({
+			afficherSlideshow: accueil.afficherSlideshow !== false,
+		slideshow: (accueil.slideshow ?? []).map((s, i) => ({
 			key: String(i),
 			image: uploadUrl(s.image, '/saint-hilaire-bonneval-village.jpg'),
 			etiquette: s.etiquette,

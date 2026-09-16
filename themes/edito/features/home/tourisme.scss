@@ -1,0 +1,67 @@
+@import '@themes/edito/styles/variables';
+
+// Réglages propres à la variante tourisme (`Tenants.variante`) de l'accueil
+// édito — jamais le mode défaut, qui reste inchangé (voir
+// `themes/edito/features/home/index.tsx`). Tout est scopé sous
+// `.tourisme-layout`, le wrapper posé uniquement autour du retour JSX de la
+// branche tourisme, pour ne toucher aucun style partagé avec le mode défaut.
+.theme-edito .tourisme-layout {
+	// ---- Titres de section ----
+	// Décision du 2026-09-16 — par cohérence, tous les titres principaux de
+	// la variante tourisme font 55px, sauf le Hero (inchangé en contenu/
+	// position, seule sa taille diffère ici) qui reste le repère visuel le
+	// plus fort de la page à 70px.
+	.hero__title {
+		font-size: 70px;
+	}
+
+	.quick-access__title,
+	.news__title,
+	.mayor-word__title,
+	.discover__title,
+	.slideshow__title,
+	.cta__title {
+		font-size: 55px;
+	}
+
+	// ---- Alternance de fond ----
+	// Actualités, L'essentiel en un clic et Nous contacter partagent le même
+	// fond légèrement teinté que Découvrir (déjà sur `$secondary-40`) ; les
+	// autres blocs (Diaporama, Mot du Maire, Agenda) restent sur le fond
+	// clair de base.
+	.news,
+	.quick-access,
+	.cta {
+		background-color: $secondary-40;
+	}
+
+	// ---- Cartes Découvrir ----
+	// Reprend la géométrie de saint-hilaire-discovery (proportions plus
+	// hautes, 2ᵉ carte décalée vers le haut) — couleurs du thème édito
+	// conservées, pas celles du prototype.
+	.discover__grid {
+		align-items: start;
+	}
+
+	.discover__card-image-wrap {
+		aspect-ratio: 3 / 4;
+	}
+
+	.discover__grid .discover__card:nth-child(2) {
+		transform: translateY(-52px);
+	}
+
+	.discover__card-tag {
+		background-color: $sunshine;
+		color: $foreground;
+	}
+
+	@media (max-width: $breakpoint-md) {
+		// Même repli que le prototype : la grille passe à 1 colonne à ce
+		// palier (déjà géré par `Discover/style.scss`), le décalage vertical
+		// n'a plus lieu d'être.
+		.discover__grid .discover__card:nth-child(2) {
+			transform: none;
+		}
+	}
+}

@@ -1031,11 +1031,23 @@ export const Pages: CollectionConfig = {
 							'Le nom affiché sous la citation (ex. "Le Maire").'
 						),
 						withInfo(
-							{ name: 'statNombre', type: 'text' },
+							{ name: 'afficherEncart', type: 'checkbox', defaultValue: true },
+							"Affiche ou masque l'encart chiffré superposé à la photo du maire (ex. \"1 022 · Habitants\")."
+						),
+						withInfo(
+							{
+								name: 'statNombre',
+								type: 'text',
+								admin: { condition: (_, siblingData) => siblingData?.afficherEncart !== false }
+							},
 							'Un chiffre mis en avant à côté du mot du maire (optionnel, ex. "12").'
 						),
 						withInfo(
-							{ name: 'statLibelle', type: 'text' },
+							{
+								name: 'statLibelle',
+								type: 'text',
+								admin: { condition: (_, siblingData) => siblingData?.afficherEncart !== false }
+							},
 							'Ce que ce chiffre représente (ex. "associations").'
 						)
 					]
@@ -1065,6 +1077,10 @@ export const Pages: CollectionConfig = {
 						)
 					]
 				},
+				withInfo(
+					{ name: 'afficherSlideshow', type: 'checkbox', defaultValue: true },
+					"Affiche ou masque la section Diaporama sur l'accueil (variante défaut et tourisme)."
+				),
 				{
 					// Variante « tourisme » (`Tenants.variante`) — slideshow de mise
 					// en avant sur l'accueil. Pas de min/maxRows : nombre de
@@ -1076,7 +1092,8 @@ export const Pages: CollectionConfig = {
 					labels: { singular: 'Diapositive', plural: 'Diapositives' },
 					admin: {
 						description:
-							"Met en avant un événement, un lieu ou un service en grand format sur l'accueil. Autant de diapositives que vous voulez."
+							"Met en avant un événement, un lieu ou un service en grand format sur l'accueil. Autant de diapositives que vous voulez.",
+						condition: (_, siblingData) => siblingData?.afficherSlideshow !== false
 					},
 					fields: [
 						withInfo({ name: 'image', type: 'upload', relationTo: 'media' }, 'L\'image de cette diapositive.'),

@@ -10,8 +10,13 @@
 	// Variante tourisme (`Tenants.variante`) — ce bloc suit `MayorWord`, pas
 	// le Hero (voir le commentaire de `overlapPrevious` côté `index.tsx`) :
 	// pas de chevauchement, un espacement de section normal à la place.
+	// Signalé le 2026-09-16 : sans `padding-top`, la carte restait plaquée
+	// en haut de la section (seul `padding-bottom: 0` existe ci-dessus, posé
+	// pour le chevauchement par défaut) — ajouté ici au même rythme que les
+	// autres sections (`$section-padding-y-*`).
 	&--flush {
 		margin-top: 0;
+		padding-top: $section-padding-y-desktop;
 	}
 
 	&__card {
@@ -229,10 +234,22 @@
 			margin: $spacing-xl (-$spacing-xl) (-$spacing-xl);
 			padding: $spacing-xl;
 		}
+
+		// Doit rester déclaré après `margin-top`/`padding-bottom` de base
+		// ci-dessus pour gagner à spécificité égale (même chose au palier
+		// suivant, mobile).
+		&--flush {
+			padding-top: $section-padding-y-tablet;
+		}
 	}
 
 	@media (max-width: $breakpoint-sm) {
 		margin-top: -40px;
+
+		&--flush {
+			margin-top: 0;
+			padding-top: $section-padding-y-mobile;
+		}
 
 		&__grid {
 			grid-template-columns: 1fr;

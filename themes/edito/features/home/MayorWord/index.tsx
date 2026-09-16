@@ -8,6 +8,10 @@ export type MayorWordData = {
 	image: string;
 	citation: string;
 	nomSignataire?: string;
+	// Décision du 2026-09-16 — l'encart chiffré est désormais un choix
+	// éditorial explicite (`Pages.ts`, `accueil.mayorWord.afficherEncart`),
+	// pas seulement déduit de la présence d'un chiffre.
+	afficherEncart?: boolean;
 	statNombre?: string;
 	statLibelle?: string;
 };
@@ -30,7 +34,7 @@ export default function MayorWord({ data }: Props) {
 								loading="lazy"
 							/>
 						</div>
-						{data.statNombre && (
+						{data.afficherEncart !== false && data.statNombre && (
 							<div className={`${CLASS_NAME}__stat`}>
 								<div className={`${CLASS_NAME}__stat-number`}>{data.statNombre}</div>
 								{data.statLibelle && (

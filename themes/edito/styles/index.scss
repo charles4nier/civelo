@@ -272,19 +272,21 @@ p {
 	gap: $spacing-sm;
 	padding: 12px 24px;
 	background-color: transparent;
-	color: $primary;
+	// Décision du 2026-09-16 — noir sur noir plutôt que la teinte primaire,
+	// plus sobre pour ce lien secondaire ("Toutes les actualités").
+	color: $foreground;
 	font-family: $font-body;
 	font-size: $small-size-desktop;
 	font-weight: $font-weight-semibold;
 	text-transform: uppercase;
 	letter-spacing: 0.08em;
-	border: 1px solid $primary;
+	border: 1px solid $foreground;
 	cursor: pointer;
 	transition: $transition-smooth;
 
 	&:hover {
-		background-color: $primary;
-		color: $primary-foreground;
+		background-color: $foreground;
+		color: $background;
 	}
 }
 

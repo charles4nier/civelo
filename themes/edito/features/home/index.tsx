@@ -8,6 +8,7 @@ import News, { type NewsItemData } from './News';
 import CTA, { type CTAData } from './CTA';
 import { getAccueilData, getAgendaItems, getActualitesItems, pickHomeActus, getCurrentVariant } from '@lib/payload';
 import { events as fallbackEvents } from '@themes/edito/features/agenda/data';
+import './tourisme.scss';
 
 const fallbackHero: HeroData = {
 	image: '/saint-hilaire-bonneval-hero.jpg',
@@ -47,6 +48,7 @@ const fallbackMayorWord: MayorWordData = {
 	citation:
 		"Saint-Hilaire-Bonneval, c'est l'histoire d'un village qui avance sans renier ses racines. Un lieu où la nature dicte le tempo, où les liens se tissent autour de projets partagés. Avec l'ensemble du conseil municipal, nous travaillons chaque jour pour faire vivre cette commune et la transmettre, embellie, aux générations futures.",
 	nomSignataire: 'Monsieur le Maire',
+	afficherEncart: true,
 	statNombre: '1 022',
 	statLibelle: 'Habitants au cœur du Limousin'
 };
@@ -184,7 +186,12 @@ export default async function HomePage() {
 	const slides = accueil?.slideshow?.length ? accueil.slideshow : fallbackSlideshow;
 
 	const hero = <Hero data={accueil?.hero ?? fallbackHero} />;
-	const slideshow = slides.length > 0 ? <Slideshow slides={slides} /> : null;
+	// Toggle éditorial explicite (`accueil.afficherSlideshow`, même pattern
+	// que `mayorWord.afficherEncart`) — indépendant du fait qu'il y ait des
+	// diapositives ou non, pour pouvoir masquer temporairement la section
+	// sans vider le contenu déjà saisi.
+	const slideshow =
+		accueil?.afficherSlideshow !== false && slides.length > 0 ? <Slideshow slides={slides} /> : null;
 	const news = <News articles={newsArticles} />;
 	const mayorWord = <MayorWord data={accueil?.mayorWord ?? fallbackMayorWord} />;
 	const discover = <Discover cards={discoverCards} />;
@@ -200,7 +207,7 @@ export default async function HomePage() {
 	// dans cette variante, pour ne pas l'afficher deux fois.
 	if (variant === 'tourisme') {
 		return (
-			<>
+			<div className="tourisme-layout">
 				{hero}
 				{discover}
 				{slideshow}
@@ -209,7 +216,7 @@ export default async function HomePage() {
 				{mayorWord}
 				<QuickAccess items={quickAccessItems} overlapPrevious={false} />
 				{cta}
-			</>
+			</div>
 		);
 	}
 
