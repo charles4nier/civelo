@@ -257,13 +257,16 @@ async function main() {
 	console.log(`Source: ${source.nom} (id ${source.id}) → Cible: ${target.nom} (id ${target.id})`);
 
 	const mediaCache = new Map<string, number>();
-	const localizeMedia = (id: string | number, extra: (src: any) => Record<string, unknown> = () => ({})) =>
+	// `alt` est requis sur `media` — défaut sûr (repris depuis la source)
+	// plutôt que `{}`, pour qu'un appel qui oublie de le préciser n'échoue
+	// pas silencieusement à la validation Payload (bug rencontré en prod).
+	const localizeMedia = (id: string | number, extra: (src: any) => Record<string, unknown> = (src) => ({ alt: src.alt, credit: src.credit })) =>
 		localizeOne(payload, 'media', id, target.id, baseUrl, extra, mediaCache);
 
 	// ---- 1. Blason + coordonnées du tenant ----
 	console.log('→ Blason et coordonnées du tenant…');
 	const tenantUpdate: Record<string, unknown> = { coordonnees: source.coordonnees };
-	if (source.blason) tenantUpdate.blason = await localizeMedia(source.blason, () => ({}));
+	if (source.blason) tenantUpdate.blason = await localizeMedia(source.blason, (src) => ({ alt: src.alt, credit: src.credit }));
 	await payload.update({ collection: 'tenants', id: target.id, overrideAccess: true, data: tenantUpdate });
 	console.log('  ✓ fait.');
 
@@ -278,7 +281,7 @@ async function main() {
 		}
 		const { id, tenant, createdAt, updatedAt, ...rest } = sourceDoc;
 		const data: any = stripIds(rest);
-		if (slug === 'identite' && data.logo) data.logo = await localizeMedia(data.logo);
+		if (slug === 'identite' && data.logo) data.logo = await localizeMedia(data.logo, (src) => ({ alt: src.alt, credit: src.credit }));
 
 		const { docs: targetDocs } = await payload.find({ collection: slug, where: { tenant: { equals: target.id } }, depth: 0, limit: 1, overrideAccess: true });
 		const targetDoc = targetDocs[0] as any;
