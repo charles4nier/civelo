@@ -106,7 +106,7 @@ async function duplicateCollection(
 	sourceTenantId: number,
 	targetTenantId: number
 ): Promise<Record<string, number>> {
-	const { docs: existing } = await payload.find({ collection, where: { tenant: { equals: targetTenantId } }, limit: 1, overrideAccess: true });
+	const { docs: existing } = await payload.find({ collection, where: { tenant: { equals: targetTenantId } }, depth: 0, limit: 1, overrideAccess: true });
 	if (existing.length > 0) {
 		console.log(`  ${collection} : le tenant cible en a déjà — pas de duplication (pas de double seed).`);
 		const { docs: already } = await payload.find({ collection, where: { tenant: { equals: targetTenantId } }, limit: 0, pagination: false, depth: 0, overrideAccess: true });
@@ -246,11 +246,11 @@ async function main() {
 
 	const payload = await getPayload({ config });
 
-	const { docs: sourceTenants } = await payload.find({ collection: 'tenants', where: { domaine: { equals: sourceDomain } }, overrideAccess: true });
+	const { docs: sourceTenants } = await payload.find({ collection: 'tenants', where: { domaine: { equals: sourceDomain } }, depth: 0, overrideAccess: true });
 	const source = sourceTenants[0] as any;
 	if (!source) throw new Error(`Tenant source introuvable (${sourceDomain})`);
 
-	const { docs: targetTenants } = await payload.find({ collection: 'tenants', where: { domaine: { equals: targetDomain } }, overrideAccess: true });
+	const { docs: targetTenants } = await payload.find({ collection: 'tenants', where: { domaine: { equals: targetDomain } }, depth: 0, overrideAccess: true });
 	const target = targetTenants[0] as any;
 	if (!target) throw new Error(`Tenant cible introuvable (${targetDomain})`);
 
@@ -270,7 +270,7 @@ async function main() {
 	// ---- 2. Identité / pied de page / bouton d'en-tête ----
 	console.log('→ Identité, pied de page, bouton d’en-tête…');
 	for (const slug of ['identite', 'footer', 'bouton-entete'] as const) {
-		const { docs: sourceDocs } = await payload.find({ collection: slug, where: { tenant: { equals: source.id } }, limit: 1, overrideAccess: true });
+		const { docs: sourceDocs } = await payload.find({ collection: slug, where: { tenant: { equals: source.id } }, depth: 0, limit: 1, overrideAccess: true });
 		const sourceDoc = sourceDocs[0] as any;
 		if (!sourceDoc) {
 			console.warn(`  ⚠ pas de document "${slug}" côté source, ignoré.`);
@@ -280,7 +280,7 @@ async function main() {
 		const data: any = stripIds(rest);
 		if (slug === 'identite' && data.logo) data.logo = await localizeMedia(data.logo);
 
-		const { docs: targetDocs } = await payload.find({ collection: slug, where: { tenant: { equals: target.id } }, limit: 1, overrideAccess: true });
+		const { docs: targetDocs } = await payload.find({ collection: slug, where: { tenant: { equals: target.id } }, depth: 0, limit: 1, overrideAccess: true });
 		const targetDoc = targetDocs[0] as any;
 		if (targetDoc) {
 			await payload.update({ collection: slug, id: targetDoc.id, overrideAccess: true, data });
@@ -300,7 +300,7 @@ async function main() {
 	const { docs: sourcePages } = await payload.find({ collection: 'pages', where: { tenant: { equals: source.id } }, depth: 0, limit: 100, overrideAccess: true });
 	const { docs: targetPages } = await payload.find({ collection: 'pages', where: { tenant: { equals: target.id } }, depth: 0, limit: 100, overrideAccess: true });
 
-	const { docs: existingTargetCategories } = await payload.find({ collection: 'categories', where: { tenant: { equals: target.id } }, limit: 1, overrideAccess: true });
+	const { docs: existingTargetCategories } = await payload.find({ collection: 'categories', where: { tenant: { equals: target.id } }, depth: 0, limit: 1, overrideAccess: true });
 	if (existingTargetCategories.length > 0) {
 		throw new Error(`Le tenant cible (${target.nom}) a déjà des catégories — abandon pour éviter un double seed. Nettoyer manuellement avant de relancer.`);
 	}
