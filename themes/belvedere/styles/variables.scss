@@ -1,0 +1,161 @@
+/* =========================
+   🎨 Palette Saint-Hilaire-Bonneval (style ludique)
+   ========================= */
+
+$background:          #fffaf0; // muni-stone
+$foreground:          #2a2438; // muni-dark
+$card:                #ffffff;
+$card-foreground:     #2a2438;
+$secondary:           #fff6e5; // muni-cream
+$secondary-foreground: #2a2438;
+$muted:               #fff6e5;
+$muted-foreground:    rgba(42, 36, 56, 0.65);
+$border:              rgba(42, 36, 56, 0.1);
+$input:               rgba(42, 36, 56, 0.15);
+
+$primary:             #2e8b57; // muni-green
+$primary-foreground:  #ffffff;
+$coral:               #ff7a59; // muni-coral
+$sunshine:             #ffc94d; // muni-sun
+$leaf:                #7cc66a; // muni-leaf
+$sky:                 #5ec5ea; // muni-sky
+$plum:                #5b3a87; // muni-plum
+$dark:                #2a2438; // muni-dark (fonds sombres : footer, agenda)
+
+$error:               #e0503a;
+
+/* --- Alias/dérivés — ajoutés lors du portage des pages manquantes
+   (structure d'App recolorée en Belvédère, pas un chantier de
+   personnalisation par commune comme sur edito/App : couleurs encore en
+   dur, pas de custom properties CSS ici) --- */
+$forest:              $leaf;
+$cream:               $secondary; // "muni-cream" — même teinte
+$ochre:               $sunshine;
+$accent:              $coral;
+$accent-foreground:   $dark;
+$terracotta:          $coral;
+
+$primary-05:          rgba(46, 139, 87, 0.05);
+$primary-10:          rgba(46, 139, 87, 0.10);
+$primary-20:          rgba(46, 139, 87, 0.20);
+$primary-30:          rgba(46, 139, 87, 0.30);
+$primary-60:          rgba(46, 139, 87, 0.60);
+$primary-70:          rgba(46, 139, 87, 0.70);
+$primary-80:          rgba(46, 139, 87, 0.80);
+$accent-15:           rgba(255, 122, 89, 0.15);
+$accent-20:           rgba(255, 122, 89, 0.20);
+$accent-30:           rgba(255, 122, 89, 0.30);
+$accent-70:           rgba(255, 122, 89, 0.70);
+$accent-hover:        #e85f3f; // $coral assombri
+$primary-dark:        #256b45; // $primary assombri
+$coral-15:            rgba(255, 122, 89, 0.15);
+$forest-10:           rgba(124, 198, 106, 0.10);
+$forest-60:           rgba(124, 198, 106, 0.60);
+$forest-70:           rgba(124, 198, 106, 0.70);
+$leaf-15:              rgba(124, 198, 106, 0.15);
+$sunshine-25:         rgba(255, 201, 77, 0.25);
+$sunshine-50:         rgba(255, 201, 77, 0.50);
+$cream-10:            rgba(255, 246, 229, 0.10);
+$cream-20:            rgba(255, 246, 229, 0.20);
+$cream-30:            rgba(255, 246, 229, 0.30);
+$cream-60:            rgba(255, 246, 229, 0.60);
+$cream-75:            rgba(255, 246, 229, 0.75);
+$cream-80:            rgba(255, 246, 229, 0.80);
+$ivory-08:            rgba(255, 246, 229, 0.08);
+$ivory-10:            rgba(255, 246, 229, 0.10);
+$ivory-15:            rgba(255, 246, 229, 0.15);
+$ivory-60:            rgba(255, 246, 229, 0.60);
+$ivory-75:            rgba(255, 246, 229, 0.75);
+$foreground-80:       rgba(42, 36, 56, 0.80);
+
+/* --- Dégradés --- */
+$gradient-hero:    linear-gradient(180deg, transparent 0%, rgba(42, 36, 56, 0.2) 50%, rgba(42, 36, 56, 0.85) 100%);
+$gradient-primary: linear-gradient(135deg, $primary, $sky);
+$gradient-warm:    linear-gradient(135deg, $sunshine, $coral);
+
+/* --- Ombres --- */
+$shadow-soft:    0 10px 40px -12px rgba(42, 36, 56, 0.18);
+$shadow-elegant: 0 20px 60px -20px rgba(46, 139, 87, 0.35);
+$shadow-warm:    0 14px 40px -12px rgba(255, 122, 89, 0.35);
+$shadow-hard:    4px 4px 0 0 $dark;
+
+/* --- Transition --- */
+$ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+$transition-smooth: all 0.3s $ease-smooth;
+
+/* =========================
+   📱 Breakpoints
+   ========================= */
+
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1600px;
+
+/* =========================
+   📏 Spacing (scale 8px)
+   ========================= */
+
+$spacing-xs:  4px;
+$spacing-sm:  8px;
+$spacing-md:  16px;
+$spacing-lg:  24px;
+$spacing-xl:  32px;
+$spacing-2xl: 40px;
+$spacing-3xl: 48px;
+$spacing-4xl: 64px;
+$spacing-5xl: 80px;
+$spacing-6xl: 96px;
+$spacing-7xl: 112px;
+
+$section-padding-y-desktop: $spacing-6xl;
+$section-padding-y-tablet:  $spacing-5xl;
+$section-padding-y-mobile:  $spacing-4xl;
+
+/* =========================
+   📐 Container
+   ========================= */
+
+$container-max-width:          1400px;
+$container-padding-x-desktop:  $spacing-5xl;
+$container-padding-x-tablet:   $spacing-2xl;
+$container-padding-x-mobile:   $spacing-lg;
+
+/* =========================
+   📝 Typographie
+   ========================= */
+
+$font-display: var(--font-display), ui-serif, Georgia, serif;
+$font-body:    var(--font-body), ui-sans-serif, system-ui, sans-serif;
+
+$font-weight-regular:  400;
+$font-weight-medium:   500;
+$font-weight-semibold: 600;
+$font-weight-bold:     700;
+
+$line-height-tight:   1.05;
+$line-height-snug:    1.25;
+$line-height-normal:  1.5;
+$line-height-relaxed: 1.65;
+$line-height-loose:   1.75;
+
+$h1-size-desktop: clamp(44px, 5vw, 68px);
+$h2-size-desktop: clamp(30px, 3.5vw, 48px);
+$h3-size-desktop: clamp(20px, 2vw, 26px);
+$body-size-desktop: 16px;
+$small-size-desktop: 14px;
+$xs-size-desktop: 11px;
+
+$h1-size-md: clamp(36px, 5vw, 48px);
+$h2-size-md: clamp(26px, 3.5vw, 36px);
+$h3-size-md: clamp(18px, 2.5vw, 22px);
+$body-size-md: 15px;
+
+$h1-size-sm: clamp(32px, 8vw, 40px);
+$h2-size-sm: clamp(24px, 6vw, 30px);
+$h3-size-sm: clamp(17px, 3.5vw, 20px);
+$body-size-sm: 15px;
+
+$title-margin-bottom-desktop: $spacing-md;
+$title-margin-bottom-mobile:  $spacing-sm;

@@ -1,9 +1,9 @@
 import { getPayload } from 'payload';
 import { draftMode } from 'next/headers';
 import config from '../payload.config';
-import type { AnnuaireCardData } from '@themes/edito/components/AnnuaireLayout';
-import type { ContactItem, IconVariant } from '@themes/edito/components/ContactCard';
-import type { EditorialSection } from '@themes/edito/components/EditorialLayout/Sections';
+import type { AnnuaireCardData } from '@themes/atelier/components/AnnuaireLayout';
+import type { ContactItem, IconVariant } from '@themes/atelier/components/ContactCard';
+import type { EditorialSection } from '@themes/atelier/components/EditorialLayout/Sections';
 import { getCurrentTenant } from '@shared/lib/tenant';
 
 // Item 11/12 de la feuille de route — couche de récupération de données
@@ -57,7 +57,7 @@ async function requireTenant(payload: Awaited<ReturnType<typeof getPayloadClient
 
 // Variante de disposition de la page d'accueil ("defaut"/"tourisme",
 // `Tenants.variante`) — pour l'instant seul le thème édito en tient compte
-// (voir `themes/edito/features/home/index.tsx`). Même pattern de repli que
+// (voir `themes/atelier/features/home/index.tsx`). Même pattern de repli que
 // `getCurrentTheme()` (`shared/lib/theme.ts`) : jamais d'exception qui
 // casserait le rendu, retombe sur la variante par défaut.
 export type Variant = 'defaut' | 'tourisme';

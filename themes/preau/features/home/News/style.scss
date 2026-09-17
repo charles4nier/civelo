@@ -1,0 +1,118 @@
+@import '@themes/preau/styles/variables';
+
+.theme-preau {
+.news {
+	background: $card;
+	padding: $section-padding-y-desktop 0;
+
+	@media (max-width: $breakpoint-sm) {
+		padding: $section-padding-y-mobile 0;
+	}
+
+	&__header {
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-xl;
+		margin-bottom: 56px; /* mb-14 */
+
+		@media (min-width: $breakpoint-sm) {
+			flex-direction: row;
+			align-items: flex-end;
+			justify-content: space-between;
+		}
+	}
+
+	&__title {
+		margin-top: $spacing-sm;
+		color: $primary;
+		font-size: 36px; /* text-4xl */
+
+		@media (min-width: $breakpoint-sm) {
+			font-size: 48px; /* md:text-5xl */
+		}
+	}
+
+	&__grid {
+		display: grid;
+		gap: 24px; /* gap-6 */
+
+		@media (min-width: $breakpoint-sm) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	&__card {
+		background: $background;
+		border: 1px solid $border;
+		border-radius: 16px;
+		padding: 28px; /* p-7 */
+		display: flex;
+		flex-direction: column;
+		transition: $transition-smooth;
+
+		&:hover {
+			box-shadow: $shadow-soft;
+		}
+	}
+
+	&__card-meta {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+		font-size: $xs-size-desktop;
+		color: $muted-foreground;
+	}
+
+	&__card-date {
+		font-weight: $font-weight-semibold;
+		color: $primary;
+	}
+
+	&__card-dot {
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: $border;
+	}
+
+	&__card-cat {
+		text-transform: uppercase;
+		letter-spacing: 0.2em;
+		color: $accent;
+	}
+
+	&__card-title {
+		margin-top: $spacing-md;
+		font-family: $font-display;
+		font-size: 24px; /* font-serif text-2xl */
+		font-weight: $font-weight-medium;
+		color: $primary;
+		line-height: $line-height-snug;
+		flex: 1;
+	}
+
+	&__card-text {
+		margin-top: $spacing-sm;
+		font-size: $small-size-desktop;
+		color: $muted-foreground;
+		line-height: $line-height-relaxed;
+	}
+
+	&__card-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		margin-top: $spacing-lg;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
+		color: $primary;
+		transition: gap 0.2s ease;
+
+		&:hover {
+			gap: $spacing-sm;
+		}
+	}
+}
+}
+

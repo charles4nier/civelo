@@ -1,0 +1,132 @@
+@import '@themes/clocher/styles/variables';
+
+.theme-clocher {
+.hero-clocher {
+	background-color: $card;
+	border-bottom: 1px solid $border;
+	overflow: hidden;
+
+	&__grid {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+
+		@media (min-width: $breakpoint-md) {
+			display: grid;
+			grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+			align-items: center;
+		}
+	}
+
+	&__body {
+		padding-block: $spacing-3xl;
+
+		@media (min-width: $breakpoint-md) {
+			padding-block: $spacing-6xl;
+			padding-right: $spacing-2xl;
+		}
+	}
+
+	&__eyebrow {
+		font-size: $xs-size-desktop;
+		font-weight: $font-weight-bold;
+		text-transform: uppercase;
+		letter-spacing: 0.22em;
+		color: $muted-foreground;
+	}
+
+	&__title {
+		margin-top: $spacing-md;
+		font-size: $h1-size-desktop;
+		line-height: $line-height-tight;
+		font-weight: $font-weight-bold;
+		letter-spacing: -0.01em;
+		color: $foreground;
+	}
+
+	&__desc {
+		max-width: 440px;
+		margin-top: $spacing-lg;
+		font-size: $body-size-desktop;
+		line-height: $line-height-relaxed;
+		color: $muted-foreground;
+	}
+
+	&__actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: $spacing-md;
+		margin-top: $spacing-xl;
+	}
+
+	&__btn-primary {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-sm;
+		padding: 14px $spacing-xl;
+		background-color: $primary;
+		color: $primary-foreground;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		border-radius: 999px;
+		transition: $transition-smooth;
+
+		&:hover {
+			background-color: $coral;
+		}
+	}
+
+	&__btn-secondary {
+		display: inline-flex;
+		align-items: center;
+		padding: 14px $spacing-xl;
+		background-color: transparent;
+		color: $foreground;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		border: 1px solid $border;
+		border-radius: 999px;
+		transition: $transition-smooth;
+
+		&:hover {
+			background-color: $secondary;
+		}
+	}
+
+	// Sur mobile, la photo redevient une simple bande pleine largeur sous le
+	// texte (pas de dégradé — celui-ci n'a de sens qu'à côté du texte).
+	&__image-wrap {
+		position: relative;
+		height: 224px;
+		margin-inline: -#{$container-padding-x-mobile};
+
+		@media (min-width: $breakpoint-sm) {
+			height: 288px;
+			margin-inline: -#{$container-padding-x-tablet};
+		}
+
+		@media (min-width: $breakpoint-md) {
+			height: 26rem;
+			margin-inline: 0;
+			overflow: hidden;
+		}
+	}
+
+	&__image {
+		object-fit: cover;
+	}
+
+	&__fade {
+		display: none;
+
+		@media (min-width: $breakpoint-md) {
+			display: block;
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(to right, $card, color-mix(in oklch, $card 40%, transparent) 22%, transparent 55%);
+		}
+	}
+}
+
+}

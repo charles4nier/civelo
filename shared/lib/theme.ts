@@ -3,14 +3,14 @@ import type { Payload } from 'payload';
 import { getCurrentTenant } from './tenant';
 
 // Le thème est un attribut du tenant (`Tenants.theme`) — 4 existent
-// (`edito`, `moderne`, `accueillant`, `classique`). Chaque route/layout
+// (`atelier`, `preau`, `belvedere`, `clocher`). Chaque route/layout
 // appelle `getCurrentTheme()` puis choisit le bon composant via
 // `pickTheme()` — un registre explicite par route plutôt qu'un import
 // dynamique par chaîne (non analysable statiquement par Webpack), qui de
 // plus est vérifié par le compilateur : ajouter un `ThemeName` fait échouer
 // la compilation de toute route qui ne lui a pas encore donné de composant.
-export type ThemeName = 'edito' | 'moderne' | 'accueillant' | 'classique';
-export const DEFAULT_THEME: ThemeName = 'edito';
+export type ThemeName = 'atelier' | 'preau' | 'belvedere' | 'clocher';
+export const DEFAULT_THEME: ThemeName = 'atelier';
 
 export const getCurrentTheme = cache(async (payload: Payload): Promise<ThemeName> => {
 	const tenant = await getCurrentTenant(payload);

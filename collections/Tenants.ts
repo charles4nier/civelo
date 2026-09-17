@@ -80,13 +80,13 @@ export const Tenants: CollectionConfig = {
 				name: 'theme',
 				type: 'select',
 				required: true,
-				defaultValue: 'edito',
+				defaultValue: 'atelier',
 				access: { update: isSuperAdminField },
 				options: [
-					{ label: 'Style édito', value: 'edito' },
-					{ label: 'Moderne', value: 'moderne' },
-					{ label: 'Accueillant', value: 'accueillant' },
-					{ label: 'Classique', value: 'classique' }
+					{ label: 'L’Atelier', value: 'atelier' },
+					{ label: 'Le Préau', value: 'preau' },
+					{ label: 'Le Belvédère', value: 'belvedere' },
+					{ label: 'Le Clocher', value: 'clocher' }
 				]
 			},
 			'La structure de page utilisée par le site de cette commune.'
@@ -103,7 +103,7 @@ export const Tenants: CollectionConfig = {
 					{ label: 'Tourisme', value: 'tourisme' }
 				]
 			},
-			"La disposition de la page d'accueil de cette commune. Pour l'instant, seul le thème « Style édito » en tient compte."
+			"La disposition de la page d'accueil de cette commune. Pour l'instant, seul le thème « L’Atelier » en tient compte."
 		),
 		withInfo(
 			{

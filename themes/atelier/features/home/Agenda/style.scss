@@ -1,0 +1,113 @@
+@import '@themes/atelier/styles/variables';
+
+.theme-atelier {
+.agenda-highlight {
+	padding-bottom: $section-padding-y-desktop;
+
+	&__card {
+		display: flex;
+		align-items: center;
+		gap: $spacing-xl;
+		padding: $spacing-2xl $spacing-3xl;
+		background: $gradient-forest;
+		color: $background;
+		box-shadow: $shadow-elegant;
+		border-top: 4px solid $sunshine;
+	}
+
+	&__date {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		width: 72px;
+		height: 72px;
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.15);
+	}
+
+	&__date-day {
+		font-family: $font-display;
+		font-size: 26px;
+		font-weight: $font-weight-semibold;
+		line-height: 1;
+		color: #ffffff;
+	}
+
+	&__date-month {
+		margin-top: 4px;
+		font-family: $font-body;
+		font-size: 10px;
+		font-weight: $font-weight-bold;
+		letter-spacing: 0.14em;
+		color: $sunshine;
+	}
+
+	&__body {
+		flex: 1;
+		min-width: 0;
+	}
+
+	&__eyebrow {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+		font-family: $font-body;
+		font-size: 11px;
+		font-weight: $font-weight-bold;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: $sunshine;
+	}
+
+	&__title {
+		margin-top: 4px;
+		font-family: $font-display;
+		font-size: 16px;
+		font-weight: $font-weight-semibold;
+		color: #ffffff;
+	}
+
+	&__link {
+		display: inline-flex;
+		align-items: center;
+		flex-shrink: 0;
+		gap: 6px;
+		padding: 12px 24px;
+		background-color: #ffffff;
+		color: $foreground;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		transition: $transition-smooth;
+
+		&:hover {
+			background-color: $sunshine;
+			color: $foreground;
+		}
+	}
+
+	/* ---- Responsive ---- */
+
+	@media (max-width: $breakpoint-md) {
+		padding-bottom: $section-padding-y-tablet;
+
+		&__card {
+			flex-wrap: wrap;
+			padding: $spacing-xl;
+		}
+	}
+
+	@media (max-width: $breakpoint-sm) {
+		padding-bottom: $section-padding-y-mobile;
+
+		&__link {
+			width: 100%;
+			justify-content: center;
+		}
+	}
+}
+}

@@ -1,0 +1,84 @@
+@import '@themes/atelier/styles/variables';
+
+// Réglages propres à la variante tourisme (`Tenants.variante`) de l'accueil
+// édito — jamais le mode défaut, qui reste inchangé (voir
+// `themes/atelier/features/home/index.tsx`). Tout est scopé sous
+// `.tourisme-layout`, le wrapper posé uniquement autour du retour JSX de la
+// branche tourisme, pour ne toucher aucun style partagé avec le mode défaut.
+.theme-atelier .tourisme-layout {
+	// ---- Titres de section ----
+	// Décision du 2026-09-16 — par cohérence, tous les titres principaux de
+	// la variante tourisme plafonnent à 55px, sauf le Hero (inchangé en
+	// contenu/position, seule sa taille diffère ici) qui reste le repère
+	// visuel le plus fort de la page, plafonné à 70px. En `clamp()`, pas en
+	// valeur fixe — sinon, contrairement au reste du site (tout est en
+	// `clamp()`, `styles/variables.scss`), ces titres ne rétréciraient pas
+	// entre 1024 et 1440px et casseraient plus vite que leurs voisins.
+	.hero__title {
+		font-size: clamp(36px, 5.5vw, 70px);
+	}
+
+	.quick-access__title,
+	.news__title,
+	.mayor-word__title,
+	.discover__title,
+	.slideshow__title,
+	.cta__title {
+		font-size: clamp(30px, 4vw, 55px);
+	}
+
+	// Le titre plus large (55px) déborde plus vite sur 2 lignes à la largeur
+	// par défaut (560px, `News/style.scss`) — un peu plus de place ici.
+	.news__header-text {
+		max-width: 700px;
+	}
+
+	// ---- Alternance de fond ----
+	// Reprend le duo blanc/beige de saint-hilaire-discovery (une vraie
+	// alternance à deux tons, pas une simple teinte translucide) : Découvrir,
+	// Actualités, L'essentiel en un clic et Nous contacter sur le beige de
+	// base du thème (`$background`) ; Diaporama et Mot du Maire en blanc
+	// franc (`$card`). L'Agenda garde son bandeau vert, hors de cette
+	// alternance.
+	.discover,
+	.news,
+	.quick-access,
+	.cta {
+		background-color: $background;
+	}
+
+	.slideshow,
+	.mayor-word {
+		background-color: $card;
+	}
+
+	// ---- Cartes Découvrir ----
+	// Reprend la géométrie de saint-hilaire-discovery (proportions plus
+	// hautes, 2ᵉ carte décalée vers le haut) — couleurs du thème édito
+	// conservées, pas celles du prototype.
+	.discover__grid {
+		align-items: start;
+	}
+
+	.discover__card-image-wrap {
+		aspect-ratio: 3 / 4;
+	}
+
+	.discover__grid .discover__card:nth-child(2) {
+		transform: translateY(-52px);
+	}
+
+	.discover__card-tag {
+		background-color: $sunshine;
+		color: $foreground;
+	}
+
+	@media (max-width: $breakpoint-md) {
+		// Même repli que le prototype : la grille passe à 1 colonne à ce
+		// palier (déjà géré par `Discover/style.scss`), le décalage vertical
+		// n'a plus lieu d'être.
+		.discover__grid .discover__card:nth-child(2) {
+			transform: none;
+		}
+	}
+}

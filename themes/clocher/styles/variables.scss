@@ -1,0 +1,178 @@
+/* =========================
+   🎨 Palette Le Clocher — épurée / intemporelle
+   ========================= */
+
+// Direction "épuré/intemporel" (par opposition à edito/institutionnel,
+// accueillant/coloré, app/prestige) : une base neutre (navy, inspirée de
+// saint-hilaire-digital-hub) + UN SEUL accent chaud (ambre/laiton) réutilisé
+// partout où edito distingue plusieurs teintes (coral/sunshine/leaf/
+// terracotta/sky/berry) — pas de palette arc-en-ciel par catégorie, mais pas
+// non plus de survol/accent dans la même teinte que le texte : un premier
+// essai purement monochrome (accent = simple variante de luminosité du
+// navy) rendait les états de survol quasi invisibles ("fade" — retour
+// utilisateur réel après vérification en navigateur). Un accent doré sobre
+// résout ce problème de contraste tout en restant cohérent avec
+// "intemporel" (laiton/bronze, pas une couleur vive).
+//
+// Même mécanique de personnalisation par tenant que les autres thèmes
+// (custom properties CSS avec repli, teintes alpha dérivées) — voir le
+// commentaire équivalent dans edito/styles/variables.scss pour le détail.
+$background:          var(--color-background, oklch(0.985 0.003 247.858));
+$foreground:          var(--color-foreground, oklch(0.21 0.038 265.5));
+$card:                var(--color-card, oklch(1 0 0));
+$card-foreground:     var(--color-card-foreground, oklch(0.21 0.038 265.5));
+$secondary:           var(--color-secondary, oklch(0.968 0.007 247.896));
+$secondary-foreground: var(--color-secondary-foreground, oklch(0.26 0.062 262));
+$muted:               var(--color-muted, oklch(0.968 0.007 247.896));
+$muted-foreground:    var(--color-muted-foreground, oklch(0.54 0.032 257.417));
+$border:              var(--color-border, oklch(0.929 0.013 255.508));
+$input:               var(--color-input, oklch(0.929 0.013 255.508));
+
+$primary:             var(--color-primary, oklch(0.26 0.062 262));
+$primary-foreground:  var(--color-primary-foreground, oklch(0.99 0.003 247.858));
+$primary-glow:        var(--color-primary-glow, oklch(0.40 0.05 262));
+$coral:               var(--color-coral, oklch(0.64 0.13 72));
+$sunshine:            var(--color-sunshine, oklch(0.92 0.05 80));
+$leaf:                var(--color-leaf, oklch(0.64 0.13 72));
+$terracotta:          var(--color-terracotta, oklch(0.64 0.13 72));
+$sky:                 var(--color-sky, oklch(0.64 0.13 72));
+$berry:               var(--color-berry, oklch(0.64 0.13 72));
+
+$error:               var(--color-error, oklch(0.577 0.245 27.325));
+
+/* --- Variantes alpha (dérivées, pas des custom properties séparées) --- */
+$primary-10:          oklch(from #{$primary} l c h / 0.1);
+$primary-30:          oklch(from #{$primary} l c h / 0.3);
+$coral-15:            oklch(from #{$coral} l c h / 0.15);
+$coral-40:            oklch(from #{$coral} l c h / 0.4);
+$leaf-15:             oklch(from #{$leaf} l c h / 0.15);
+$leaf-40:             oklch(from #{$leaf} l c h / 0.4);
+// Survol/actif — même teinte que $leaf, assombrie (l fixé plutôt que
+// `calc(l - x)` : $leaf peut être n'importe quelle luminosité une fois
+// personnalisable par commune, un delta relatif risquerait de sortir de
+// l'intervalle [0,1] sur une teinte de base déjà très sombre ou très claire).
+$leaf-dark:           oklch(from #{$leaf} 0.54 c h);
+$sunshine-25:         oklch(from #{$sunshine} l c h / 0.25);
+$sunshine-30:         oklch(from #{$sunshine} l c h / 0.3);
+// Texte lisible sur fond $sunshine-25 — custom property INDÉPENDANTE plutôt
+// que dérivée de $sunshine : la valeur d'origine (#8a6d1a, vérifiée en
+// contraste WCAG AA, audit RGAA saint-hilaire-demo) n'était pas exprimée en
+// oklch avec la même chrominance/teinte que $sunshine — impossible de
+// garantir qu'une dérivation mathématique reproduirait le même rendu au
+// pixel près sans un outil de vérification visuelle. Une commune qui
+// personnalise $sunshine devra donc aussi choisir son propre
+// $sunshine-foreground pour rester lisible/conforme.
+$sunshine-foreground: var(--color-sunshine-foreground, oklch(0.26 0.062 262));
+$foreground-20:       oklch(from #{$foreground} l c h / 0.2);
+$foreground-50:       oklch(from #{$foreground} l c h / 0.5);
+$foreground-80:       oklch(from #{$foreground} l c h / 0.8);
+$foreground-85:       oklch(from #{$foreground} l c h / 0.85);
+$background-10:       oklch(from #{$background} l c h / 0.1);
+$background-15:       oklch(from #{$background} l c h / 0.15);
+$background-20:       oklch(from #{$background} l c h / 0.2);
+$background-50:       oklch(from #{$background} l c h / 0.5);
+$background-60:       oklch(from #{$background} l c h / 0.6);
+$background-70:       oklch(from #{$background} l c h / 0.7);
+$background-85:       oklch(from #{$background} l c h / 0.85);
+$background-90:       oklch(from #{$background} l c h / 0.9);
+$background-95:       oklch(from #{$background} l c h / 0.95);
+$secondary-40:        oklch(from #{$secondary} l c h / 0.4);
+$muted-foreground-50: oklch(from #{$muted-foreground} l c h / 0.5);
+
+/* --- Dégradés --- */
+$gradient-hero:    linear-gradient(180deg, transparent 0%, oklch(from #{$foreground} l c h / 0.2) 50%, oklch(from #{$foreground} calc(l - 0.02) calc(c + 0.01) h / 0.85) 100%);
+$gradient-forest:  linear-gradient(135deg, #{$leaf}, oklch(from #{$leaf} calc(l - 0.17) calc(c - 0.05) calc(h + 8)));
+$gradient-primary: linear-gradient(135deg, #{$primary}, #{$primary-glow});
+$gradient-warm:    linear-gradient(135deg, #{$sunshine}, #{$coral});
+$gradient-sunset:  linear-gradient(135deg, #{$coral}, #{$berry});
+$gradient-meadow:  linear-gradient(135deg, #{$leaf}, #{$sky});
+
+/* --- Ombres --- */
+$shadow-soft:    0 10px 40px -12px oklch(from #{$foreground} l c h / 0.18);
+$shadow-elegant: 0 20px 60px -20px oklch(from #{$primary} l c h / 0.35);
+$shadow-warm:    0 14px 40px -12px oklch(from #{$coral} l c h / 0.35);
+
+/* --- Transition --- */
+$ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+$transition-smooth: all 0.4s $ease-smooth;
+
+/* =========================
+   📱 Breakpoints
+   ========================= */
+
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1600px;
+
+/* =========================
+   📏 Spacing (scale 8px)
+   ========================= */
+
+$spacing-xs:  4px;
+$spacing-sm:  8px;
+$spacing-md:  16px;
+$spacing-lg:  24px;
+$spacing-xl:  32px;
+$spacing-2xl: 40px;
+$spacing-3xl: 48px;
+$spacing-4xl: 64px;
+$spacing-5xl: 80px;
+$spacing-6xl: 96px;
+$spacing-7xl: 112px;
+
+$section-padding-y-desktop: $spacing-7xl;
+$section-padding-y-tablet:  $spacing-5xl;
+$section-padding-y-mobile:  $spacing-4xl;
+
+/* =========================
+   📐 Container
+   ========================= */
+
+$container-max-width:          1400px;
+$container-padding-x-desktop:  $spacing-5xl;
+$container-padding-x-tablet:   $spacing-2xl;
+$container-padding-x-mobile:   $spacing-lg;
+
+/* =========================
+   📝 Typographie
+   ========================= */
+
+// Une seule police, partout — pas de duo serif/sans ni d'accent script,
+// à l'opposé des autres thèmes : c'est ce qui porte l'identité "épuré/
+// intemporel" de Le Clocher plus que la couleur elle-même.
+$font-display: var(--font-clocher), system-ui, sans-serif;
+$font-body:    var(--font-clocher), system-ui, sans-serif;
+$font-script:  var(--font-clocher), system-ui, sans-serif;
+
+$font-weight-regular:  400;
+$font-weight-medium:   500;
+$font-weight-semibold: 600;
+$font-weight-bold:     700;
+
+$line-height-tight:   1.05;
+$line-height-snug:    1.25;
+$line-height-normal:  1.5;
+$line-height-relaxed: 1.65;
+$line-height-loose:   1.75;
+
+$h1-size-desktop: clamp(44px, 5vw, 64px);
+$h2-size-desktop: clamp(30px, 3.5vw, 44px);
+$h3-size-desktop: clamp(20px, 2vw, 26px);
+$body-size-desktop: 16px;
+$small-size-desktop: 14px;
+$xs-size-desktop: 11px;
+
+$h1-size-md: clamp(36px, 5vw, 48px);
+$h2-size-md: clamp(26px, 3.5vw, 36px);
+$h3-size-md: clamp(18px, 2.5vw, 22px);
+$body-size-md: 15px;
+
+$h1-size-sm: clamp(32px, 8vw, 40px);
+$h2-size-sm: clamp(24px, 6vw, 30px);
+$h3-size-sm: clamp(17px, 3.5vw, 20px);
+$body-size-sm: 15px;
+
+$title-margin-bottom-desktop: $spacing-md;
+$title-margin-bottom-mobile:  $spacing-sm;

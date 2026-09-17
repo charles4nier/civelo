@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { draftMode } from 'next/headers';
-import { defaultMetadata } from '@themes/edito/config/seo';
-import StyleEditoRootLayout from '@themes/edito/RootLayout';
-import ModerneRootLayout from '@themes/moderne/RootLayout';
-import AccueillantRootLayout from '@themes/accueillant/RootLayout';
-import ClassiqueRootLayout from '@themes/classique/RootLayout';
+import { defaultMetadata } from '@themes/atelier/config/seo';
+import AtelierRootLayout from '@themes/atelier/RootLayout';
+import PreauRootLayout from '@themes/preau/RootLayout';
+import BelvedereRootLayout from '@themes/belvedere/RootLayout';
+import ClocherRootLayout from '@themes/clocher/RootLayout';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import PreviewBanner from '@shared/components/PreviewBanner';
 import { getNavLinks, getIdentiteData, getBoutonEnteteData, getFooterData, getPayloadClient } from '../../lib/payload';
@@ -17,7 +17,7 @@ import { getNavLinks, getIdentiteData, getBoutonEnteteData, getFooterData, getPa
 // thème du tenant résolu par domaine.
 //
 // Métadonnées par défaut encore prises directement dans la config SEO de
-// edito (pas de dispatch par thème) — un SEO réellement multi-thème
+// l'Atelier (pas de dispatch par thème) — un SEO réellement multi-thème
 // nécessiterait un `generateMetadata` async résolvant le tenant, hors
 // périmètre de cette extraction.
 export const metadata: Metadata = defaultMetadata;
@@ -41,10 +41,10 @@ export default async function Layout({ children }: { children: React.ReactNode }
 	]);
 
 	const RootLayout = pickTheme(theme, {
-		edito: StyleEditoRootLayout,
-		moderne: ModerneRootLayout,
-		accueillant: AccueillantRootLayout,
-		classique: ClassiqueRootLayout
+		atelier: AtelierRootLayout,
+		preau: PreauRootLayout,
+		belvedere: BelvedereRootLayout,
+		clocher: ClocherRootLayout
 	});
 
 	return (

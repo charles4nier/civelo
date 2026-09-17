@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/edito/config/seo';
-import StyleEditoHistoirePage from '@themes/edito/features/histoire';
-import ModerneHistoirePage from '@themes/moderne/features/histoire';
-import AccueillantHistoirePage from '@themes/accueillant/features/histoire';
-import ClassiqueHistoirePage from '@themes/classique/features/histoire';
+import { generatePageMetadata } from '@themes/atelier/config/seo';
+import AtelierHistoirePage from '@themes/atelier/features/histoire';
+import PreauHistoirePage from '@themes/preau/features/histoire';
+import BelvedereHistoirePage from '@themes/belvedere/features/histoire';
+import ClocherHistoirePage from '@themes/clocher/features/histoire';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -17,6 +17,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoHistoirePage, moderne: ModerneHistoirePage, accueillant: AccueillantHistoirePage, classique: ClassiqueHistoirePage });
+	const Component = pickTheme(theme, { atelier: AtelierHistoirePage, preau: PreauHistoirePage, belvedere: BelvedereHistoirePage, clocher: ClocherHistoirePage });
 	return <Component />;
 }

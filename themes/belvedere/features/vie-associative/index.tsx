@@ -1,0 +1,49 @@
+import AnnuaireLayout, { type AnnuaireCardData } from '@themes/belvedere/components/AnnuaireLayout';
+import type { IconVariant } from '@themes/belvedere/components/ContactCard';
+import { getAnnuaireItems } from '@lib/payload';
+import { associations, type Category } from './data';
+
+const categoryMeta: Record<Category, { icon: string; iconVariant: IconVariant }> = {
+	'Éducation & famille':  { icon: 'GraduationCap', iconVariant: 'primary' },
+	'Sports':               { icon: 'Trophy',        iconVariant: 'coral' },
+	'Culture & patrimoine': { icon: 'Leaf',          iconVariant: 'leaf' },
+	'Citoyenneté':          { icon: 'Flag',          iconVariant: 'muted' },
+};
+
+const fallbackCards: AnnuaireCardData[] = associations.map((a) => ({
+	key: a.name,
+	icon: categoryMeta[a.category].icon,
+	iconVariant: categoryMeta[a.category].iconVariant,
+	category: a.category,
+	name: a.name,
+	badge: a.shortName,
+	description: a.desc,
+	contacts: a.email ? [{ type: 'email' as const, value: a.email }] : [],
+}));
+
+const filters = ['Tous', 'Éducation & famille', 'Sports', 'Culture & patrimoine', 'Citoyenneté'];
+
+export default async function VieAssociativePage() {
+	const cards = (await getAnnuaireItems('vivre/vie-associative')) ?? fallbackCards;
+
+	return (
+		<AnnuaireLayout
+			breadcrumbLabel="Vie associative"
+			eyebrowIcon="Users"
+			eyebrowText="Vivre à la commune"
+			title="Vie associative"
+			subtitle={<>Sport, culture, éducation et citoyenneté :<br />{cards.length} associations animent la commune.</>}
+			sectionEyebrow="Annuaire associatif"
+			countSingular="association"
+			countPlural="associations"
+			filters={filters}
+			cards={cards}
+			cta={{
+				eyebrow: "Vous représentez une association ?",
+				title: "Faites référencer votre association sur le site de la mairie",
+				desc: "La mairie tient à jour cet annuaire pour valoriser la vie associative locale. Contactez le secrétariat pour ajouter ou mettre à jour votre fiche.",
+				email: "contact@commune.fr",
+			}}
+		/>
+	);
+}

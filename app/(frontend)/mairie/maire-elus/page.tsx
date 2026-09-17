@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/edito/config/seo';
-import StyleEditoElusPage from '@themes/edito/features/elus';
-import ModerneElusPage from '@themes/moderne/features/elus';
-import AccueillantElusPage from '@themes/accueillant/features/elus';
-import ClassiqueElusPage from '@themes/classique/features/elus';
+import { generatePageMetadata } from '@themes/atelier/config/seo';
+import AtelierElusPage from '@themes/atelier/features/elus';
+import PreauElusPage from '@themes/preau/features/elus';
+import BelvedereElusPage from '@themes/belvedere/features/elus';
+import ClocherElusPage from '@themes/clocher/features/elus';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -16,6 +16,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoElusPage, moderne: ModerneElusPage, accueillant: AccueillantElusPage, classique: ClassiqueElusPage });
+	const Component = pickTheme(theme, { atelier: AtelierElusPage, preau: PreauElusPage, belvedere: BelvedereElusPage, clocher: ClocherElusPage });
 	return <Component />;
 }

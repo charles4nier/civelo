@@ -31,17 +31,17 @@ import { fileURLToPath } from 'url';
 import { getPayload } from 'payload';
 import config from '../payload.config';
 
-import { commerces } from '../themes/edito/features/commerces/data';
-import { associations } from '../themes/edito/features/vie-associative/data';
-import { services } from '../themes/edito/features/enfance-jeunesse/data';
-import { activities } from '../themes/edito/features/sports-loisirs/data';
-import { events } from '../themes/edito/features/agenda/data';
-import { articles } from '../themes/edito/features/actualites/data';
-import { docs } from '../themes/edito/features/documents/data';
-import { entries as budgetProjetEntries } from '../themes/edito/features/budget-projets/data';
-import { pois, sentiers } from '../themes/edito/features/carte/data';
-import { maire, adjoints, delegues, conseillers } from '../themes/edito/features/elus/data';
-import { urgences, locaux } from '../themes/edito/features/numeros-utiles/data';
+import { commerces } from '../themes/atelier/features/commerces/data';
+import { associations } from '../themes/atelier/features/vie-associative/data';
+import { services } from '../themes/atelier/features/enfance-jeunesse/data';
+import { activities } from '../themes/atelier/features/sports-loisirs/data';
+import { events } from '../themes/atelier/features/agenda/data';
+import { articles } from '../themes/atelier/features/actualites/data';
+import { docs } from '../themes/atelier/features/documents/data';
+import { entries as budgetProjetEntries } from '../themes/atelier/features/budget-projets/data';
+import { pois, sentiers } from '../themes/atelier/features/carte/data';
+import { maire, adjoints, delegues, conseillers } from '../themes/atelier/features/elus/data';
+import { urgences, locaux } from '../themes/atelier/features/numeros-utiles/data';
 
 type CategoryMap = Record<string, string>;
 

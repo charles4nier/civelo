@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/edito/config/seo';
-import StyleEditoBudgetProjetsPage from '@themes/edito/features/budget-projets';
-import ModerneBudgetProjetsPage from '@themes/moderne/features/budget-projets';
-import AccueillantBudgetProjetsPage from '@themes/accueillant/features/budget-projets';
-import ClassiqueBudgetProjetsPage from '@themes/classique/features/budget-projets';
+import { generatePageMetadata } from '@themes/atelier/config/seo';
+import AtelierBudgetProjetsPage from '@themes/atelier/features/budget-projets';
+import PreauBudgetProjetsPage from '@themes/preau/features/budget-projets';
+import BelvedereBudgetProjetsPage from '@themes/belvedere/features/budget-projets';
+import ClocherBudgetProjetsPage from '@themes/clocher/features/budget-projets';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -16,6 +16,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoBudgetProjetsPage, moderne: ModerneBudgetProjetsPage, accueillant: AccueillantBudgetProjetsPage, classique: ClassiqueBudgetProjetsPage });
+	const Component = pickTheme(theme, { atelier: AtelierBudgetProjetsPage, preau: PreauBudgetProjetsPage, belvedere: BelvedereBudgetProjetsPage, clocher: ClocherBudgetProjetsPage });
 	return <Component />;
 }

@@ -1,0 +1,486 @@
+@import '@themes/atelier/styles/variables';
+
+.theme-atelier {
+.header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 50;
+	transition: $transition-smooth;
+
+	&__inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 80px;
+		position: relative;
+	}
+
+	// Regroupées ici plutôt qu'en `.scrolled &` dispersés dans chaque
+	// sous-élément : ce dernier pattern capture tout le sélecteur parent
+	// accumulé (y compris le `.theme-atelier` englobant) dans `&`, et
+	// `.scrolled &` le préfixe alors du mauvais côté — `.scrolled` doit
+	// rester un ancêtre direct de `.header`, jamais un ancêtre du wrapper
+	// de thème lui-même. Des sélecteurs plats en descendance directe de
+	// `&.scrolled` (qui, lui, compile correctement) évitent le problème.
+	&.scrolled {
+		background: $background-95;
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		box-shadow: 0 1px 0 $border, $shadow-soft;
+
+		.header__logo-badge {
+			background: $card;
+			border: 1px solid $border;
+		}
+
+		.header__logo-name {
+			color: $foreground;
+			text-shadow: none;
+		}
+
+		.header__logo-sub {
+			color: $muted-foreground;
+		}
+
+		.header__nav-link {
+			color: $foreground-80;
+
+			&:hover {
+				color: $coral;
+				border-bottom-color: $coral;
+			}
+		}
+
+		.header__burger {
+			color: $foreground;
+		}
+	}
+
+	/* ---- Logo ---- */
+
+	&__logo {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm + 4px;
+		flex-shrink: 0;
+
+		@media (max-width: $breakpoint-sm) {
+			flex: 1;
+		}
+	}
+
+	&__logo-badge {
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		background: rgba(255, 255, 255, 0.95);
+		box-shadow: $shadow-soft;
+		overflow: hidden;
+	}
+
+	&__logo-text {
+		display: flex;
+		flex-direction: column;
+		line-height: 1;
+	}
+
+	&__logo-name {
+		font-family: $font-display;
+		font-size: 18px;
+		font-weight: $font-weight-semibold;
+		letter-spacing: -0.01em;
+		text-transform: uppercase;
+		color: #ffffff;
+		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+		transition: $transition-smooth;
+
+		@media (max-width: $breakpoint-sm) {
+			font-size: 15px;
+		}
+	}
+
+	&__logo-sub {
+		font-family: $font-body;
+		font-size: $xs-size-desktop;
+		letter-spacing: 0.22em;
+		text-transform: uppercase;
+		color: rgba(255, 255, 255, 0.85);
+		margin-top: 3px;
+		transition: $transition-smooth;
+
+		@media (max-width: $breakpoint-sm) {
+			display: none;
+		}
+	}
+
+	&__logo-text {
+		@media (max-width: $breakpoint-sm) {
+			justify-content: center;
+		}
+	}
+
+	/* ---- Nav desktop ---- */
+
+	&__nav {
+		display: none;
+		align-items: center;
+		gap: 2px;
+
+		@media (min-width: $breakpoint-md + 1) {
+			display: flex;
+		}
+	}
+
+	&__nav-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 8px 12px;
+		font-family: $font-body;
+		font-size: 13px;
+		font-weight: $font-weight-medium;
+		color: rgba(255, 255, 255, 0.95);
+		border-bottom: 2px solid transparent;
+		transition: $transition-smooth;
+		white-space: nowrap;
+
+		&:hover {
+			color: $sunshine;
+			border-bottom-color: $sunshine;
+		}
+	}
+
+	/* ---- Dropdown desktop ---- */
+
+	&__dropdown {
+		position: relative;
+
+		// Hover stays as a mouse convenience; the --open modifier (driven by
+		// aria-expanded state, not CSS) is what makes this work via keyboard.
+		&:hover .header__submenu,
+		&--open .header__submenu {
+			opacity: 1;
+			visibility: visible;
+			transform: translateX(-50%) translateY(0);
+			pointer-events: auto;
+		}
+
+		&:hover .header__chevron,
+		&--open .header__chevron {
+			transform: rotate(180deg);
+		}
+	}
+
+	&__chevron {
+		transition: transform 0.25s $ease-smooth;
+		flex-shrink: 0;
+	}
+
+	&__submenu {
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		transform: translateX(-50%) translateY(-6px);
+		min-width: 220px;
+		background: $card;
+		border: 1px solid $border;
+		box-shadow: $shadow-soft;
+		z-index: 60;
+		overflow: hidden;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition:
+			opacity 0.2s $ease-smooth,
+			transform 0.2s $ease-smooth,
+			visibility 0.2s $ease-smooth;
+	}
+
+	&__submenu-link {
+		display: block;
+		padding: 12px 20px;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
+		color: $foreground;
+		transition: $transition-smooth;
+		white-space: nowrap;
+
+		&:hover {
+			background: $muted;
+			color: $coral;
+		}
+	}
+
+	/* ---- Actions ---- */
+
+	&__actions {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
+
+		@media (max-width: $breakpoint-sm) {
+			position: absolute;
+			right: $spacing-lg;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+	}
+
+	&__cta {
+		display: none;
+		align-items: center;
+		gap: $spacing-xs;
+		padding: 10px 20px;
+		background-color: $primary;
+		color: #ffffff;
+		font-family: $font-body;
+		font-size: 13px;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		transition: $transition-smooth;
+		box-shadow: $shadow-warm;
+
+		&:hover {
+			background-color: $coral;
+		}
+
+		@media (min-width: $breakpoint-sm + 1) {
+			display: inline-flex;
+		}
+	}
+
+	&__burger {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 8px;
+		color: #ffffff;
+		transition: $transition-smooth;
+
+		@media (min-width: $breakpoint-md + 1) {
+			display: none;
+		}
+	}
+
+	/* ---- Overlay ---- */
+
+	&__overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.45);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
+		z-index: 130;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.35s $ease-smooth;
+
+		&--visible {
+			opacity: 1;
+			pointer-events: auto;
+		}
+	}
+
+	/* ---- Drawer mobile ---- */
+
+	&__drawer {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		width: min(85vw, 360px);
+		background: $background;
+		z-index: 140;
+		display: flex;
+		flex-direction: column;
+		transform: translateX(100%);
+		transition: transform 0.4s $ease-smooth;
+		box-shadow: -8px 0 40px rgba(0, 0, 0, 0.15);
+
+		&--open {
+			transform: translateX(0);
+		}
+
+		@media (min-width: $breakpoint-md + 1) {
+			display: none;
+		}
+	}
+
+	&__drawer-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: $spacing-xl $spacing-xl;
+		flex-shrink: 0;
+	}
+
+	&__drawer-logo {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	&__drawer-logo-name {
+		font-family: $font-display;
+		font-size: 15px;
+		font-weight: $font-weight-semibold;
+		color: $foreground;
+		letter-spacing: -0.01em;
+	}
+
+	&__drawer-logo-sub {
+		font-size: $xs-size-desktop;
+		text-transform: uppercase;
+		letter-spacing: 0.18em;
+		color: $muted-foreground;
+	}
+
+	&__drawer-close {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: $muted-foreground;
+		transition: $transition-smooth;
+		flex-shrink: 0;
+
+		&:hover {
+			color: $foreground;
+		}
+	}
+
+	&__drawer-body {
+		flex: 1;
+		overflow-y: auto;
+	}
+
+	&__drawer-footer {
+		padding: $spacing-xl;
+		border-top: 1px solid $border;
+		flex-shrink: 0;
+	}
+
+	&__drawer-cta {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		padding: 14px;
+		background: $primary;
+		color: #ffffff;
+		font-family: $font-body;
+		font-size: 13px;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		transition: $transition-smooth;
+
+		&:hover {
+			background: $coral;
+		}
+	}
+
+	/* ---- Mobile nav items ---- */
+
+	&__mobile-link {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 16px $spacing-xl;
+		font-family: $font-body;
+		font-size: $body-size-desktop;
+		font-weight: $font-weight-medium;
+		color: $foreground;
+		transition: $transition-smooth;
+		text-align: left;
+
+		&:hover {
+			background: $muted;
+			color: $primary;
+		}
+
+		&--parent {
+			cursor: pointer;
+		}
+	}
+
+	&__mobile-arrow {
+		color: $muted-foreground;
+		flex-shrink: 0;
+	}
+
+	&__mobile-chevron {
+		color: $muted-foreground;
+		flex-shrink: 0;
+		transition: transform 0.3s $ease-smooth;
+
+		&--open {
+			transform: rotate(180deg);
+		}
+	}
+
+	&__mobile-group {
+		border-bottom: 1px solid $border;
+
+		&:first-child {
+			border-top: 1px solid $border;
+		}
+	}
+
+	/* Accordion animé via grid */
+	&__mobile-sub {
+		display: grid;
+		grid-template-rows: 0fr;
+		transition: grid-template-rows 0.3s $ease-smooth;
+
+		&--open {
+			grid-template-rows: 1fr;
+		}
+	}
+
+	&__mobile-sub-inner {
+		overflow: hidden;
+		background: $muted;
+	}
+
+	&__mobile-sublink {
+		display: flex;
+		align-items: center;
+		gap: $spacing-md;
+		padding: 13px $spacing-xl 13px ($spacing-xl + 8px);
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
+		color: $foreground-80;
+		border-top: 1px solid $border;
+		transition: $transition-smooth;
+
+		&:hover {
+			color: $primary;
+			background: $secondary;
+
+			.header__mobile-sublink-dot {
+				background: $primary;
+			}
+		}
+	}
+
+	&__mobile-sublink-dot {
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		background: $coral;
+		flex-shrink: 0;
+		transition: $transition-smooth;
+	}
+}
+}
+

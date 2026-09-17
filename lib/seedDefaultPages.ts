@@ -4,8 +4,8 @@ import { paragraphsToRichText } from '../shared/lib/richText';
 // "Je veux que chaque nouveau domaine, donc nouveau tenant, ait de base
 // toutes les pages que nous retrouvons sur edito, app et accueillant. Ce
 // sont les mêmes schéma de données, juste le templating qui change." Les 3
-// thèmes partagent le même schéma `pages` (Payload) — seuls App et
-// Accueillant ne le consomment pas encore au rendu (pages 100% statiques,
+// thèmes partagent le même schéma `pages` (Payload) — seuls Le Préau et
+// Le Belvédère ne le consomment pas encore au rendu (pages 100% statiques,
 // décision 96) ; ce seed reste donc utile pour les 3, en préparation de leur
 // branchement à venir.
 //

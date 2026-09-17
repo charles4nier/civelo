@@ -8,15 +8,15 @@ import './style.scss';
 const MODAL_SLUG = 'create-tenant';
 
 const THEMES = [
-	{ value: 'edito', label: 'Style édito' },
-	{ value: 'moderne', label: 'Moderne' },
-	{ value: 'accueillant', label: 'Accueillant' },
-	{ value: 'classique', label: 'Classique' }
+	{ value: 'atelier', label: 'L’Atelier' },
+	{ value: 'preau', label: 'Le Préau' },
+	{ value: 'belvedere', label: 'Le Belvédère' },
+	{ value: 'clocher', label: 'Le Clocher' }
 ];
 
 // Disposition de la page d'accueil (`Tenants.variante`) — pour l'instant
-// seul le thème « Style édito » en tient compte (voir
-// themes/edito/features/home/index.tsx), les autres thèmes l'ignorent
+// seul le thème « L'Atelier » en tient compte (voir
+// themes/atelier/features/home/index.tsx), les autres thèmes l'ignorent
 // silencieusement. Pensé pour grandir : ajouter une variante = une ligne ici
 // + une option dans le `select` de Tenants.ts.
 const VARIANTES = [
@@ -40,7 +40,7 @@ export default function CreateTenantButton({ isSuperAdminConsole }: Props) {
 	const { user } = useAuth();
 	const [nom, setNom] = useState('');
 	const [domaine, setDomaine] = useState('');
-	const [theme, setTheme] = useState('edito');
+	const [theme, setTheme] = useState('atelier');
 	const [variante, setVariante] = useState('defaut');
 	const [submitting, setSubmitting] = useState(false);
 
@@ -95,7 +95,7 @@ export default function CreateTenantButton({ isSuperAdminConsole }: Props) {
 			toast.success(`« ${nom} » créé, avec ses 18 pages générées automatiquement.${domainMessage}`);
 			setNom('');
 			setDomaine('');
-			setTheme('edito');
+			setTheme('atelier');
 			setVariante('defaut');
 			closeModal(MODAL_SLUG);
 			router.refresh();

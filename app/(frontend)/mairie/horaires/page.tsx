@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/edito/config/seo';
-import StyleEditoHorairesPage from '@themes/edito/features/horaires';
-import ModerneHorairesPage from '@themes/moderne/features/horaires';
-import AccueillantHorairesPage from '@themes/accueillant/features/horaires';
-import ClassiqueHorairesPage from '@themes/classique/features/horaires';
+import { generatePageMetadata } from '@themes/atelier/config/seo';
+import AtelierHorairesPage from '@themes/atelier/features/horaires';
+import PreauHorairesPage from '@themes/preau/features/horaires';
+import BelvedereHorairesPage from '@themes/belvedere/features/horaires';
+import ClocherHorairesPage from '@themes/clocher/features/horaires';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -16,6 +16,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoHorairesPage, moderne: ModerneHorairesPage, accueillant: AccueillantHorairesPage, classique: ClassiqueHorairesPage });
+	const Component = pickTheme(theme, { atelier: AtelierHorairesPage, preau: PreauHorairesPage, belvedere: BelvedereHorairesPage, clocher: ClocherHorairesPage });
 	return <Component />;
 }

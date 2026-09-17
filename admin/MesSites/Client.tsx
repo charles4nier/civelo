@@ -20,7 +20,12 @@ function formatExportDate(iso: string) {
 	return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
-const THEME_LABELS: Record<string, string> = { edito: 'Style édito', app: 'App', accueillant: 'Accueillant' };
+const THEME_LABELS: Record<string, string> = {
+	atelier: 'L’Atelier',
+	preau: 'Le Préau',
+	belvedere: 'Le Belvédère',
+	clocher: 'Le Clocher'
+};
 const STATUT_LABELS: Record<string, string> = { actif: 'Actif', suspendu: 'Suspendu', resilie: 'Résilié' };
 const STATUT_ORDER = ['actif', 'suspendu', 'resilie'];
 

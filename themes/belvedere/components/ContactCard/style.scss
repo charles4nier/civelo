@@ -1,0 +1,142 @@
+@import '@themes/belvedere/styles/variables';
+
+.theme-belvedere {
+$b: 'contact-card';
+
+/* ========================
+   Conteneur (shell gateway)
+   ======================== */
+
+.#{$b} {
+	display: flex;
+	flex-direction: column;
+	border-radius: 16px;
+	background: $cream;
+	border: 1px solid $primary-10;
+	padding: $spacing-xl;
+	transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+
+	&:hover {
+		background: $background;
+		border-color: $sunshine-50;
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px -4px $primary-10;
+
+		.#{$b}__icon {
+			background: $primary;
+			color: $cream;
+		}
+	}
+}
+
+/* ========================
+   Top row (badge + icon)
+   ======================== */
+
+.#{$b}__top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.#{$b}__category {
+	display: inline-flex;
+	align-items: center;
+	padding: 4px 10px;
+	border-radius: 999px;
+	background: $accent-20;
+	font-family: $font-body;
+	font-size: 10px;
+	font-weight: $font-weight-semibold;
+	text-transform: uppercase;
+	letter-spacing: 0.12em;
+	color: $primary;
+}
+
+.#{$b}__icon {
+	display: grid;
+	place-items: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	transition: background 0.2s, color 0.2s;
+
+	&--primary  { background: $primary-05;   color: $primary; }
+	&--coral    { background: $coral-15;     color: $coral; }
+	&--leaf     { background: $leaf-15;      color: $leaf; }
+	&--muted    { background: $secondary;    color: $foreground; }
+	&--sunshine { background: $sunshine-25;  color: $terracotta; }
+}
+
+/* ========================
+   Contenu
+   ======================== */
+
+.#{$b}__name {
+	margin-top: $spacing-3xl;
+	font-family: $font-display;
+	font-size: 19px;
+	font-weight: $font-weight-medium;
+	color: $primary;
+	line-height: $line-height-snug;
+}
+
+.#{$b}__badge {
+	display: inline-flex;
+	align-items: center;
+	margin-top: $spacing-sm;
+	padding: 2px 8px;
+	border-radius: 999px;
+	border: 1px solid $primary-20;
+	font-family: $font-body;
+	font-size: 10px;
+	font-weight: $font-weight-medium;
+	color: $primary;
+}
+
+.#{$b}__desc {
+	margin-top: $spacing-md;
+	font-size: $small-size-desktop;
+	color: $forest-70;
+	line-height: $line-height-relaxed;
+	flex: 1;
+}
+
+/* ========================
+   Contacts (pied de carte)
+   ======================== */
+
+.#{$b}__contacts {
+	margin-top: auto;
+	padding-top: $spacing-xl;
+	border-top: 1px solid $border;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.#{$b}__row {
+	display: flex;
+	align-items: flex-start;
+	gap: $spacing-sm;
+	font-size: 12px;
+	color: $muted-foreground;
+	line-height: $line-height-relaxed;
+}
+
+.#{$b}__row-icon {
+	flex-shrink: 0;
+	margin-top: 2px;
+	color: $primary;
+	opacity: 0.7;
+}
+
+.#{$b}__link {
+	transition: color 0.15s;
+	word-break: break-all;
+
+	&:hover { color: $primary; }
+}
+}
+

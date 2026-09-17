@@ -1,0 +1,138 @@
+@import '@themes/preau/styles/variables';
+
+.theme-preau {
+$b: 'contact-layout';
+
+.#{$b}__section {
+	padding: $spacing-6xl $spacing-lg;
+
+	@media (min-width: $breakpoint-md) {
+		padding: $spacing-7xl $spacing-5xl;
+	}
+}
+
+.#{$b}__infos-title {
+	font-family: $font-display;
+	font-size: $h3-size-desktop;
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+	margin-bottom: $spacing-xl;
+}
+
+.#{$b}__infos {
+	display: grid;
+	gap: $spacing-lg;
+	grid-template-columns: 1fr;
+	margin-bottom: $spacing-2xl;
+
+	@media (min-width: $breakpoint-sm) {
+		grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	}
+}
+
+.#{$b}__hours-link {
+	font-family: $font-body;
+	font-size: $body-size-desktop;
+	color: $muted-foreground;
+	margin-bottom: $spacing-4xl;
+
+	a {
+		color: $primary;
+		font-weight: $font-weight-medium;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+}
+
+.#{$b}__form-block {
+	max-width: 720px;
+}
+
+.#{$b}__block-eyebrow {
+	font-family: $font-body;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-regular;
+	text-transform: uppercase;
+	letter-spacing: 0.3em;
+	color: $forest-70;
+}
+
+.#{$b}__block-title {
+	font-family: $font-display;
+	font-size: $h3-size-desktop;
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+	margin-top: $spacing-sm;
+}
+
+.#{$b}__block-divider {
+	width: 64px;
+	height: 3px;
+	background-color: $accent;
+	margin: $spacing-md 0 $spacing-2xl;
+}
+
+.#{$b}__form {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: $spacing-lg;
+
+	@media (min-width: $breakpoint-sm) {
+		grid-template-columns: 1fr 1fr;
+	}
+}
+
+.#{$b}__field {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-xs;
+
+	&--full {
+		@media (min-width: $breakpoint-sm) {
+			grid-column: 1 / -1;
+		}
+	}
+}
+
+.#{$b}__label {
+	font-family: $font-body;
+	font-size: $small-size-desktop;
+	font-weight: $font-weight-medium;
+	color: $foreground;
+}
+
+.#{$b}__input,
+.#{$b}__textarea {
+	font-family: $font-body;
+	font-size: $body-size-desktop;
+	color: $foreground;
+	background: $card;
+	border: 1px solid $border;
+	border-radius: 12px;
+	padding: 12px $spacing-md;
+	transition: $transition-smooth;
+
+	&::placeholder {
+		color: $muted-foreground;
+	}
+
+	&:focus {
+		outline: none;
+		border-color: $primary;
+		box-shadow: 0 0 0 3px $primary-10;
+	}
+}
+
+.#{$b}__textarea {
+	resize: vertical;
+	min-height: 140px;
+}
+
+.#{$b}__submit {
+	justify-self: flex-start;
+
+	@media (min-width: $breakpoint-sm) {
+		grid-column: 1 / -1;
+	}
+}
+}

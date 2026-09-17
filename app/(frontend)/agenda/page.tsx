@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/edito/config/seo';
-import StyleEditoAgendaPage from '@themes/edito/features/agenda';
-import ModerneAgendaPage from '@themes/moderne/features/agenda';
-import AccueillantAgendaPage from '@themes/accueillant/features/agenda';
-import ClassiqueAgendaPage from '@themes/classique/features/agenda';
+import { generatePageMetadata } from '@themes/atelier/config/seo';
+import AtelierAgendaPage from '@themes/atelier/features/agenda';
+import PreauAgendaPage from '@themes/preau/features/agenda';
+import BelvedereAgendaPage from '@themes/belvedere/features/agenda';
+import ClocherAgendaPage from '@themes/clocher/features/agenda';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -16,6 +16,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoAgendaPage, moderne: ModerneAgendaPage, accueillant: AccueillantAgendaPage, classique: ClassiqueAgendaPage });
+	const Component = pickTheme(theme, { atelier: AtelierAgendaPage, preau: PreauAgendaPage, belvedere: BelvedereAgendaPage, clocher: ClocherAgendaPage });
 	return <Component />;
 }

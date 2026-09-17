@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/edito/config/seo';
-import StyleEditoSportsLoisirsPage from '@themes/edito/features/sports-loisirs';
-import ModerneSportsLoisirsPage from '@themes/moderne/features/sports-loisirs';
-import AccueillantSportsLoisirsPage from '@themes/accueillant/features/sports-loisirs';
-import ClassiqueSportsLoisirsPage from '@themes/classique/features/sports-loisirs';
+import { generatePageMetadata } from '@themes/atelier/config/seo';
+import AtelierSportsLoisirsPage from '@themes/atelier/features/sports-loisirs';
+import PreauSportsLoisirsPage from '@themes/preau/features/sports-loisirs';
+import BelvedereSportsLoisirsPage from '@themes/belvedere/features/sports-loisirs';
+import ClocherSportsLoisirsPage from '@themes/clocher/features/sports-loisirs';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -16,6 +16,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoSportsLoisirsPage, moderne: ModerneSportsLoisirsPage, accueillant: AccueillantSportsLoisirsPage, classique: ClassiqueSportsLoisirsPage });
+	const Component = pickTheme(theme, { atelier: AtelierSportsLoisirsPage, preau: PreauSportsLoisirsPage, belvedere: BelvedereSportsLoisirsPage, clocher: ClocherSportsLoisirsPage });
 	return <Component />;
 }

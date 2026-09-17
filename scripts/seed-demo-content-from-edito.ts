@@ -1,7 +1,7 @@
 /**
- * Remplit un tenant de démo (App, Accueillant) avec le contenu réel d'edito
+ * Remplit un tenant de démo (Le Préau, Le Belvédère) avec le contenu réel d'edito
  * (Saint-Hilaire-Bonneval) sur toutes les pages SAUF Accueil, pour que les
- * démos App/Accueillant montrent de vraies données plutôt que le texte
+ * démos Le Préau/Le Belvédère montrent de vraies données plutôt que le texte
  * générique posé par `lib/seedDefaultPages.ts`.
  *
  * Ne duplique PAS les relations (`categorie`, `lien`, `lienDocument`,

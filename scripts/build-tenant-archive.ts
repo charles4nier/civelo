@@ -7,7 +7,7 @@
  *
  * Usage :
  *   node --env-file=.env --experimental-loader=./scripts/_resolve-ts.mjs \
- *     scripts/build-tenant-archive.ts --export=./exports/saint-hilaire-bonneval --theme=edito --slug=saint-hilaire-bonneval
+ *     scripts/build-tenant-archive.ts --export=./exports/saint-hilaire-bonneval --theme=atelier --slug=saint-hilaire-bonneval
  *
  * Suppose que `export-tenant.ts` a déjà tourné vers `--export` (contient
  * déjà `data/` et `medias/`).
@@ -30,7 +30,7 @@ function parseArgs(): Args {
 	return args;
 }
 
-const THEMES = ['edito', 'moderne', 'accueillant', 'classique'] as const;
+const THEMES = ['atelier', 'preau', 'belvedere', 'clocher'] as const;
 type Theme = (typeof THEMES)[number];
 
 // Fichiers/dossiers jamais livrés — infra interne, scripts qui parlent à
@@ -107,7 +107,7 @@ async function stripThemeDispatch(destDir: string, keep: Theme) {
 		let content = await readFile(file, 'utf-8');
 		if (!content.includes('pickTheme(theme')) continue;
 
-		const importLineRe = /^import .* from '@themes\/(edito|moderne|accueillant|classique)\/[^']*';\n/gm;
+		const importLineRe = /^import .* from '@themes\/(atelier|preau|belvedere|clocher)\/[^']*';\n/gm;
 		const importsByTheme: Partial<Record<Theme, string>> = {};
 		for (const match of content.matchAll(importLineRe)) {
 			const theme = match[1] as Theme;
@@ -122,7 +122,7 @@ async function stripThemeDispatch(destDir: string, keep: Theme) {
 		// Retire les lignes d'import des 2 thèmes non conservés.
 		content = content.replace(importLineRe, (line, theme: Theme) => (theme === keep ? line : ''));
 
-		// `pickTheme(theme, { edito: X, app: Y, accueillant: Z })` → `X`
+		// `pickTheme(theme, { atelier: X, app: Y, belvedere: Z })` → `X`
 		// (ou Y/Z selon le thème conservé) — motif sur une seule expression,
 		// peut s'étendre sur plusieurs lignes.
 		const pickThemeCallRe = /pickTheme\(\s*theme\s*,\s*\{[^}]*\}\s*\)/s;
@@ -142,10 +142,10 @@ async function stripThemeDispatch(destDir: string, keep: Theme) {
 async function stripCarteInteractive(destDir: string, keep: Theme) {
 	const file = path.join(destDir, 'app', '(frontend)', 'tourisme', 'carte-interactive', 'page.tsx');
 	if (!(await pathExists(file))) return;
-	const label = { edito: 'StyleEdito', moderne: 'Moderne', accueillant: 'Accueillant', classique: 'Classique' }[keep];
-	const varPrefix = { edito: 'edito', moderne: 'moderne', accueillant: 'accueillant', classique: 'classique' }[keep];
+	const label = { atelier: 'Atelier', preau: 'Preau', belvedere: 'Belvedere', clocher: 'Clocher' }[keep];
+	const varPrefix = { atelier: 'atelier', preau: 'preau', belvedere: 'belvedere', clocher: 'clocher' }[keep];
 	const content = `import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/edito/config/seo';
+import { generatePageMetadata } from '@themes/atelier/config/seo';
 import ${label}CarteInteractive from '@themes/${keep}/features/carte';
 import { pois as ${varPrefix}FallbackPois, sentiers as ${varPrefix}FallbackSentiers } from '@themes/${keep}/features/carte/data';
 import { getCarteData } from '@lib/payload';
@@ -429,7 +429,7 @@ async function main() {
 	const { export: exportDir, theme, slug } = parseArgs();
 	if (!exportDir || !theme || !slug) {
 		console.error(
-			'Usage: build-tenant-archive.ts --export=<dossier exporté> --theme=<edito|moderne|accueillant|classique> --slug=<identifiant archive>'
+			'Usage: build-tenant-archive.ts --export=<dossier exporté> --theme=<atelier|preau|belvedere|clocher> --slug=<identifiant archive>'
 		);
 		process.exit(1);
 	}

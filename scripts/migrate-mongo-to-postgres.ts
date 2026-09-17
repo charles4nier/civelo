@@ -208,7 +208,7 @@ async function main() {
 			data: {
 				nom: TENANT_NOM,
 				domaine: TENANT_DOMAINE,
-				theme: 'edito',
+				theme: 'atelier',
 				palette: 'defaut',
 				typographie: 'defaut',
 				statutContrat: 'actif'

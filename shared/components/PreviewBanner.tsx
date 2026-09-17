@@ -1,8 +1,8 @@
 // Mode brouillon/preview (roadmap 2026-09-14) — affiché uniquement quand le
 // Next.js Draft Mode est actif (posé par `app/(payload)/api/preview`).
 // Styles en ligne volontairement : ce composant est rendu à l'intérieur du
-// `RootLayout` de N'IMPORTE lequel des 4 thèmes (edito/moderne/accueillant/
-// classique, voir `app/(frontend)/layout.tsx`), qui ont chacun leur propre
+// `RootLayout` de N'IMPORTE lequel des 4 thèmes (atelier/preau/belvedere/
+// clocher, voir `app/(frontend)/layout.tsx`), qui ont chacun leur propre
 // feuille de style globale — pas de dépendance à l'une d'elles.
 export default function PreviewBanner() {
 	return (

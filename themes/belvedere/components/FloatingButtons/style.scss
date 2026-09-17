@@ -1,0 +1,375 @@
+@import '@themes/belvedere/styles/variables';
+
+.theme-belvedere {
+@keyframes backdrop-in {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes backdrop-out {
+	from { opacity: 1; }
+	to { opacity: 0; }
+}
+
+@keyframes modal-in {
+	from { transform: translateX(100%); opacity: 0; }
+	to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes modal-out {
+	from { transform: translateX(0); opacity: 1; }
+	to { transform: translateX(100%); opacity: 0; }
+}
+
+.floating {
+	&__buttons {
+		position: fixed;
+		bottom: 32px;
+		right: 32px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		z-index: 100;
+
+		@media (max-width: $breakpoint-sm) {
+			bottom: 20px;
+			right: 16px;
+		}
+	}
+
+	&__btn {
+		width: 52px;
+		height: 52px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #ffffff;
+		border: none;
+		cursor: pointer;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+		transition: $transition-smooth;
+
+		&:hover {
+			transform: scale(1.1);
+			box-shadow: 0 6px 28px rgba(0, 0, 0, 0.28);
+		}
+
+		&--leaf { background: $leaf; }
+		&--coral { background: $coral; }
+
+		&--sunshine {
+			background: $sunshine;
+			color: $foreground;
+		}
+	}
+
+	&__backdrop {
+		position: fixed;
+		inset: 0;
+		z-index: 110;
+		background: rgba(0, 0, 0, 0.45);
+		backdrop-filter: blur(6px);
+		animation: backdrop-in 0.25s ease forwards;
+
+		&--closing {
+			animation: backdrop-out 0.28s ease forwards;
+		}
+	}
+
+	&__modal {
+		position: fixed;
+		top: 5vh;
+		right: 0;
+		width: 25vw;
+		min-width: 320px;
+		height: 90vh;
+		background: $background;
+		border-left: 1px solid $border;
+		box-shadow: -8px 0 40px rgba(0, 0, 0, 0.12);
+		z-index: 120;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		animation: modal-in 0.32s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+
+		&--closing {
+			animation: modal-out 0.28s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+		}
+
+		@media (max-width: $breakpoint-md) {
+			width: 90vw;
+			min-width: unset;
+		}
+	}
+
+	&__modal-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: $spacing-lg;
+		border-bottom: 1px solid $border;
+		flex-shrink: 0;
+	}
+
+	&__modal-title-group {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	&__modal-icon {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #ffffff;
+		flex-shrink: 0;
+
+		&--leaf { background: $leaf; }
+		&--coral { background: $coral; }
+	}
+
+	&__modal-title {
+		font-family: $font-display;
+		font-size: 16px;
+		font-weight: $font-weight-semibold;
+		color: $foreground;
+	}
+
+	&__modal-close {
+		width: 32px;
+		height: 32px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: $muted-foreground;
+		border-radius: 50%;
+		transition: $transition-smooth;
+		cursor: pointer;
+
+		&:hover {
+			background: $muted;
+			color: $foreground;
+		}
+	}
+
+	&__modal-body {
+		flex: 1;
+		overflow-y: auto;
+		padding: $spacing-lg;
+
+		&--bot {
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+		}
+	}
+
+	&__contact-infos {
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-md;
+	}
+
+	&__contact-info {
+		display: flex;
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	&__contact-info-icon {
+		color: $leaf;
+		flex-shrink: 0;
+		margin-top: 3px;
+	}
+
+	&__contact-info-label {
+		font-size: 11px;
+		font-weight: $font-weight-bold;
+		text-transform: uppercase;
+		letter-spacing: 0.15em;
+		color: $muted-foreground;
+		margin-bottom: 2px;
+	}
+
+	&__contact-info-value {
+		font-size: $small-size-desktop;
+		color: $foreground;
+		line-height: $line-height-relaxed;
+		transition: $transition-smooth;
+
+		&:hover {
+			color: $coral;
+		}
+	}
+
+	&__divider {
+		height: 1px;
+		background: $border;
+		margin: $spacing-lg 0;
+	}
+
+	&__form-title {
+		font-family: $font-display;
+		font-size: 15px;
+		font-weight: $font-weight-semibold;
+		color: $foreground;
+		margin-bottom: $spacing-md;
+	}
+
+	&__form {
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-md;
+	}
+
+	&__field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	&__label {
+		font-size: 12px;
+		font-weight: $font-weight-medium;
+		color: rgba(42, 36, 56, 0.8);
+	}
+
+	&__input,
+	&__textarea {
+		width: 100%;
+		padding: 10px 14px;
+		border-radius: 6px;
+		border: 1px solid $border;
+		background: $card;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		color: $foreground;
+		outline: none;
+		transition: $transition-smooth;
+
+		&:focus {
+			border-color: $primary;
+		}
+
+		&::placeholder {
+			color: $muted-foreground;
+		}
+	}
+
+	&__textarea {
+		resize: vertical;
+		min-height: 100px;
+	}
+
+	&__submit {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: $spacing-sm;
+		padding: 11px 20px;
+		border-radius: 6px;
+		background: $primary;
+		color: #ffffff;
+		font-family: $font-body;
+		font-size: 13px;
+		font-weight: $font-weight-semibold;
+		cursor: pointer;
+		transition: $transition-smooth;
+		border: none;
+
+		&:hover {
+			background: $coral;
+		}
+	}
+
+	&__chat {
+		flex: 1;
+		overflow-y: auto;
+		padding: $spacing-md;
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-sm;
+	}
+
+	&__message {
+		max-width: 85%;
+		padding: 10px 14px;
+		font-size: $small-size-desktop;
+		line-height: $line-height-relaxed;
+
+		&--bot {
+			background: $muted;
+			color: $foreground;
+			align-self: flex-start;
+			border-radius: 0 12px 12px 12px;
+		}
+
+		&--user {
+			background: $primary;
+			color: #ffffff;
+			align-self: flex-end;
+			border-radius: 12px 12px 0 12px;
+		}
+	}
+
+	&__suggestions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		padding: $spacing-sm $spacing-md;
+		border-top: 1px solid $border;
+		border-bottom: 1px solid $border;
+	}
+
+	&__suggestion {
+		padding: 5px 12px;
+		border: 1px solid $border;
+		border-radius: 999px;
+		font-size: 12px;
+		color: rgba(42, 36, 56, 0.8);
+		cursor: pointer;
+		background: transparent;
+		transition: $transition-smooth;
+
+		&:hover {
+			border-color: $coral;
+			color: $coral;
+		}
+	}
+
+	&__chat-input {
+		display: flex;
+		gap: $spacing-sm;
+		padding: $spacing-md;
+		border-top: 1px solid $border;
+
+		.floating__input {
+			flex: 1;
+		}
+	}
+
+	&__send {
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: $coral;
+		color: #ffffff;
+		border: none;
+		border-radius: 50%;
+		cursor: pointer;
+		flex-shrink: 0;
+		transition: $transition-smooth;
+
+		&:hover {
+			background: $primary;
+		}
+	}
+}
+}
+

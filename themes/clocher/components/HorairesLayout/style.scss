@@ -1,0 +1,253 @@
+@import '@themes/clocher/styles/variables';
+
+.theme-clocher {
+$b: 'horaires';
+
+/* ========================
+   Hero
+   ======================== */
+
+.#{$b}__hero {
+	position: relative;
+	padding-top: 160px;
+	padding-bottom: $spacing-6xl;
+	padding-left: $spacing-lg;
+	padding-right: $spacing-lg;
+	overflow: hidden;
+	background: $gradient-primary;
+	color: #ffffff;
+	text-align: center;
+
+	@media (min-width: $breakpoint-md) {
+		padding-left: $spacing-5xl;
+		padding-right: $spacing-5xl;
+	}
+}
+
+.#{$b}__hero-blur {
+	position: absolute;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	filter: blur(80px);
+	pointer-events: none;
+
+	&--top {
+		top: -96px;
+		right: -96px;
+		background: $sunshine-25;
+	}
+
+	&--bottom {
+		bottom: -128px;
+		left: -96px;
+		background: $primary-30;
+	}
+}
+
+.#{$b}__hero-content {
+	position: relative;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.#{$b}__breadcrumb {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.8);
+	margin-bottom: $spacing-lg;
+
+	a:hover { color: #ffffff; }
+}
+
+.#{$b}__eyebrow {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-sm;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.28em;
+	color: $sunshine;
+}
+
+.#{$b}__title {
+	font-family: $font-display;
+	font-size: clamp(36px, 6vw, 64px);
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-tight;
+	color: #ffffff;
+	margin-top: $spacing-md;
+}
+
+.#{$b}__divider {
+	width: 80px;
+	height: 4px;
+	background: $sunshine;
+	margin: $spacing-lg auto 0;
+}
+
+.#{$b}__subtitle {
+	margin-top: $spacing-3xl;
+	font-size: $body-size-desktop;
+	color: rgba(255, 255, 255, 0.85);
+	line-height: $line-height-relaxed;
+}
+
+/* ========================
+   Section & blocs
+   ======================== */
+
+.#{$b}__section {
+	padding-top: $section-padding-y-desktop;
+	padding-bottom: $section-padding-y-desktop;
+}
+
+.#{$b}__inner {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-7xl;
+}
+
+.#{$b}__block-eyebrow {
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.22em;
+	color: $coral;
+}
+
+.#{$b}__block-title {
+	font-family: $font-display;
+	font-size: $h2-size-desktop;
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-snug;
+	margin-top: $spacing-sm;
+	color: $foreground;
+}
+
+.#{$b}__block-divider {
+	width: 64px;
+	height: 4px;
+	background: $coral;
+	margin-top: $spacing-md;
+	margin-bottom: $spacing-4xl;
+}
+
+/* ========================
+   Tableau d'horaires
+   ======================== */
+
+.#{$b}__table-wrap {
+	overflow-x: auto;
+	border: 1px solid $border;
+}
+
+.#{$b}__table {
+	width: 100%;
+	border-collapse: collapse;
+	background: #ffffff;
+}
+
+.#{$b}__table-caption {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+}
+
+.#{$b}__table th,
+.#{$b}__table td {
+	padding: $spacing-md $spacing-lg;
+	text-align: left;
+	font-size: $small-size-desktop;
+	border-bottom: 1px solid $border;
+}
+
+.#{$b}__table thead th {
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	color: $muted-foreground;
+	background: $secondary;
+}
+
+.#{$b}__table tbody th {
+	font-weight: $font-weight-semibold;
+	color: $foreground;
+	white-space: nowrap;
+}
+
+.#{$b}__table tbody td {
+	color: $muted-foreground;
+	font-variant-numeric: tabular-nums;
+}
+
+.#{$b}__table tbody tr:last-child th,
+.#{$b}__table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.#{$b}__table-row--closed td {
+	color: $muted-foreground;
+	font-style: italic;
+}
+
+.#{$b}__closures {
+	margin-top: $spacing-xl;
+	padding: $spacing-lg $spacing-xl;
+	background: $secondary;
+}
+
+.#{$b}__closures-title {
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	color: $muted-foreground;
+	margin-bottom: $spacing-sm;
+}
+
+.#{$b}__closures-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: $spacing-sm $spacing-xl;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	font-size: $small-size-desktop;
+	color: $foreground;
+
+	li::before {
+		content: '· ';
+		color: $coral;
+		font-weight: $font-weight-bold;
+	}
+}
+
+/* ========================
+   Contacts pratiques
+   ======================== */
+
+.#{$b}__contacts {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: $spacing-md;
+
+	@media (min-width: $breakpoint-sm) {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	@media (min-width: $breakpoint-md) {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+}
+

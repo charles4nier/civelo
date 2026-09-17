@@ -18,7 +18,7 @@ async function upsertTenant(payload: Payload, domaine: string, nom: string) {
 	if (docs[0]) return docs[0];
 	return payload.create({
 		collection: 'tenants',
-		data: { nom, domaine, theme: 'edito', palette: 'defaut', typographie: 'defaut', statutContrat: 'actif' },
+		data: { nom, domaine, theme: 'atelier', palette: 'defaut', typographie: 'defaut', statutContrat: 'actif' },
 		overrideAccess: true
 	});
 }

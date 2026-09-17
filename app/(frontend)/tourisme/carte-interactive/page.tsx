@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/edito/config/seo';
-import StyleEditoCarteInteractive from '@themes/edito/features/carte';
-import { pois as editoFallbackPois, sentiers as editoFallbackSentiers } from '@themes/edito/features/carte/data';
-import ModerneCarteInteractive from '@themes/moderne/features/carte';
-import { pois as moderneFallbackPois, sentiers as moderneFallbackSentiers } from '@themes/moderne/features/carte/data';
-import AccueillantCarteInteractive from '@themes/accueillant/features/carte';
-import { pois as accueillantFallbackPois, sentiers as accueillantFallbackSentiers } from '@themes/accueillant/features/carte/data';
+import { generatePageMetadata } from '@themes/atelier/config/seo';
+import AtelierCarteInteractive from '@themes/atelier/features/carte';
+import { pois as atelierFallbackPois, sentiers as atelierFallbackSentiers } from '@themes/atelier/features/carte/data';
+import PreauCarteInteractive from '@themes/preau/features/carte';
+import { pois as preauFallbackPois, sentiers as preauFallbackSentiers } from '@themes/preau/features/carte/data';
+import BelvedereCarteInteractive from '@themes/belvedere/features/carte';
+import { pois as belvedereFallbackPois, sentiers as belvedereFallbackSentiers } from '@themes/belvedere/features/carte/data';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getCarteData, getPayloadClient } from '@lib/payload';
 
@@ -24,21 +24,21 @@ export default async function Page({ searchParams }: PageProps) {
 	const payload = await getPayloadClient();
 	const [theme, data] = await Promise.all([getCurrentTheme(payload), getCarteData()]);
 
-	if (theme === 'moderne') {
-		return <ModerneCarteInteractive initialId={id} pois={data?.pois ?? moderneFallbackPois} sentiers={data?.sentiers ?? moderneFallbackSentiers} />;
+	if (theme === 'preau') {
+		return <PreauCarteInteractive initialId={id} pois={data?.pois ?? preauFallbackPois} sentiers={data?.sentiers ?? preauFallbackSentiers} />;
 	}
 
-	if (theme === 'accueillant') {
+	if (theme === 'belvedere') {
 		return (
-			<AccueillantCarteInteractive
+			<BelvedereCarteInteractive
 				initialId={id}
-				pois={data?.pois ?? accueillantFallbackPois}
-				sentiers={data?.sentiers ?? accueillantFallbackSentiers}
+				pois={data?.pois ?? belvedereFallbackPois}
+				sentiers={data?.sentiers ?? belvedereFallbackSentiers}
 			/>
 		);
 	}
 
 	return (
-		<StyleEditoCarteInteractive initialId={id} pois={data?.pois ?? editoFallbackPois} sentiers={data?.sentiers ?? editoFallbackSentiers} />
+		<AtelierCarteInteractive initialId={id} pois={data?.pois ?? atelierFallbackPois} sentiers={data?.sentiers ?? atelierFallbackSentiers} />
 	);
 }

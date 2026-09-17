@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import { generatePageMetadata } from '@themes/edito/config/seo';
-import StyleEditoActualitesPage from '@themes/edito/features/actualites';
-import ModerneActualitesPage from '@themes/moderne/features/actualites';
-import AccueillantActualitesPage from '@themes/accueillant/features/actualites';
-import ClassiqueActualitesPage from '@themes/classique/features/actualites';
+import { generatePageMetadata } from '@themes/atelier/config/seo';
+import AtelierActualitesPage from '@themes/atelier/features/actualites';
+import PreauActualitesPage from '@themes/preau/features/actualites';
+import BelvedereActualitesPage from '@themes/belvedere/features/actualites';
+import ClocherActualitesPage from '@themes/clocher/features/actualites';
 import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
@@ -17,6 +17,6 @@ export const metadata: Metadata = generatePageMetadata({
 export default async function Page() {
 	const payload = await getPayloadClient();
 	const theme = await getCurrentTheme(payload);
-	const Component = pickTheme(theme, { edito: StyleEditoActualitesPage, moderne: ModerneActualitesPage, accueillant: AccueillantActualitesPage, classique: ClassiqueActualitesPage });
+	const Component = pickTheme(theme, { atelier: AtelierActualitesPage, preau: PreauActualitesPage, belvedere: BelvedereActualitesPage, clocher: ClocherActualitesPage });
 	return <Component />;
 }

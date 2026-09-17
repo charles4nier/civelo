@@ -1,0 +1,172 @@
+@import '@themes/belvedere/styles/variables';
+
+.theme-belvedere {
+$b: 'location';
+
+/* ========================
+   Section principale
+   ======================== */
+
+.#{$b}__section {
+	padding-top: $section-padding-y-desktop;
+	padding-bottom: $section-padding-y-desktop;
+}
+
+.#{$b}__grid {
+	display: grid;
+	gap: $spacing-xl;
+
+	@media (min-width: $breakpoint-md) {
+		grid-template-columns: 1fr 1fr;
+		align-items: start;
+	}
+}
+
+/* ========================
+   Carte salle (gateway style)
+   ======================== */
+
+.#{$b}__salle {
+	border-radius: 16px;
+	background: $cream;
+	border: 1px solid $primary-10;
+	overflow: hidden;
+}
+
+.#{$b}__salle-header {
+	background: $primary-05;
+	border-bottom: 1px solid $primary-10;
+	padding: $spacing-2xl $spacing-2xl $spacing-xl;
+}
+
+.#{$b}__salle-icon {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background: $primary-05;
+	color: $primary;
+	margin-bottom: $spacing-lg;
+
+	&--alt {
+		background: $accent-20;
+		color: $primary;
+	}
+}
+
+.#{$b}__salle-title {
+	font-family: $font-display;
+	font-size: clamp(20px, 2vw, 26px);
+	font-weight: $font-weight-medium;
+	line-height: $line-height-snug;
+	color: $primary;
+}
+
+.#{$b}__salle-desc {
+	margin-top: $spacing-sm;
+	font-size: $small-size-desktop;
+	color: $primary-70;
+	line-height: $line-height-relaxed;
+}
+
+.#{$b}__salle-body {
+	padding: $spacing-2xl;
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-lg;
+}
+
+.#{$b}__salle-condition {
+	display: flex;
+	align-items: flex-start;
+	gap: $spacing-sm;
+	padding: $spacing-md $spacing-lg;
+	background: $primary-05;
+	border-radius: 8px;
+	font-size: $small-size-desktop;
+	color: $primary-70;
+	line-height: $line-height-relaxed;
+
+	svg {
+		flex-shrink: 0;
+		margin-top: 2px;
+		color: $primary;
+	}
+}
+
+.#{$b}__salle-note {
+	display: flex;
+	align-items: center;
+	gap: $spacing-sm;
+	font-size: 12px;
+	color: $muted-foreground;
+	padding-top: $spacing-md;
+	border-top: 1px solid $border;
+
+	svg {
+		flex-shrink: 0;
+		color: $primary;
+	}
+}
+
+/* ========================
+   Tarifs
+   ======================== */
+
+.#{$b}__tarif-group-label {
+	font-family: $font-body;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-semibold;
+	text-transform: uppercase;
+	letter-spacing: 0.18em;
+	color: $muted-foreground;
+	margin-bottom: $spacing-sm;
+}
+
+.#{$b}__tarifs {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.#{$b}__tarif {
+	display: flex;
+	align-items: baseline;
+	gap: $spacing-sm;
+	padding: $spacing-md $spacing-lg;
+	background: $background;
+	border-radius: 8px;
+	flex-wrap: wrap;
+
+	&:first-child {
+		border-top: 2px solid $primary-10;
+	}
+}
+
+.#{$b}__tarif-public {
+	flex: 1;
+	font-size: $small-size-desktop;
+	color: $primary-70;
+	line-height: $line-height-snug;
+}
+
+.#{$b}__tarif-price {
+	font-family: $font-display;
+	font-size: 18px;
+	font-weight: $font-weight-medium;
+	color: $primary;
+	white-space: nowrap;
+
+	&--free {
+		color: $accent;
+	}
+}
+
+.#{$b}__tarif-caution {
+	font-size: 11px;
+	color: $muted-foreground;
+	white-space: nowrap;
+}
+}
+
