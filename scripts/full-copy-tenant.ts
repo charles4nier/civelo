@@ -256,6 +256,24 @@ async function main() {
 
 	console.log(`Source: ${source.nom} (id ${source.id}) → Cible: ${target.nom} (id ${target.id})`);
 
+	// Calculée tôt (avant les globals) : le plugin multi-tenant valide que
+	// toute relation vers `pages` pointe vers une page du MÊME tenant que le
+	// document qui la porte (filtrage découvert en prod : `bouton-entete`
+	// refusait l'id source de `boutonLien` — "Le plugin... filtre bien les
+	// relations vers les collections tenant-enabled comme pages/media",
+	// commentaire de sécurité dans `collections/Tenants.ts`). Contrairement à
+	// `resolvePageHref` (lecture, non filtrée), l'ÉCRITURE l'est — tout champ
+	// `relationTo: 'pages'` doit donc être remappé vers l'id cible via le slug
+	// (identique entre tenants, seed depuis le même catalogue de gabarits).
+	const { docs: sourcePages } = await payload.find({ collection: 'pages', where: { tenant: { equals: source.id } }, depth: 0, limit: 100, overrideAccess: true });
+	const { docs: targetPages } = await payload.find({ collection: 'pages', where: { tenant: { equals: target.id } }, depth: 0, limit: 100, overrideAccess: true });
+	const pageIdMap: Record<string, number> = {};
+	for (const sp of sourcePages as any[]) {
+		const tp = (targetPages as any[]).find((p) => p.slug === sp.slug);
+		if (tp) pageIdMap[String(sp.id)] = tp.id as number;
+	}
+	const remapPageLien = (id: any) => (id != null ? pageIdMap[String(id)] ?? id : id);
+
 	const mediaCache = new Map<string, number>();
 	// `alt` est requis sur `media` — défaut sûr (repris depuis la source)
 	// plutôt que `{}`, pour qu'un appel qui oublie de le préciser n'échoue
@@ -282,6 +300,7 @@ async function main() {
 		const { id, tenant, createdAt, updatedAt, ...rest } = sourceDoc;
 		const data: any = stripIds(rest);
 		if (slug === 'identite' && data.logo) data.logo = await localizeMedia(data.logo, (src) => ({ alt: src.alt, credit: src.credit }));
+		if (slug === 'bouton-entete' && data.boutonLien) data.boutonLien = remapPageLien(data.boutonLien);
 
 		const { docs: targetDocs } = await payload.find({ collection: slug, where: { tenant: { equals: target.id } }, depth: 0, limit: 1, overrideAccess: true });
 		const targetDoc = targetDocs[0] as any;
@@ -300,9 +319,6 @@ async function main() {
 
 	// ---- 4. Toutes les pages, Accueil comprise ----
 	console.log('→ Contenu des pages (Accueil comprise)…');
-	const { docs: sourcePages } = await payload.find({ collection: 'pages', where: { tenant: { equals: source.id } }, depth: 0, limit: 100, overrideAccess: true });
-	const { docs: targetPages } = await payload.find({ collection: 'pages', where: { tenant: { equals: target.id } }, depth: 0, limit: 100, overrideAccess: true });
-
 	const { docs: existingTargetCategories } = await payload.find({ collection: 'categories', where: { tenant: { equals: target.id } }, depth: 0, limit: 1, overrideAccess: true });
 	if (existingTargetCategories.length > 0) {
 		throw new Error(`Le tenant cible (${target.nom}) a déjà des catégories — abandon pour éviter un double seed. Nettoyer manuellement avant de relancer.`);
@@ -326,9 +342,22 @@ async function main() {
 		if (sp.gabarit === 'liste') {
 			const idMap = await duplicateCategoriesForPage(payload, sp.id, tp.id, target.id);
 			wrapped[groupField] = remapCategories(wrapped[groupField], idMap);
+			if (wrapped.liste.itemsActualites) {
+				wrapped.liste.itemsActualites = wrapped.liste.itemsActualites.map((it: any) => ({
+					...it,
+					lienDocument: it.lienDocument ? remapPageLien(it.lienDocument) : it.lienDocument
+				}));
+			}
 		}
 		if (sp.gabarit === 'accueil') {
 			remapAccueilPoiSentier(wrapped, poiIdMap, sentierIdMap);
+			const a = wrapped.accueil;
+			if (a.hero) {
+				if (a.hero.boutonPrincipalLien) a.hero.boutonPrincipalLien = remapPageLien(a.hero.boutonPrincipalLien);
+				if (a.hero.boutonSecondaireLien) a.hero.boutonSecondaireLien = remapPageLien(a.hero.boutonSecondaireLien);
+			}
+			if (a.quickAccessItems) a.quickAccessItems = a.quickAccessItems.map((it: any) => ({ ...it, lien: remapPageLien(it.lien) }));
+			if (a.slideshow) a.slideshow = a.slideshow.map((s: any) => ({ ...s, lien: s.lien ? remapPageLien(s.lien) : s.lien }));
 		}
 
 		const mediaIds = new Set<string>();
