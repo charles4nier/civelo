@@ -54,31 +54,15 @@
 
 	// ---- Cartes Découvrir ----
 	// Reprend la géométrie de saint-hilaire-discovery (proportions plus
-	// hautes, 2ᵉ carte décalée vers le haut) — couleurs du thème édito
-	// conservées, pas celles du prototype.
-	.discover__grid {
-		align-items: start;
-	}
-
+	// hautes) — couleurs du thème édito conservées, pas celles du prototype.
+	// Décalage vertical de la 2ᵉ carte retiré le 2026-09-18 : les 3 cartes
+	// doivent rester alignées, le désaxage lisait comme un bug.
 	.discover__card-image-wrap {
 		aspect-ratio: 3 / 4;
-	}
-
-	.discover__grid .discover__card:nth-child(2) {
-		transform: translateY(-52px);
 	}
 
 	.discover__card-tag {
 		background-color: $sunshine;
 		color: $foreground;
-	}
-
-	@media (max-width: $breakpoint-md) {
-		// Même repli que le prototype : la grille passe à 1 colonne à ce
-		// palier (déjà géré par `Discover/style.scss`), le décalage vertical
-		// n'a plus lieu d'être.
-		.discover__grid .discover__card:nth-child(2) {
-			transform: none;
-		}
 	}
 }
