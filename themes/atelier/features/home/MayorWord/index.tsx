@@ -16,9 +16,9 @@ export type MayorWordData = {
 	statLibelle?: string;
 };
 
-type Props = { data: MayorWordData };
+type Props = { data: MayorWordData; nomCommune?: string };
 
-export default function MayorWord({ data }: Props) {
+export default function MayorWord({ data, nomCommune }: Props) {
 	return (
 		<section className={CLASS_NAME}>
 			<div className="container">
@@ -27,7 +27,7 @@ export default function MayorWord({ data }: Props) {
 						<div className={`${CLASS_NAME}__image-wrap`}>
 							<Image
 								src={data.image}
-								alt="Le village de Saint-Hilaire-Bonneval"
+								alt={nomCommune ? `Le village de ${nomCommune}` : 'Le village de la commune'}
 								fill
 								sizes="(max-width: 1024px) 100vw, 50vw"
 								className={`${CLASS_NAME}__image`}
@@ -62,7 +62,7 @@ export default function MayorWord({ data }: Props) {
 								<div>
 									<div className={`${CLASS_NAME}__signature-name`}>{data.nomSignataire}</div>
 									<div className={`${CLASS_NAME}__signature-role`}>
-										Commune de Saint-Hilaire-Bonneval
+										{nomCommune ? `Commune de ${nomCommune}` : 'Commune'}
 									</div>
 								</div>
 							</div>

@@ -6,7 +6,7 @@ import Agenda from './Agenda';
 import MayorWord, { type MayorWordData } from './MayorWord';
 import News, { type NewsItemData } from './News';
 import CTA, { type CTAData } from './CTA';
-import { getAccueilData, getAgendaItems, getActualitesItems, pickHomeActus, getCurrentVariant } from '@lib/payload';
+import { getAccueilData, getAgendaItems, getActualitesItems, pickHomeActus, getCurrentVariant, getIdentiteData } from '@lib/payload';
 import { events as fallbackEvents } from '@themes/atelier/features/agenda/data';
 import './tourisme.scss';
 
@@ -157,12 +157,14 @@ const fallbackNews: NewsItemData[] = [
 ];
 
 export default async function HomePage() {
-	const [accueil, agendaItems, actualiteItems, variant] = await Promise.all([
+	const [accueil, agendaItems, actualiteItems, variant, identite] = await Promise.all([
 		getAccueilData(),
 		getAgendaItems('agenda'),
 		getActualitesItems('mairie/actualites'),
-		getCurrentVariant()
+		getCurrentVariant(),
+		getIdentiteData()
 	]);
+	const nomCommune = identite.titre;
 
 	const today = new Date(new Date().toDateString());
 	const events: NextEventData[] = agendaItems ?? fallbackEvents.map((e) => ({ title: e.title, date: e.date }));
@@ -193,9 +195,9 @@ export default async function HomePage() {
 	const slideshow =
 		accueil?.afficherSlideshow !== false && slides.length > 0 ? <Slideshow slides={slides} /> : null;
 	const news = <News articles={newsArticles} />;
-	const mayorWord = <MayorWord data={accueil?.mayorWord ?? fallbackMayorWord} />;
+	const mayorWord = <MayorWord data={accueil?.mayorWord ?? fallbackMayorWord} nomCommune={nomCommune} />;
 	const discover = <Discover cards={discoverCards} />;
-	const cta = <CTA data={accueil?.cta ?? fallbackCTA} />;
+	const cta = <CTA data={accueil?.cta ?? fallbackCTA} nomCommune={nomCommune} />;
 
 	// Variante tourisme (`Tenants.variante`, pour l'instant uniquement gérée
 	// par le thème édito) — mêmes blocs que la variante par défaut, disposés

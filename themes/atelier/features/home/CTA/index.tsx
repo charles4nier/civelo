@@ -14,9 +14,9 @@ export type CTAData = {
 	contacts: ContactItem[];
 };
 
-type Props = { data: CTAData };
+type Props = { data: CTAData; nomCommune?: string };
 
-export default function CTA({ data }: Props) {
+export default function CTA({ data, nomCommune }: Props) {
 	return (
 		<section id="contact" className={CLASS_NAME}>
 			<div className="container">
@@ -26,7 +26,7 @@ export default function CTA({ data }: Props) {
 
 					<div className={`${CLASS_NAME}__grid`}>
 						<div className={`${CLASS_NAME}__intro`}>
-							<p className={`${CLASS_NAME}__eyebrow`}>Mairie de Saint-Hilaire-Bonneval</p>
+							<p className={`${CLASS_NAME}__eyebrow`}>{nomCommune ? `Mairie de ${nomCommune}` : 'Mairie'}</p>
 							<h2 className={`${CLASS_NAME}__title`}>{data.titre ?? 'Nous contacter'}</h2>
 							<div className={`${CLASS_NAME}__divider`} />
 							{data.description && <p className={`${CLASS_NAME}__desc`}>{data.description}</p>}

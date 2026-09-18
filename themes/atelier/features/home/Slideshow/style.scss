@@ -37,10 +37,6 @@
 		inset: 0 $spacing-xl $spacing-xl 0;
 		overflow: hidden;
 		box-shadow: $shadow-elegant;
-		// Fond de lettrage visible autour d'une image portrait affichée en
-		// `contain` (voir `img` ci-dessous) — sans ça, l'espace non couvert par
-		// l'image laisse voir le fond transparent du conteneur.
-		background-color: $card;
 
 		img {
 			// `contain` plutôt que `cover` : les photos fournies sont souvent au
