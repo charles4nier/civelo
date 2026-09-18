@@ -13,9 +13,17 @@
 
 	/* ---- Colonne image ---- */
 
+	// Ratio plutôt que hauteur fixe : une hauteur fixe généreuse (essayé
+	// d'abord à 600px, pensée pour bien montrer un portrait) laissait un
+	// large bandeau blanc au-dessus/dessous de toute photo paysage classique
+	// (bien plus large que haute) — `contain` la centre sans jamais remplir
+	// une boîte aussi haute. 3/2 correspond à une vraie photo paysage :
+	// celles-ci remplissent la boîte quasiment sans lettrage, et une image
+	// portrait reste centrée en hauteur pleine (letterboxing gauche/droite
+	// uniquement, jamais en haut/bas).
 	&__image {
 		position: relative;
-		min-height: 600px;
+		aspect-ratio: 3 / 2;
 	}
 
 	// Décale l'image du coin bas-droit du conteneur (effet de profondeur,
@@ -144,10 +152,6 @@
 
 	@media (max-width: $breakpoint-sm) {
 		padding: $section-padding-y-mobile 0;
-
-		&__image {
-			min-height: 420px;
-		}
 
 		&__image-inner {
 			inset: 0 $spacing-md $spacing-lg 0;
