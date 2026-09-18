@@ -53,15 +53,15 @@ export default function Slideshow({ slides }: Props) {
 					onMouseEnter={() => setPaused(true)}
 					onMouseLeave={() => setPaused(false)}
 				>
-					{/* Wrapper dédié pour le décalage bas-droite (effet de profondeur,
-					    badge en débord) : `next/image` en mode `fill` pose `inset: 0`
-					    en style INLINE sur le <img> lui-même (priorité sur toute règle
-					    CSS ciblant `img`), donc un `inset` personnalisé sur l'`<img>`
-					    ne peut jamais s'appliquer. En le posant ici, sur un `<div>`
-					    intermédiaire que `fill` se contente de remplir à 100 %, le
-					    décalage fonctionne réellement — bug réel du 2026-09-16 : le
-					    badge et les contrôles se retrouvaient plaqués contre le bord
-					    réel de l'image (aucune marge), au lieu de déborder proprement. */}
+					{/* Wrapper dédié pour le décalage bas-droite (effet de profondeur) :
+					    `next/image` en mode `fill` pose `inset: 0` en style INLINE sur
+					    le <img> lui-même (priorité sur toute règle CSS ciblant `img`),
+					    donc un `inset` personnalisé sur l'`<img>` ne peut jamais
+					    s'appliquer. En le posant ici, sur un `<div>` intermédiaire que
+					    `fill` se contente de remplir à 100 %, le décalage fonctionne
+					    réellement — bug réel du 2026-09-16 : les contrôles se
+					    retrouvaient plaqués contre le bord réel de l'image (aucune
+					    marge), au lieu de déborder proprement. */}
 					<div className={`${CLASS_NAME}__image-inner`}>
 						{slides.map((slide, i) => (
 							<Image
@@ -77,13 +77,6 @@ export default function Slideshow({ slides }: Props) {
 							/>
 						))}
 					</div>
-
-					{(current.badgeNombre || current.badgeLibelle) && (
-						<div className={`${CLASS_NAME}__badge`}>
-							{current.badgeNombre && <strong>{current.badgeNombre}</strong>}
-							{current.badgeLibelle && <span>{current.badgeLibelle}</span>}
-						</div>
-					)}
 
 					{slides.length > 1 && (
 						<div className={`${CLASS_NAME}__controls`}>

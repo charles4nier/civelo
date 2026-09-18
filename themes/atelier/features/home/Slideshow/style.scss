@@ -15,7 +15,7 @@
 
 	&__image {
 		position: relative;
-		min-height: 480px;
+		min-height: 600px;
 	}
 
 	// Décale l'image du coin bas-droit du conteneur (effet de profondeur,
@@ -29,50 +29,21 @@
 		inset: 0 $spacing-xl $spacing-xl 0;
 		overflow: hidden;
 		box-shadow: $shadow-elegant;
+		// Fond de lettrage visible autour d'une image portrait affichée en
+		// `contain` (voir `img` ci-dessous) — sans ça, l'espace non couvert par
+		// l'image laisse voir le fond transparent du conteneur.
+		background-color: $card;
 
 		img {
-			object-fit: cover;
+			// `contain` plutôt que `cover` : les photos fournies sont souvent au
+			// format portrait, `cover` les recadrait de façon imprévisible.
+			object-fit: contain;
 			opacity: 0;
 			transition: opacity 0.7s ease;
 
 			&.is-active {
 				opacity: 1;
 			}
-		}
-	}
-
-	&__badge {
-		position: absolute;
-		right: 0;
-		bottom: 0;
-		width: 235px;
-		padding: $spacing-lg;
-		border-left: 4px solid $coral;
-		background-color: $card;
-		box-shadow: $shadow-elegant;
-		z-index: 2;
-
-		strong,
-		span {
-			display: block;
-		}
-
-		strong {
-			font-family: $font-display;
-			font-size: 42px;
-			font-weight: $font-weight-semibold;
-			color: $primary;
-		}
-
-		span {
-			margin-top: 5px;
-			font-family: $font-body;
-			font-size: 10px;
-			font-weight: $font-weight-bold;
-			text-transform: uppercase;
-			letter-spacing: 0.12em;
-			color: $muted-foreground;
-			line-height: $line-height-relaxed;
 		}
 	}
 
@@ -170,20 +141,11 @@
 		padding: $section-padding-y-mobile 0;
 
 		&__image {
-			min-height: 360px;
+			min-height: 420px;
 		}
 
 		&__image-inner {
 			inset: 0 $spacing-md $spacing-lg 0;
-		}
-
-		&__badge {
-			width: 190px;
-			padding: $spacing-md;
-
-			strong {
-				font-size: 34px;
-			}
 		}
 
 		&__controls {
