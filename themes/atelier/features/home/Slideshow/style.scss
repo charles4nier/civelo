@@ -49,7 +49,12 @@
 
 	&__controls {
 		position: absolute;
-		left: $spacing-md;
+		// Centré sur le conteneur plutôt que collé à gauche : avec
+		// `object-fit: contain`, une image portrait n'occupe qu'une bande
+		// étroite au centre — les contrôles doivent suivre cette bande, pas
+		// rester ancrés sur le fond visible autour (letterboxing).
+		left: 50%;
+		transform: translateX(-50%);
 		bottom: $spacing-3xl + $spacing-xs;
 		z-index: 3;
 		display: flex;
@@ -149,7 +154,6 @@
 		}
 
 		&__controls {
-			left: $spacing-sm;
 			bottom: $spacing-2xl;
 		}
 	}
