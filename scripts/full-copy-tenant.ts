@@ -281,9 +281,15 @@ async function main() {
 	const localizeMedia = (id: string | number, extra: (src: any) => Record<string, unknown> = (src) => ({ alt: src.alt, credit: src.credit })) =>
 		localizeOne(payload, 'media', id, target.id, baseUrl, extra, mediaCache);
 
-	// ---- 1. Blason + coordonnées du tenant ----
-	console.log('→ Blason et coordonnées du tenant…');
-	const tenantUpdate: Record<string, unknown> = { coordonnees: source.coordonnees };
+	// ---- 1. Blason + coordonnées + variante du tenant ----
+	// `variante` (ex. 'tourisme') pilote la disposition entière de l'Accueil
+	// dans le thème — oublié à la première version de ce script, la cible se
+	// retrouvait avec le contenu source mais la mise en page par défaut
+	// (tags jaunes/alternance de fond absents, bug repéré en prod). `theme`
+	// n'est volontairement jamais copié : c'est l'identité propre du tenant
+	// cible, pas une donnée à écraser depuis la source.
+	console.log('→ Blason, coordonnées et variante du tenant…');
+	const tenantUpdate: Record<string, unknown> = { coordonnees: source.coordonnees, variante: source.variante };
 	if (source.blason) tenantUpdate.blason = await localizeMedia(source.blason, (src) => ({ alt: src.alt, credit: src.credit }));
 	await payload.update({ collection: 'tenants', id: target.id, overrideAccess: true, data: tenantUpdate });
 	console.log('  ✓ fait.');
