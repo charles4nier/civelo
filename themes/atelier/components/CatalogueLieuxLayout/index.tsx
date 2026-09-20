@@ -37,7 +37,7 @@ export default function CatalogueLieuxLayout({ salles }: Props) {
 					</nav>
 					<p className={`${CLASS_NAME}__eyebrow`}>
 						<Building2 size={14} aria-hidden="true" />
-						Mairie de Saint-Hilaire-Bonneval
+						Mairie de Saint-Martin
 					</p>
 					<h1 className={`${CLASS_NAME}__title`}>Location de salles</h1>
 					<div className={`${CLASS_NAME}__divider`} />
@@ -127,7 +127,7 @@ export default function CatalogueLieuxLayout({ salles }: Props) {
 								secrétariat de mairie aux heures d'ouverture.
 							</p>
 						</div>
-						<a href="mailto:mairie@saint-hilaire-bonneval.fr" className={`${CLASS_NAME}__cta-btn btn-primary`}>
+						<a href="mailto:mairie@saint-martin.fr" className={`${CLASS_NAME}__cta-btn btn-primary`}>
 							<Phone size={15} aria-hidden="true" />
 							Contacter la mairie
 						</a>

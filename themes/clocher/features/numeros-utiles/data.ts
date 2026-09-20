@@ -12,14 +12,14 @@ export const urgences = [
 
 export const locaux = [
 	{
-		label: 'Mairie de Saint-Hilaire-Bonneval',
-		number: '05 55 00 60 15',
+		label: 'Mairie de Saint-Martin',
+		number: '05 XX XX 60 15',
 		detail: 'Lundi – vendredi : 9h – 12h / 14h – 17h',
 		href: 'tel:+33555006015'
 	},
 	{
-		label: 'Gendarmerie de Saint-Hilaire-Bonneval',
-		number: '05 55 00 60 17',
+		label: 'Gendarmerie de Saint-Martin',
+		number: '05 XX XX 60 17',
 		detail: null,
 		href: 'tel:+33555006017'
 	},

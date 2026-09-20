@@ -74,7 +74,7 @@ export default function ActualitesLayout({ filters, items }: Props) {
 					</nav>
 					<p className={`${CLASS_NAME}__eyebrow`}>
 						<Newspaper size={14} aria-hidden="true" />
-						Mairie de Saint-Hilaire-Bonneval
+						Mairie de Saint-Martin
 					</p>
 					<h1 className={`${CLASS_NAME}__title`}>Actualités</h1>
 					<div className={`${CLASS_NAME}__divider`} />

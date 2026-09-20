@@ -12,9 +12,9 @@ const LABELS: Partial<Record<ContactItem['type'], string>> = {
 };
 
 const fallbackInfos: ContactItem[] = [
-	{ type: 'address', value: 'Le Bourg, 87260 Saint-Hilaire-Bonneval' },
-	{ type: 'phone', value: '05 55 00 61 65' },
-	{ type: 'email', value: 'contact@saint-hilaire-bonneval.fr' }
+	{ type: 'address', value: 'Le Bourg, 87000 Saint-Martin' },
+	{ type: 'phone', value: '05 XX XX 61 65' },
+	{ type: 'email', value: 'contact@saint-martin.fr' }
 ];
 
 type Props = { data?: CTAData | null; nomCommune?: string };

@@ -39,7 +39,7 @@ export default async function EnfanceJeunessePage() {
 			heroGradient="linear-gradient(135deg, oklch(0.52 0.17 240), oklch(0.70 0.16 220))"
 			breadcrumbLabel="Enfance & jeunesse"
 			eyebrowIcon="Baby"
-			eyebrowText="Vivre à Saint-Hilaire-Bonneval"
+			eyebrowText="Vivre à Saint-Martin"
 			title="Enfance & jeunesse"
 			subtitle={<>École, micro-crèche, centre de loisirs et assistantes maternelles :<br />tous les services dédiés aux familles de la commune.</>}
 			sectionEyebrow="Services aux familles"

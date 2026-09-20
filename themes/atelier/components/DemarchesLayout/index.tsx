@@ -97,7 +97,7 @@ export default function DemarchesLayout({ filters, items }: Props) {
 						<ChevronRight size={14} aria-hidden="true" />
 						<span>Mes démarches</span>
 					</nav>
-					<p className={`${CLASS_NAME}__eyebrow`}>Mairie de Saint-Hilaire-Bonneval</p>
+					<p className={`${CLASS_NAME}__eyebrow`}>Mairie de Saint-Martin</p>
 					<h1 className={`${CLASS_NAME}__title`}>Mes démarches</h1>
 					<div className={`${CLASS_NAME}__divider`} />
 					<p className={`${CLASS_NAME}__subtitle`}>
@@ -150,7 +150,7 @@ export default function DemarchesLayout({ filters, items }: Props) {
 								heures d'ouverture.
 							</p>
 						</div>
-						<a href="mailto:mairie@saint-hilaire-bonneval.fr" className={`${CLASS_NAME}__cta-btn btn-primary`}>
+						<a href="mailto:mairie@saint-martin.fr" className={`${CLASS_NAME}__cta-btn btn-primary`}>
 							Contacter la mairie
 						</a>
 					</div>

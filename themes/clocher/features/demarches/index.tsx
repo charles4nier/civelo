@@ -171,7 +171,7 @@ const fallbackDemarches: FallbackDemarche[] = [
 		cat: 'Scolarité',
 		icon: 'GraduationCap',
 		title: "Inscription à l'école",
-		summary: "Inscription à l'école primaire de Saint-Hilaire-Bonneval, dossiers et formulaires.",
+		summary: "Inscription à l'école primaire de Saint-Martin, dossiers et formulaires.",
 		content: (
 			<>
 				<p>

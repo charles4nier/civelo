@@ -61,7 +61,7 @@ export const articles: Article[] = [
 		cat: 'Vie locale',
 		title: 'Assemblée générale du Foyer rural',
 		excerpt:
-			"Le Foyer rural de Saint-Hilaire-Bonneval tient son assemblée générale annuelle. Bilan d'activités, projets 2026 et élection du bureau."
+			"Le Foyer rural de Saint-Martin tient son assemblée générale annuelle. Bilan d'activités, projets 2026 et élection du bureau."
 	},
 	{
 		date: '25 Mars 2026',

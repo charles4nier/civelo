@@ -42,7 +42,7 @@ export default async function CommercesPage() {
 			heroGradient="linear-gradient(135deg, oklch(0.52 0.17 240), oklch(0.70 0.16 220))"
 			breadcrumbLabel="Services & vie pratique"
 			eyebrowIcon="Store"
-			eyebrowText="Vivre à Saint-Hilaire-Bonneval"
+			eyebrowText="Vivre à Saint-Martin"
 			title="Services & vie pratique"
 			subtitle={<>Producteurs, restaurateurs, professionnels de santé et artisans :<br />celles et ceux qui animent la commune au quotidien.</>}
 			sectionEyebrow="Annuaire local"
@@ -54,7 +54,7 @@ export default async function CommercesPage() {
 				eyebrow: "Vous êtes un professionnel ?",
 				title: "Référencez votre commerce ou activité dans l'annuaire communal",
 				desc: "La mairie tient à jour cet annuaire pour valoriser le tissu économique local. Contactez le secrétariat pour ajouter ou mettre à jour votre fiche.",
-				email: "mairie@saint-hilaire-bonneval.fr",
+				email: "mairie@saint-martin.fr",
 			}}
 		/>
 	);

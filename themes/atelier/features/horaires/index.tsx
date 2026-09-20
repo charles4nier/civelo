@@ -22,8 +22,8 @@ const fallbackContacts: HorairesContactData[] = [
 		name: 'Accueil mairie',
 		description: 'Renseignements généraux, état civil, démarches administratives.',
 		contacts: [
-			{ type: 'phone', value: '05 55 00 60 15' },
-			{ type: 'email', value: 'mairie@saint-hilaire-bonneval.fr' }
+			{ type: 'phone', value: '05 XX XX 60 15' },
+			{ type: 'email', value: 'mairie@saint-martin.fr' }
 		]
 	},
 	{
@@ -33,7 +33,7 @@ const fallbackContacts: HorairesContactData[] = [
 		category: 'Sur rendez-vous',
 		name: 'Service urbanisme',
 		description: 'Permis de construire, déclarations préalables, PLU. Le mardi matin uniquement.',
-		contacts: [{ type: 'phone', value: '05 55 00 60 20' }]
+		contacts: [{ type: 'phone', value: '05 XX XX 60 20' }]
 	},
 	{
 		key: 'securite',
@@ -41,8 +41,8 @@ const fallbackContacts: HorairesContactData[] = [
 		iconVariant: 'muted',
 		category: 'Sécurité',
 		name: 'Police municipale / Gendarmerie',
-		description: 'Gendarmerie de Saint-Hilaire-Bonneval.',
-		contacts: [{ type: 'phone', value: '05 55 00 60 17' }]
+		description: 'Gendarmerie de Saint-Martin.',
+		contacts: [{ type: 'phone', value: '05 XX XX 60 17' }]
 	},
 	{
 		key: 'pompiers',

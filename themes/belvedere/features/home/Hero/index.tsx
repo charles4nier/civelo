@@ -45,8 +45,8 @@ export default function Hero({ data }: Props) {
 							<div>
 								<dt>Mairie</dt>
 								<dd>
-									05 55 00 87 26
-									<span>contact@saint-hilaire-bonneval.fr</span>
+									05 XX XX 87 26
+									<span>contact@saint-martin.fr</span>
 								</dd>
 							</div>
 						</dl>

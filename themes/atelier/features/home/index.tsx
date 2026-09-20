@@ -12,7 +12,7 @@ import './tourisme.scss';
 
 const fallbackHero: HeroData = {
 	image: '/saint-hilaire-bonneval-hero.jpg',
-	titre: 'Bienvenue sur le site de la Mairie de Saint-Hilaire-Bonneval, au cœur de la Haute-Vienne.',
+	titre: 'Bienvenue sur le site de la Mairie de Saint-Martin, au cœur de la Haute-Vienne.',
 	description:
 		"Entre rivières, forêts et patrimoine vivant, la commune vous accueille. Retrouvez ici vos démarches, l'actualité municipale et toutes les informations utiles à la vie locale.",
 	boutonPrincipal: { label: 'Effectuer une démarche', href: '/demarches' },
@@ -46,7 +46,7 @@ const fallbackQuickAccess: QuickAccessItemData[] = [
 const fallbackMayorWord: MayorWordData = {
 	image: '/saint-hilaire-bonneval-village.jpg',
 	citation:
-		"Saint-Hilaire-Bonneval, c'est l'histoire d'un village qui avance sans renier ses racines. Un lieu où la nature dicte le tempo, où les liens se tissent autour de projets partagés. Avec l'ensemble du conseil municipal, nous travaillons chaque jour pour faire vivre cette commune et la transmettre, embellie, aux générations futures.",
+		"Saint-Martin, c'est l'histoire d'un village qui avance sans renier ses racines. Un lieu où la nature dicte le tempo, où les liens se tissent autour de projets partagés. Avec l'ensemble du conseil municipal, nous travaillons chaque jour pour faire vivre cette commune et la transmettre, embellie, aux générations futures.",
 	nomSignataire: 'Monsieur le Maire',
 	afficherEncart: true,
 	statNombre: '1 022',
@@ -125,9 +125,9 @@ const fallbackCTA: CTAData = {
 		'La mairie vous accueille du lundi au vendredi, de 9h à 12h et de 14h à 17h. Le secrétariat reste à votre disposition pour toute démarche.',
 	boutonLabel: 'Prendre rendez-vous',
 	contacts: [
-		{ type: 'address', value: 'Le Bourg, 87260 Saint-Hilaire-Bonneval' },
-		{ type: 'phone', value: '05 55 00 61 65' },
-		{ type: 'email', value: 'contact@saint-hilaire-bonneval.fr' }
+		{ type: 'address', value: 'Le Bourg, 87000 Saint-Martin' },
+		{ type: 'phone', value: '05 XX XX 61 65' },
+		{ type: 'email', value: 'contact@saint-martin.fr' }
 	]
 };
 

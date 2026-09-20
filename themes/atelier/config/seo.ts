@@ -1,15 +1,15 @@
 export const siteConfig = {
-	name: 'Mairie de Saint-Hilaire-Bonneval',
+	name: 'Mairie de Saint-Martin',
 	description:
-		'Site officiel de la commune de Saint-Hilaire-Bonneval (87) : démarches, actualités, tourisme, vie locale et patrimoine au cœur du Limousin.',
-	url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.saint-hilaire-bonneval.fr',
+		'Site officiel de la commune de Saint-Martin (87) : démarches, actualités, tourisme, vie locale et patrimoine au cœur du Limousin.',
+	url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.saint-martin.fr',
 	ogImage: '/og-image.jpg',
 	keywords: [
-		'Saint-Hilaire-Bonneval',
+		'Saint-Martin',
 		'commune Haute-Vienne',
-		'mairie Saint-Hilaire-Bonneval',
+		'mairie Saint-Martin',
 		'Limousin',
-		'87260',
+		'87000',
 		'démarches administratives',
 		'tourisme Haute-Vienne',
 		'patrimoine Limousin',

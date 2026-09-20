@@ -32,7 +32,7 @@ function ContactModal({ onClose, closing }: { onClose: () => void; closing: bool
 						<div>
 							<p className={`${CLASS_NAME}__contact-info-label`}>Téléphone</p>
 							<a href="tel:0555006165" className={`${CLASS_NAME}__contact-info-value`}>
-								05 55 00 61 65
+								05 XX XX 61 65
 							</a>
 						</div>
 					</div>
@@ -40,8 +40,8 @@ function ContactModal({ onClose, closing }: { onClose: () => void; closing: bool
 						<Mail size={15} className={`${CLASS_NAME}__contact-info-icon`} />
 						<div>
 							<p className={`${CLASS_NAME}__contact-info-label`}>Email</p>
-							<a href="mailto:contact@saint-hilaire-bonneval.fr" className={`${CLASS_NAME}__contact-info-value`}>
-								contact@saint-hilaire-bonneval.fr
+							<a href="mailto:contact@saint-martin.fr" className={`${CLASS_NAME}__contact-info-value`}>
+								contact@saint-martin.fr
 							</a>
 						</div>
 					</div>
@@ -52,7 +52,7 @@ function ContactModal({ onClose, closing }: { onClose: () => void; closing: bool
 							<p className={`${CLASS_NAME}__contact-info-value`}>
 								Le Bourg
 								<br />
-								87260 Saint-Hilaire-Bonneval
+								87000 Saint-Martin
 							</p>
 						</div>
 					</div>

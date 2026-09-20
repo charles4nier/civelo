@@ -34,7 +34,7 @@ export const associations: Association[] = [
 		desc: "1ère fédération nationale des parents d'élèves, avec des instances départementales et locales.",
 	},
 	{
-		name: 'Gym Club Saint-Hilaire-Bonneval',
+		name: 'Gym Club Saint-Martin',
 		category: 'Sports',
 		desc: 'Gymnastique volontaire et marche nordique.',
 	},
@@ -46,10 +46,10 @@ export const associations: Association[] = [
 	{
 		name: 'Foot Sud 87',
 		category: 'Sports',
-		desc: 'Club de football des communes de Pierre-Buffière, Saint-Bonnet-Briance, Saint-Genest-Roselle, Saint-Paul et Saint-Hilaire-Bonneval.',
+		desc: 'Club de football des communes de Pierre-Buffière, Saint-Bonnet-Briance, Saint-Genest-Roselle, Saint-Paul et Saint-Martin.',
 	},
 	{
-		name: 'Amicale de Pétanque de Saint-Hilaire-Bonneval',
+		name: 'Amicale de Pétanque de Saint-Martin',
 		shortName: 'APSHB',
 		category: 'Sports',
 		desc: "Entraînements tous les mardis à partir de 18h sous le hangar communal. Cotisation : 20 € / an (30 € couple, gratuit -14 ans).",
@@ -61,7 +61,7 @@ export const associations: Association[] = [
 		desc: 'Confection du pain dans le four communal.',
 	},
 	{
-		name: 'Comité de jumelage Saint-Hilaire-Bonneval – Auenheim',
+		name: 'Comité de jumelage Saint-Martin – Auenheim',
 		category: 'Culture & patrimoine',
 		desc: "Échanges culturels et humains avec la commune d'Auenheim (Alsace).",
 	},

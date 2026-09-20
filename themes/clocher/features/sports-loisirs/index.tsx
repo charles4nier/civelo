@@ -50,12 +50,12 @@ export default async function SportsLoisirsPage() {
 			heroGradient="linear-gradient(135deg, oklch(0.62 0.16 150), oklch(0.78 0.12 220))"
 			breadcrumbLabel="Sports & loisirs"
 			eyebrowIcon="Trophy"
-			eyebrowText="Vivre à Saint-Hilaire-Bonneval"
+			eyebrowText="Vivre à Saint-Martin"
 			title="Sports & loisirs"
 			subtitle={
 				<>
 					Équipements, clubs et sentiers :<br />
-					tout pour bouger et se détendre à Saint-Hilaire-Bonneval.
+					tout pour bouger et se détendre à Saint-Martin.
 				</>
 			}
 			sectionEyebrow="Activités & équipements"
@@ -67,7 +67,7 @@ export default async function SportsLoisirsPage() {
 				eyebrow: 'Vous animez un club ou une activité ?',
 				title: 'Faites référencer votre activité sur le site de la mairie',
 				desc: "La mairie tient à jour cet annuaire pour valoriser l'offre sportive et de loisirs locale. Contactez le secrétariat pour ajouter ou mettre à jour votre fiche.",
-				email: 'mairie@saint-hilaire-bonneval.fr'
+				email: 'mairie@saint-martin.fr'
 			}}
 		/>
 	);

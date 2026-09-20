@@ -7,9 +7,9 @@ const fallbackCards: ContactCardData[] = [
 		icon: 'Phone',
 		iconVariant: 'primary',
 		category: 'Par téléphone',
-		name: '05 55 00 00 00',
+		name: '05 XX XX 00 00',
 		description: 'Lundi – vendredi, 9h – 12h et 14h – 17h.',
-		contacts: [{ type: 'phone', value: '05 55 00 00 00' }]
+		contacts: [{ type: 'phone', value: '05 XX XX 00 00' }]
 	},
 	{
 		key: 'email',

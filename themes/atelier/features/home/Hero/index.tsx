@@ -19,7 +19,7 @@ export default function Hero({ data }: Props) {
 		<section className={CLASS_NAME}>
 			<Image
 				src={data.image}
-				alt="Vue aérienne de Saint-Hilaire-Bonneval et ses étangs au coucher du soleil"
+				alt="Vue aérienne de Saint-Martin et ses étangs au coucher du soleil"
 				fill
 				priority
 				sizes="100vw"

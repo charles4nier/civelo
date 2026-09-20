@@ -71,7 +71,7 @@ function ContactModal({ onClose, closing, titleId, closeButtonRef, modalRef }: M
 								href="tel:0555006200"
 								className={`${CLASS_NAME}__contact-info-value`}
 							>
-								05 55 00 62 00
+								05 XX XX 62 00
 							</a>
 						</div>
 					</div>
@@ -86,10 +86,10 @@ function ContactModal({ onClose, closing, titleId, closeButtonRef, modalRef }: M
 								Email
 							</p>
 							<a
-								href="mailto:mairie@saint-hilaire-bonneval.fr"
+								href="mailto:mairie@saint-martin.fr"
 								className={`${CLASS_NAME}__contact-info-value`}
 							>
-								mairie@saint-hilaire-bonneval.fr
+								mairie@saint-martin.fr
 							</a>
 						</div>
 					</div>
@@ -106,7 +106,7 @@ function ContactModal({ onClose, closing, titleId, closeButtonRef, modalRef }: M
 							<p className={`${CLASS_NAME}__contact-info-value`}>
 								Le Bourg
 								<br />
-								87260 Saint-Hilaire-Bonneval
+								87000 Saint-Martin
 							</p>
 						</div>
 					</div>

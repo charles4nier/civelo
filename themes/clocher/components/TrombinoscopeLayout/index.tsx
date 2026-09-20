@@ -93,7 +93,7 @@ export default function TrombinoscopeLayout({ members, meetingInfo }: Props) {
 					<h1 className={`${CLASS_NAME}__title`}>Le maire &amp; les élus</h1>
 					<div className={`${CLASS_NAME}__divider`} />
 					<p className={`${CLASS_NAME}__subtitle`}>
-						Le conseil municipal de Saint-Hilaire-Bonneval réunit le Maire, ses adjoints,
+						Le conseil municipal de Saint-Martin réunit le Maire, ses adjoints,
 						<br />
 						deux conseillers délégués et huit conseillers municipaux.
 					</p>

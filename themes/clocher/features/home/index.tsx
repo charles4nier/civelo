@@ -86,7 +86,7 @@ const fallbackCTA: CTAData = {
 	boutonLabel: 'Prendre rendez-vous',
 	contacts: [
 		{ type: 'address', value: 'Le Bourg' },
-		{ type: 'phone', value: '05 55 00 00 00' },
+		{ type: 'phone', value: '05 XX XX 00 00' },
 		{ type: 'email', value: 'contact@mairie.fr' }
 	]
 };

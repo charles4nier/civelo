@@ -8,7 +8,7 @@ type Props = { data?: MayorWordData | null; nomCommune?: string };
 
 const FALLBACK_QUOTE = (
 	<>
-		Saint-Hilaire-Bonneval, c'est l'histoire d'un village qui avance
+		Saint-Martin, c'est l'histoire d'un village qui avance
 		<span className={`${CLASS_NAME}__quote-highlight`}> sans renier ses racines</span> — où la nature dicte le
 		tempo et où les liens se tissent autour de projets partagés.
 	</>
@@ -29,7 +29,7 @@ export default function MayorWord({ data, nomCommune }: Props) {
 					<div className={`${CLASS_NAME}__avatar`}>{initiale}</div>
 					<div>
 						<div className={`${CLASS_NAME}__name`}>{nomSignataire}</div>
-						<div className={`${CLASS_NAME}__role`}>{nomCommune ? `Commune de ${nomCommune}` : 'Commune de Saint-Hilaire-Bonneval'}</div>
+						<div className={`${CLASS_NAME}__role`}>{nomCommune ? `Commune de ${nomCommune}` : 'Commune de Saint-Martin'}</div>
 					</div>
 				</div>
 			</div>

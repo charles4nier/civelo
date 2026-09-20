@@ -21,7 +21,7 @@ const fallbackContacts: HorairesContactData[] = [
 		category: 'Secrétariat',
 		name: 'Accueil mairie',
 		description: 'Renseignements généraux, état civil, démarches administratives.',
-		contacts: [{ type: 'phone', value: '05 55 00 00 00' }, { type: 'email', value: 'contact@commune.fr' }]
+		contacts: [{ type: 'phone', value: '05 XX XX 00 00' }, { type: 'email', value: 'contact@commune.fr' }]
 	},
 	{
 		key: 'urbanisme',
@@ -30,7 +30,7 @@ const fallbackContacts: HorairesContactData[] = [
 		category: 'Sur rendez-vous',
 		name: 'Service urbanisme',
 		description: 'Permis de construire, déclarations préalables, PLU.',
-		contacts: [{ type: 'phone', value: '05 55 00 00 00' }]
+		contacts: [{ type: 'phone', value: '05 XX XX 00 00' }]
 	}
 ];
 

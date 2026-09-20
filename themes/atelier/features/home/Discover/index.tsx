@@ -25,7 +25,7 @@ export default function Discover({ cards }: Props) {
 					<h2 className={`${CLASS_NAME}__title`}>Un territoire à vivre, au rythme de la nature</h2>
 					<div className="divider-line" />
 					<p className={`${CLASS_NAME}__desc`}>
-						Entre Limoges et Brive, Saint-Hilaire-Bonneval vous invite à ralentir. Découvrez ses
+						Entre Limoges et Brive, Saint-Martin vous invite à ralentir. Découvrez ses
 						paysages, son patrimoine bâti et la richesse d'un village où il fait bon vivre.
 					</p>
 				</div>

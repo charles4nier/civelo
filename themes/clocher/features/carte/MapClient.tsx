@@ -516,7 +516,7 @@ export default function MapClient({ initialId, pois, sentiers }: Props) {
 			<aside className="carte__sidebar">
 				<div className="carte__sidebar-header">
 					<div className="carte__sidebar-eyebrow">
-						Saint-Hilaire-Bonneval
+						Saint-Martin
 					</div>
 					<h1 className="carte__sidebar-title">
 						Explorer la commune

@@ -41,7 +41,7 @@ export default async function VieAssociativePage() {
 			heroGradient="linear-gradient(135deg, oklch(0.52 0.17 240), oklch(0.70 0.16 220))"
 			breadcrumbLabel="Vie associative"
 			eyebrowIcon="Users"
-			eyebrowText="Vivre à Saint-Hilaire-Bonneval"
+			eyebrowText="Vivre à Saint-Martin"
 			title="Vie associative"
 			subtitle={<>Sport, culture, éducation et engagement local :<br />{cards.length} associations animent la commune.</>}
 			sectionEyebrow="Annuaire associatif"
@@ -53,7 +53,7 @@ export default async function VieAssociativePage() {
 				eyebrow: "Vous représentez une association ?",
 				title: "Faites référencer votre association sur le site de la mairie",
 				desc: "La mairie tient à jour cet annuaire pour valoriser la vie associative locale. Contactez le secrétariat pour ajouter ou mettre à jour votre fiche.",
-				email: "mairie@saint-hilaire-bonneval.fr",
+				email: "mairie@saint-martin.fr",
 			}}
 		/>
 	);
