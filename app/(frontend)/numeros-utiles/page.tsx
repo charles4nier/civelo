@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Numéros utiles',
-	description: "Numéros d'urgence (SAMU, pompiers, police) et contacts locaux de Saint-Hilaire-Bonneval : mairie, gendarmerie, hôpital.",
+	description: "Numéros d'urgence (SAMU, pompiers, police) et contacts locaux de Saint-Martin : mairie, gendarmerie, hôpital.",
 	path: '/numeros-utiles'
 });
 

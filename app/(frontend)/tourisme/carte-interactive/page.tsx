@@ -11,7 +11,7 @@ import { getCarteData, getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Carte interactive',
-	description: 'Explorez Saint-Hilaire-Bonneval grâce à notre carte interactive.',
+	description: 'Explorez Saint-Martin grâce à notre carte interactive.',
 	path: '/tourisme/carte-interactive'
 });
 

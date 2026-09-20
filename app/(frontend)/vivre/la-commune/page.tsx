@@ -10,7 +10,7 @@ import { getPayloadClient } from '@lib/payload';
 export const metadata: Metadata = generatePageMetadata({
 	title: 'La commune',
 	description:
-		"Portrait de Saint-Hilaire-Bonneval : habitants, superficie, services, commerces et atouts d'une commune rurale dynamique au cœur de la Haute-Vienne.",
+		"Portrait de Saint-Martin : habitants, superficie, services, commerces et atouts d'une commune rurale dynamique au cœur de la Haute-Vienne.",
 	path: '/vivre/la-commune'
 });
 

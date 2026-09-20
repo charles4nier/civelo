@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Sports & loisirs',
-	description: 'Équipements sportifs, clubs et sentiers de randonnée à Saint-Hilaire-Bonneval.',
+	description: 'Équipements sportifs, clubs et sentiers de randonnée à Saint-Martin.',
 	path: '/vivre/sports-loisirs'
 });
 

@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Vie associative',
-	description: 'Les associations de Saint-Hilaire-Bonneval : sport, culture, éducation et citoyenneté.',
+	description: 'Les associations de Saint-Martin : sport, culture, éducation et citoyenneté.',
 	path: '/vivre/vie-associative'
 });
 

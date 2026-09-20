@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Budget & projets',
-	description: 'Budgets votés, comptes administratifs et grands projets municipaux à Saint-Hilaire-Bonneval.',
+	description: 'Budgets votés, comptes administratifs et grands projets municipaux à Saint-Martin.',
 	path: '/mairie/budget-projets'
 });
 

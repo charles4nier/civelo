@@ -10,7 +10,7 @@ import { getPayloadClient } from '@lib/payload';
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Actualités',
 	description:
-		'Toutes les actualités de Saint-Hilaire-Bonneval : comptes-rendus du conseil municipal, vie locale, travaux et événements.',
+		'Toutes les actualités de Saint-Martin : comptes-rendus du conseil municipal, vie locale, travaux et événements.',
 	path: '/mairie/actualites'
 });
 

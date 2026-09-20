@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Documents & publications',
-	description: "Comptes-rendus, bulletins municipaux, budget, arrêtés et documents d'urbanisme de Saint-Hilaire-Bonneval.",
+	description: "Comptes-rendus, bulletins municipaux, budget, arrêtés et documents d'urbanisme de Saint-Martin.",
 	path: '/mairie/publications'
 });
 

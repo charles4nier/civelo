@@ -10,7 +10,7 @@ import { getPayloadClient } from '@lib/payload';
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Location de salles',
 	description:
-		'Tarifs et conditions de location de la salle polyvalente et de la salle du restaurant scolaire à Saint-Hilaire-Bonneval.',
+		'Tarifs et conditions de location de la salle polyvalente et de la salle du restaurant scolaire à Saint-Martin.',
 	path: '/location-salle'
 });
 

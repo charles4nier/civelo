@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Le maire & les élus',
-	description: 'Le conseil municipal de Saint-Hilaire-Bonneval : Maire, adjoints, conseillers délégués et conseillers municipaux.',
+	description: 'Le conseil municipal de Saint-Martin : Maire, adjoints, conseillers délégués et conseillers municipaux.',
 	path: '/mairie/maire-elus'
 });
 

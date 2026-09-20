@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Contact',
-	description: 'Contactez la mairie de Saint-Hilaire-Bonneval par téléphone, email ou via le formulaire en ligne.',
+	description: 'Contactez la mairie de Saint-Martin par téléphone, email ou via le formulaire en ligne.',
 	path: '/contact'
 });
 

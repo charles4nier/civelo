@@ -8,9 +8,9 @@ import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
-	title: 'Histoire de Saint-Hilaire-Bonneval',
+	title: 'Histoire de Saint-Martin',
 	description:
-		"Découvrez l'histoire de Saint-Hilaire-Bonneval : origines gallo-romaines, paroisse, développement du bourg et patrimoine.",
+		"Découvrez l'histoire de Saint-Martin : origines gallo-romaines, paroisse, développement du bourg et patrimoine.",
 	path: '/histoire'
 });
 

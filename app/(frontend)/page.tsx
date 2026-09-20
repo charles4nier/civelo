@@ -10,7 +10,7 @@ import { getPayloadClient } from '@lib/payload';
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Accueil',
 	description:
-		'Site officiel de la commune de Saint-Hilaire-Bonneval (87) : démarches, actualités, tourisme, vie locale et patrimoine au cœur du Limousin.',
+		'Site officiel de la commune de Saint-Martin (87) : démarches, actualités, tourisme, vie locale et patrimoine au cœur du Limousin.',
 	path: '/'
 });
 

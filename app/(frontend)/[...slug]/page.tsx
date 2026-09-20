@@ -76,7 +76,7 @@ export default async function DynamicPage({ params }: Props) {
 						heroGradient={DEFAULT_GRADIENT}
 						breadcrumbLabel={title}
 						eyebrowIcon="MapPin"
-						eyebrowText="Mairie de Saint-Hilaire-Bonneval"
+						eyebrowText="Mairie de Saint-Martin"
 						title={title}
 						subtitle=""
 						sectionEyebrow="Annuaire"
@@ -123,7 +123,7 @@ export default async function DynamicPage({ params }: Props) {
 				heroGradient={DEFAULT_GRADIENT}
 				breadcrumbLabel={title}
 				eyebrowIcon={FileText}
-				eyebrowText={data?.eyebrowText || 'Mairie de Saint-Hilaire-Bonneval'}
+				eyebrowText={data?.eyebrowText || 'Mairie de Saint-Martin'}
 				title={title}
 				subtitle={data?.sousTitre ?? ''}
 			>

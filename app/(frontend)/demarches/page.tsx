@@ -10,7 +10,7 @@ import { getPayloadClient } from '@lib/payload';
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Mes démarches',
 	description:
-		'Toutes les démarches administratives de Saint-Hilaire-Bonneval : état civil, scolarité, urbanisme, environnement, titres et documents.',
+		'Toutes les démarches administratives de Saint-Martin : état civil, scolarité, urbanisme, environnement, titres et documents.',
 	path: '/demarches'
 });
 

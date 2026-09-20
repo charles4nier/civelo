@@ -10,7 +10,7 @@ import { getPayloadClient } from '@lib/payload';
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Services & vie pratique',
 	description:
-		'Découvrez les commerces, artisans et entreprises de Saint-Hilaire-Bonneval : alimentation, restauration, santé, beauté, garages et savoir-faire locaux.',
+		'Découvrez les commerces, artisans et entreprises de Saint-Martin : alimentation, restauration, santé, beauté, garages et savoir-faire locaux.',
 	path: '/commerces'
 });
 

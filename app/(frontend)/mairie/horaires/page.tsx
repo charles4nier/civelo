@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Horaires & informations',
-	description: "Horaires d'ouverture et numéros pratiques de la mairie de Saint-Hilaire-Bonneval.",
+	description: "Horaires d'ouverture et numéros pratiques de la mairie de Saint-Martin.",
 	path: '/mairie/horaires'
 });
 

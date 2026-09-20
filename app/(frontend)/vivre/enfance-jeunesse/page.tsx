@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Enfance & jeunesse',
-	description: 'Centre de loisirs, cantine, garderie et assistantes maternelles à Saint-Hilaire-Bonneval.',
+	description: 'Centre de loisirs, cantine, garderie et assistantes maternelles à Saint-Martin.',
 	path: '/vivre/enfance-jeunesse'
 });
 

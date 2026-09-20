@@ -9,7 +9,7 @@ import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
 	title: 'Agenda',
-	description: 'Conseils municipaux, marchés, fêtes et cérémonies à Saint-Hilaire-Bonneval.',
+	description: 'Conseils municipaux, marchés, fêtes et cérémonies à Saint-Martin.',
 	path: '/agenda'
 });
 
