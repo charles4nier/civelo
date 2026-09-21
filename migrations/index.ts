@@ -8,6 +8,7 @@ import * as migration_20260916_194420_ajoute_variante_tenant from './20260916_19
 import * as migration_20260916_205500_ajoute_afficher_encart_mayor_word from './20260916_205500_ajoute_afficher_encart_mayor_word';
 import * as migration_20260916_205821_ajoute_afficher_slideshow from './20260916_205821_ajoute_afficher_slideshow';
 import * as migration_20260917_075040_renomme_themes_clocher_belvedere_preau_atelier from './20260917_075040_renomme_themes_clocher_belvedere_preau_atelier';
+import * as migration_20260921_082014_ajoute_image_items_annuaire from './20260921_082014_ajoute_image_items_annuaire';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20260917_075040_renomme_themes_clocher_belvedere_preau_atelier.up,
     down: migration_20260917_075040_renomme_themes_clocher_belvedere_preau_atelier.down,
-    name: '20260917_075040_renomme_themes_clocher_belvedere_preau_atelier'
+    name: '20260917_075040_renomme_themes_clocher_belvedere_preau_atelier',
+  },
+  {
+    up: migration_20260921_082014_ajoute_image_items_annuaire.up,
+    down: migration_20260921_082014_ajoute_image_items_annuaire.down,
+    name: '20260921_082014_ajoute_image_items_annuaire'
   },
 ];
