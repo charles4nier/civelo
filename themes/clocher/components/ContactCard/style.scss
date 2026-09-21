@@ -5,14 +5,35 @@ $b: 'contact-card';
 
 .#{$b} {
 	background: #ffffff;
-	padding: $spacing-xl;
 	display: flex;
 	flex-direction: column;
+	overflow: hidden;
 	transition: $transition-smooth;
 
 	&:hover {
 		box-shadow: $shadow-soft;
 	}
+}
+
+/* Image (optionnelle, en premier) */
+
+.#{$b}__image-wrap {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+}
+
+.#{$b}__image {
+	object-fit: cover;
+}
+
+/* Corps (tout le contenu sous l'image) */
+
+.#{$b}__body {
+	padding: $spacing-xl;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
 }
 
 /* Icon */

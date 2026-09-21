@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Phone, Mail, MapPin, Clock, Globe } from 'lucide-react';
 import { LucideIconByName } from '@shared/lib/icons';
 import './style.scss';
@@ -21,6 +22,8 @@ function websiteHref(value: string) {
 }
 
 type Props = {
+	// Optionnelle — s'affiche en haut de la carte quand elle est renseignée.
+	image?: { url: string; alt?: string };
 	// Nom d'icône lucide-react (ex. venu de Payload, sérialisable) plutôt
 	// qu'une référence de composant — voir shared/lib/icons.ts.
 	icon: string;
@@ -33,6 +36,7 @@ type Props = {
 };
 
 export default function ContactCard({
+	image,
 	icon,
 	iconVariant,
 	category,
@@ -43,20 +47,32 @@ export default function ContactCard({
 }: Props) {
 	return (
 		<article className={B}>
-			<div className={`${B}__top`}>
-				<span className={`${B}__category`}>{category}</span>
-				<div className={`${B}__icon ${B}__icon--${iconVariant}`}>
-					<LucideIconByName name={icon} size={16} strokeWidth={1.75} />
+			{image && (
+				<div className={`${B}__image-wrap`}>
+					<Image
+						src={image.url}
+						alt={image.alt || name}
+						fill
+						sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+						className={`${B}__image`}
+					/>
 				</div>
-			</div>
+			)}
+			<div className={`${B}__body`}>
+				<div className={`${B}__top`}>
+					<span className={`${B}__category`}>{category}</span>
+					<div className={`${B}__icon ${B}__icon--${iconVariant}`}>
+						<LucideIconByName name={icon} size={16} strokeWidth={1.75} />
+					</div>
+				</div>
 
-			<h3 className={`${B}__name`}>{name}</h3>
-			{badge && <span className={`${B}__badge`}>{badge}</span>}
-			{description && <p className={`${B}__desc`}>{description}</p>}
+				<h3 className={`${B}__name`}>{name}</h3>
+				{badge && <span className={`${B}__badge`}>{badge}</span>}
+				{description && <p className={`${B}__desc`}>{description}</p>}
 
-			{contacts && contacts.length > 0 && (
-				<div className={`${B}__contacts`}>
-					{contacts.map((c, i) => {
+				{contacts && contacts.length > 0 && (
+					<div className={`${B}__contacts`}>
+						{contacts.map((c, i) => {
 						if (c.type === 'address') return (
 							<div key={i} className={`${B}__row`}>
 								<MapPin size={13} className={`${B}__row-icon`} />
@@ -95,7 +111,8 @@ export default function ContactCard({
 						);
 					})}
 				</div>
-			)}
+				)}
+			</div>
 		</article>
 	);
 }

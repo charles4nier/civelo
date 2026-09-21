@@ -373,6 +373,10 @@ export const Pages: CollectionConfig = {
 							{ name: 'nom', type: 'text', required: true },
 							'Le nom de la fiche (ex. nom du commerce, du médecin, de l\'association).'
 						),
+						withInfo(
+							{ name: 'image', type: 'upload', relationTo: 'media' },
+							"Une photo pour cette fiche (optionnel). Affichée en haut de la carte."
+						),
 						categoryField(),
 						withInfo({ name: 'badge', type: 'text' }, "Petit texte affiché à côté du nom (ex. un sigle d'association)."),
 						withInfo({ name: 'description', type: 'textarea' }, 'Quelques lignes qui présentent cette fiche.'),

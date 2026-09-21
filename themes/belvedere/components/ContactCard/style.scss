@@ -13,7 +13,7 @@ $b: 'contact-card';
 	border-radius: 16px;
 	background: $cream;
 	border: 1px solid $primary-10;
-	padding: $spacing-xl;
+	overflow: hidden;
 	transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 
 	&:hover {
@@ -27,6 +27,27 @@ $b: 'contact-card';
 			color: $cream;
 		}
 	}
+}
+
+/* Image (optionnelle, en premier) */
+
+.#{$b}__image-wrap {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+}
+
+.#{$b}__image {
+	object-fit: cover;
+}
+
+/* Corps (tout le contenu sous l'image) */
+
+.#{$b}__body {
+	padding: $spacing-xl;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
 }
 
 /* ========================

@@ -224,6 +224,7 @@ type PayloadContactGroup = {
 // champs (plus de `group-field--within-group` visuel dans l'admin).
 type PayloadAnnuaireItem = PayloadContactGroup & {
 	nom: string;
+	image?: { url?: string; alt?: string } | string;
 	categorie: PayloadCategory | string;
 	badge?: string;
 	description?: string;
@@ -260,12 +261,14 @@ export async function getAnnuaireItems(slug: string): Promise<AnnuaireCardData[]
 
 		return items.map((item) => {
 			const cat = typeof item.categorie === 'object' ? item.categorie : undefined;
+			const img = typeof item.image === 'object' ? item.image : undefined;
 			return {
 				key: item.nom,
 				icon: resolveIconName(cat?.icone, 'HelpCircle'),
 				iconVariant: toIconVariant(cat?.couleur),
 				category: cat?.nom ?? '',
 				name: item.nom,
+				image: img?.url ? { url: img.url, alt: img.alt ?? item.nom } : undefined,
 				badge: item.badge,
 				description: item.description,
 				contacts: mapContactGroup(item)

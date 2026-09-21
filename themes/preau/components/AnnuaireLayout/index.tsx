@@ -18,6 +18,8 @@ export type AnnuaireCardData = {
 	iconVariant: IconVariant;
 	category: string;
 	name: string;
+	// Optionnelle — s'affiche en haut de la carte quand elle est renseignée.
+	image?: { url: string; alt?: string };
 	badge?: string;
 	description?: string;
 	contacts?: ContactItem[];
@@ -130,6 +132,7 @@ export default function AnnuaireLayout({
 						{filtered.map((card) => (
 							<ContactCard
 								key={card.key}
+								image={card.image}
 								icon={card.icon}
 								iconVariant={card.iconVariant}
 								category={card.category}
