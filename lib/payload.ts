@@ -122,7 +122,7 @@ const DEFAULT_NAV_LINKS = [
 		href: '#',
 		children: [
 			{ label: 'La commune', href: '/vivre/la-commune' },
-			{ label: 'Services & vie pratique', href: '/commerces' },
+			{ label: 'Commerces, artisans & santé', href: '/commerces' },
 			{ label: 'Enfance & jeunesse', href: '/vivre/enfance-jeunesse' },
 			{ label: 'Vie associative', href: '/vivre/vie-associative' },
 			{ label: 'Sports & loisirs', href: '/vivre/sports-loisirs' }

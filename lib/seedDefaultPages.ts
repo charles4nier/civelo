@@ -66,7 +66,7 @@ export async function seedDefaultPagesForTenant(
 		}
 	});
 	await create({
-		title: 'Commerces & artisans',
+		title: 'Commerces, artisans & santé',
 		slug: 'commerces',
 		menu: 'commune',
 		gabarit: 'liste',

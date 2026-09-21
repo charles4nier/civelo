@@ -39,10 +39,10 @@ export default async function CommercesPage() {
 
 	return (
 		<AnnuaireLayout
-			breadcrumbLabel="Commerces & artisans"
+			breadcrumbLabel="Commerces, artisans & santé"
 			eyebrowIcon="Store"
 			eyebrowText="Vivre à la commune"
-			title="Commerces & artisans"
+			title="Commerces, artisans & santé"
 			subtitle={<>Producteurs, restaurateurs, professionnels de santé et artisans :<br />celles et ceux qui animent la commune au quotidien.</>}
 			sectionEyebrow="Annuaire local"
 			countSingular="professionnel à découvrir"

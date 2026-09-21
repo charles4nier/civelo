@@ -8,7 +8,7 @@ import { pickTheme, getCurrentTheme } from '@shared/lib/theme';
 import { getPayloadClient } from '@lib/payload';
 
 export const metadata: Metadata = generatePageMetadata({
-	title: 'Services & vie pratique',
+	title: 'Commerces, artisans & santé',
 	description:
 		'Découvrez les commerces, artisans et entreprises de Saint-Martin : alimentation, restauration, santé, beauté, garages et savoir-faire locaux.',
 	path: '/commerces'

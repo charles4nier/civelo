@@ -40,10 +40,10 @@ export default async function CommercesPage() {
 	return (
 		<AnnuaireLayout
 			heroGradient="linear-gradient(135deg, oklch(0.52 0.17 240), oklch(0.70 0.16 220))"
-			breadcrumbLabel="Services & vie pratique"
+			breadcrumbLabel="Commerces, artisans & santé"
 			eyebrowIcon="Store"
 			eyebrowText="Vivre à Saint-Martin"
-			title="Services & vie pratique"
+			title="Commerces, artisans & santé"
 			subtitle={<>Producteurs, restaurateurs, professionnels de santé et artisans :<br />celles et ceux qui animent la commune au quotidien.</>}
 			sectionEyebrow="Annuaire local"
 			countSingular="professionnel à découvrir"
