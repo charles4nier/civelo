@@ -47,22 +47,13 @@ export default function Slideshow({ slides }: Props) {
 
 	return (
 		<section className={CLASS_NAME} aria-roledescription="carousel" aria-label="Mise en avant de la commune">
-			<div className={`container ${CLASS_NAME}__grid`}>
+			<div className="container">
 				<div
-					className={`${CLASS_NAME}__image`}
+					className={`${CLASS_NAME}__card`}
 					onMouseEnter={() => setPaused(true)}
 					onMouseLeave={() => setPaused(false)}
 				>
-					{/* Wrapper dédié pour le décalage bas-droite (effet de profondeur) :
-					    `next/image` en mode `fill` pose `inset: 0` en style INLINE sur
-					    le <img> lui-même (priorité sur toute règle CSS ciblant `img`),
-					    donc un `inset` personnalisé sur l'`<img>` ne peut jamais
-					    s'appliquer. En le posant ici, sur un `<div>` intermédiaire que
-					    `fill` se contente de remplir à 100 %, le décalage fonctionne
-					    réellement — bug réel du 2026-09-16 : les contrôles se
-					    retrouvaient plaqués contre le bord réel de l'image (aucune
-					    marge), au lieu de déborder proprement. */}
-					<div className={`${CLASS_NAME}__image-inner`}>
+					<div className={`${CLASS_NAME}__image`}>
 						{slides.map((slide, i) => (
 							<Image
 								key={slide.key}
@@ -78,45 +69,44 @@ export default function Slideshow({ slides }: Props) {
 						))}
 					</div>
 
-					{slides.length > 1 && (
-						<div className={`${CLASS_NAME}__controls`}>
-							<button type="button" onClick={() => move(-1)} aria-label="Diapositive précédente">
-								<ArrowLeft size={16} aria-hidden="true" />
-							</button>
-							<div>
-								{slides.map((slide, i) => (
-									<button
-										key={slide.key}
-										type="button"
-										className={i === active ? 'is-active' : ''}
-										onClick={() => setActive(i)}
-										aria-label={`Afficher : ${slide.titre}`}
-									>
-										<span />
-									</button>
-								))}
-							</div>
-							<button type="button" onClick={() => move(1)} aria-label="Diapositive suivante">
-								<ArrowRight size={16} aria-hidden="true" />
-							</button>
+					<div className={`${CLASS_NAME}__panel`}>
+						{/* `key={current.key}` force le remontage à chaque changement de
+						    diapositive : c'est ce qui rejoue l'animation d'entrée
+						    (keyframe `fade-up-atelier` partagé du thème) à chaque fois
+						    plutôt qu'une seule fois au premier rendu. */}
+						<div key={current.key} className={`${CLASS_NAME}__panel-text`}>
+							{current.etiquette && <p className="eyebrow">{current.etiquette}</p>}
+							<h2 className={`${CLASS_NAME}__title`}>{current.titre}</h2>
+							{current.description && <p className={`${CLASS_NAME}__desc`}>{current.description}</p>}
+							{current.boutonLabel && current.href && (
+								<Link href={current.href} className={`${CLASS_NAME}__cta`}>
+									{current.boutonLabel}
+								</Link>
+							)}
 						</div>
-					)}
-				</div>
 
-				{/* `key={current.key}` force le remontage à chaque changement de
-				    diapositive : c'est ce qui rejoue l'animation d'entrée
-				    (`.slideshow__text`, keyframe `fade-up-atelier` partagé du thème)
-				    à chaque fois plutôt qu'une seule fois au premier rendu. */}
-				<div className={`${CLASS_NAME}__text`} key={current.key}>
-					{current.etiquette && <p className="eyebrow">{current.etiquette}</p>}
-					<h2 className={`${CLASS_NAME}__title`}>{current.titre}</h2>
-					<div className="divider-line" />
-					{current.description && <p className={`${CLASS_NAME}__desc`}>{current.description}</p>}
-					{current.boutonLabel && current.href && (
-						<Link href={current.href} className={`${CLASS_NAME}__cta btn-primary`}>
-							{current.boutonLabel} <ArrowRight size={16} aria-hidden="true" />
-						</Link>
-					)}
+						{slides.length > 1 && (
+							<div className={`${CLASS_NAME}__controls`}>
+								<button type="button" onClick={() => move(-1)} aria-label="Diapositive précédente">
+									<ArrowLeft size={16} aria-hidden="true" />
+								</button>
+								<button type="button" onClick={() => move(1)} aria-label="Diapositive suivante">
+									<ArrowRight size={16} aria-hidden="true" />
+								</button>
+								<div className={`${CLASS_NAME}__dots`}>
+									{slides.map((slide, i) => (
+										<button
+											key={slide.key}
+											type="button"
+											className={i === active ? 'is-active' : ''}
+											onClick={() => setActive(i)}
+											aria-label={`Afficher : ${slide.titre}`}
+										/>
+									))}
+								</div>
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 		</section>

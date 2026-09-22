@@ -3,7 +3,9 @@
 .theme-atelier {
 .hero {
 	position: relative;
-	min-height: 100svh;
+	// Compense le header fixe (80px) pour que le hero ne démarre pas sous le menu.
+	margin-top: 80px;
+	height: 580px;
 	width: 100%;
 	overflow: hidden;
 
@@ -22,10 +24,11 @@
 	&__content {
 		position: relative;
 		z-index: 10;
-		min-height: 100svh;
+		min-height: 580px;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+		padding-block: $spacing-4xl;
 	}
 
 	&__body {
@@ -48,27 +51,56 @@
 		width: 80px;
 		height: 4px;
 		background-color: $coral;
-		margin-top: $spacing-xl;
+		margin-top: $spacing-md;
 	}
 
 	&__desc {
 		margin-top: $spacing-xl;
 		color: rgba(255, 255, 255, 0.9);
-		font-size: 18px;
-		max-width: 520px;
-		line-height: $line-height-relaxed;
+		font-size: 16px;
+		max-width: 672px;
+		line-height: 1.8;
 	}
 
 	&__actions {
-		margin-top: $spacing-2xl + $spacing-sm;
+		margin-top: $spacing-xl;
 		display: flex;
 		flex-wrap: wrap;
 		gap: $spacing-sm;
 	}
 
+	&__scroll-hint {
+		display: none;
+		position: absolute;
+		bottom: 40px;
+		right: 0;
+		align-items: center;
+		gap: $spacing-sm;
+		color: rgba(255, 255, 255, 0.8);
+		font-size: 11px;
+		letter-spacing: 0.2em;
+		text-transform: uppercase;
+
+		@media (min-width: $breakpoint-sm + 1) {
+			display: flex;
+		}
+	}
+
+	&__scroll-line {
+		width: 48px;
+		height: 1px;
+		background: rgba(255, 255, 255, 0.4);
+	}
+
 	/* ---- Responsive ---- */
 
 	@media (max-width: $breakpoint-sm) {
+		height: 650px;
+
+		&__content {
+			min-height: 650px;
+		}
+
 		&__desc {
 			font-size: 16px;
 		}
@@ -89,4 +121,3 @@
 	}
 }
 }
-

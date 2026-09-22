@@ -28,7 +28,7 @@
 	}
 
 	// Le titre plus large (55px) déborde plus vite sur 2 lignes à la largeur
-	// par défaut (560px, `News/style.scss`) — un peu plus de place ici.
+	// par défaut (650px, `News/style.scss`) — un peu plus de place ici.
 	.news__header-text {
 		max-width: 700px;
 	}
@@ -52,17 +52,4 @@
 		background-color: $card;
 	}
 
-	// ---- Cartes Découvrir ----
-	// Reprend la géométrie de saint-hilaire-discovery (proportions plus
-	// hautes) — couleurs du thème édito conservées, pas celles du prototype.
-	// Décalage vertical de la 2ᵉ carte retiré le 2026-09-18 : les 3 cartes
-	// doivent rester alignées, le désaxage lisait comme un bug.
-	.discover__card-image-wrap {
-		aspect-ratio: 3 / 4;
-	}
-
-	.discover__card-tag {
-		background-color: $sunshine;
-		color: $foreground;
-	}
 }

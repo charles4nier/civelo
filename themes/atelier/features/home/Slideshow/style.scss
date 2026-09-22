@@ -3,47 +3,27 @@
 .theme-atelier {
 .slideshow {
 	padding: $section-padding-y-desktop 0;
+	// Sans fond propre, la section héritait du fond de la page — quasi
+	// identique à la section juste au-dessus, les deux se confondaient.
+	background-color: $card;
 
-	&__grid {
+	&__card {
 		display: grid;
-		grid-template-columns: 1.15fr 0.85fr;
-		gap: $spacing-6xl;
-		align-items: center;
+		grid-template-columns: 1.1fr 1fr;
+		align-items: stretch;
+		background-color: $card;
 	}
 
-	/* ---- Colonne image ---- */
-
-	// Ratio plutôt que hauteur fixe : une hauteur fixe généreuse (essayé
-	// d'abord à 600px, pensée pour bien montrer un portrait) laissait un
-	// large bandeau blanc au-dessus/dessous de toute photo paysage classique
-	// (bien plus large que haute) — `contain` la centre sans jamais remplir
-	// une boîte aussi haute. 3/2 correspond à une vraie photo paysage :
-	// celles-ci remplissent la boîte quasiment sans lettrage, et une image
-	// portrait reste centrée en hauteur pleine (letterboxing gauche/droite
-	// uniquement, jamais en haut/bas).
+	/* ---- Image : pleine hauteur, à vif contre le panneau texte ---- */
 	&__image {
 		position: relative;
-		aspect-ratio: 3 / 2;
-	}
-
-	// Décale l'image du coin bas-droit du conteneur (effet de profondeur,
-	// badge en débord) — posé ici plutôt que sur l'`<img>` lui-même : `fill`
-	// de `next/image` pose `inset: 0` en style INLINE sur l'`<img>`, qui
-	// gagnerait toujours contre une règle `inset` ciblant `img` en CSS. En
-	// isolant le décalage sur ce `<div>` intermédiaire (que `fill` se
-	// contente de remplir à 100 %), il s'applique réellement.
-	&__image-inner {
-		position: absolute;
-		inset: 0 $spacing-xl $spacing-xl 0;
+		min-height: 400px;
 		overflow: hidden;
-		box-shadow: $shadow-elegant;
 
 		img {
-			// `contain` plutôt que `cover` : les photos fournies sont souvent au
-			// format portrait, `cover` les recadrait de façon imprévisible.
-			object-fit: contain;
+			object-fit: cover;
 			opacity: 0;
-			transition: opacity 0.7s ease;
+			transition: opacity 0.6s ease;
 
 			&.is-active {
 				opacity: 1;
@@ -51,110 +31,123 @@
 		}
 	}
 
-	&__controls {
-		position: absolute;
-		// Centré sur le conteneur plutôt que collé à gauche : avec
-		// `object-fit: contain`, une image portrait n'occupe qu'une bande
-		// étroite au centre — les contrôles doivent suivre cette bande, pas
-		// rester ancrés sur le fond visible autour (letterboxing).
-		left: 50%;
-		transform: translateX(-50%);
-		bottom: $spacing-3xl + $spacing-xs;
-		z-index: 3;
+	/* ---- Panneau texte : blanc, posé sur le fond de la section ---- */
+	&__panel {
 		display: flex;
-		align-items: center;
-		gap: $spacing-sm;
-		padding: 5px;
-		background-color: $foreground-85;
-		backdrop-filter: blur(10px);
-
-		button {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 34px;
-			height: 34px;
-			background: transparent;
-			border: none;
-			color: #ffffff;
-			cursor: pointer;
-			transition: $transition-smooth;
-		}
-
-		> div {
-			display: flex;
-			gap: 2px;
-		}
-
-		> div button {
-			width: 24px;
-			height: 34px;
-			padding: 0;
-
-			span {
-				display: block;
-				width: 12px;
-				height: 2px;
-				background-color: rgba(255, 255, 255, 0.45);
-			}
-
-			&.is-active span {
-				background-color: $sunshine;
-			}
-		}
+		flex-direction: column;
+		justify-content: center;
+		padding: 50px;
 	}
 
-	/* ---- Colonne texte ---- */
-
-	// `fade-up-atelier` (keyframe partagé, `themes/atelier/styles/index.scss`) —
-	// rejoué à chaque changement de diapositive grâce au `key={current.key}`
-	// côté React qui remonte ce bloc. Durée raccourcie par rapport au Hero
-	// (.8s) : à .45s, le texte suit le rythme de rotation des diapositives
-	// (5s) sans sembler traîner derrière le fondu de l'image.
-	&__text {
+	&__panel-text {
 		animation: fade-up-atelier 0.45s $ease-smooth both;
 	}
 
 	&__title {
 		font-family: $font-display;
-		font-size: clamp(28px, 3vw, 40px);
+		font-size: clamp(24px, 2.6vw, 32px);
 		font-weight: $font-weight-semibold;
 		line-height: $line-height-snug;
-		margin-top: $spacing-sm;
 		color: $foreground;
+		margin-top: $spacing-sm;
 	}
 
 	&__desc {
-		margin-top: $spacing-xl;
-		max-width: 420px;
+		margin-top: $spacing-lg;
+		max-width: 440px;
 		color: $muted-foreground;
 		line-height: $line-height-relaxed;
 	}
 
 	&__cta {
+		display: inline-flex;
+		align-items: center;
+		margin-top: $spacing-xl;
+		padding: 14px 28px;
+		background-color: $sunshine;
+		color: $foreground;
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-semibold;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		transition: $transition-smooth;
+
+		&:hover {
+			filter: brightness(0.95);
+		}
+	}
+
+	/* ---- Contrôles : flèches carrées + points, sous le CTA ---- */
+	&__controls {
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm;
 		margin-top: $spacing-2xl;
+
+		button {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 44px;
+			height: 44px;
+			background-color: transparent;
+			border: 1px solid $border;
+			color: $foreground;
+			cursor: pointer;
+			transition: $transition-smooth;
+
+			&:hover {
+				border-color: $primary;
+				color: $primary;
+			}
+		}
+	}
+
+	&__dots {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		margin-left: $spacing-sm;
+
+		button {
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			border: none;
+			padding: 0;
+			background-color: $border;
+			cursor: pointer;
+			transition: $transition-smooth;
+
+			&:hover {
+				border-color: transparent;
+				color: inherit;
+			}
+
+			&.is-active {
+				width: 20px;
+				border-radius: 4px;
+				background-color: $foreground;
+			}
+		}
 	}
 
 	/* ---- Responsive ---- */
-
 	@media (max-width: $breakpoint-md) {
 		padding: $section-padding-y-tablet 0;
 
-		&__grid {
+		&__card {
 			grid-template-columns: 1fr;
-			gap: $spacing-3xl;
-		}
-	}
-
-	@media (max-width: $breakpoint-sm) {
-		padding: $section-padding-y-mobile 0;
-
-		&__image-inner {
-			inset: 0 $spacing-md $spacing-lg 0;
 		}
 
-		&__controls {
-			bottom: $spacing-2xl;
+		&__image {
+			min-height: 300px;
+			aspect-ratio: auto;
+		}
+
+		&__panel {
+			padding: $spacing-xl;
 		}
 	}
 }

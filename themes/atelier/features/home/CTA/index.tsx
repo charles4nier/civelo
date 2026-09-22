@@ -21,9 +21,6 @@ export default function CTA({ data, nomCommune }: Props) {
 		<section id="contact" className={CLASS_NAME}>
 			<div className="container">
 				<div className={`${CLASS_NAME}__card`}>
-					<div className={`${CLASS_NAME}__blob ${CLASS_NAME}__blob--top`} />
-					<div className={`${CLASS_NAME}__blob ${CLASS_NAME}__blob--bottom`} />
-
 					<div className={`${CLASS_NAME}__grid`}>
 						<div className={`${CLASS_NAME}__intro`}>
 							<p className={`${CLASS_NAME}__eyebrow`}>{nomCommune ? `Mairie de ${nomCommune}` : 'Mairie'}</p>

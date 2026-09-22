@@ -10,11 +10,11 @@
 		justify-content: space-between;
 		flex-wrap: wrap;
 		gap: $spacing-xl;
-		margin-bottom: $spacing-4xl + $spacing-xl;
+		margin-bottom: $spacing-4xl;
 	}
 
 	&__header-text {
-		max-width: 560px;
+		max-width: 650px;
 	}
 
 	&__title {
@@ -25,19 +25,17 @@
 	&__grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		gap: $spacing-xl;
+		gap: 32px;
 	}
 
 	&__card {
-		background-color: $card;
-		padding: $spacing-2xl;
-		border-left: 4px solid $primary-30;
+		padding-top: 1.3rem;
+		border-top: 2px solid $primary;
 		cursor: pointer;
 		transition: $transition-smooth;
 
 		&:hover {
-			border-left-color: $coral;
-			box-shadow: $shadow-soft;
+			border-top-color: $coral;
 		}
 
 		&:hover .news__card-title {
@@ -139,4 +137,3 @@
 	}
 }
 }
-

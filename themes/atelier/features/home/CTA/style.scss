@@ -8,39 +8,17 @@
 	&__card {
 		position: relative;
 		overflow: hidden;
-		background: $gradient-forest;
+		background: $primary;
 		padding: $spacing-4xl $spacing-5xl;
-		color: #ffffff;
-		box-shadow: $shadow-elegant;
+		color: $primary-foreground;
 		border-top: 4px solid $sunshine;
-	}
-
-	&__blob {
-		position: absolute;
-		width: 384px;
-		height: 384px;
-		border-radius: 50%;
-		filter: blur(80px);
-		pointer-events: none;
-
-		&--top {
-			top: -96px;
-			right: -96px;
-			background: $sunshine-30;
-		}
-
-		&--bottom {
-			bottom: -128px;
-			left: -64px;
-			background: $leaf-40;
-		}
 	}
 
 	&__grid {
 		position: relative;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: $spacing-4xl + $spacing-xl;
+		gap: $spacing-5xl;
 		align-items: center;
 	}
 
@@ -86,7 +64,7 @@
 		margin-top: $spacing-2xl;
 		padding: 14px 28px;
 		background-color: #ffffff;
-		color: $foreground;
+		color: $leaf;
 		font-family: $font-body;
 		font-size: $small-size-desktop;
 		font-weight: $font-weight-semibold;
@@ -169,4 +147,3 @@
 	}
 }
 }
-

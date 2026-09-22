@@ -49,6 +49,11 @@ export default function Hero({ data }: Props) {
 						)}
 					</div>
 				</div>
+
+				<div className={`${CLASS_NAME}__scroll-hint`}>
+					<div className={`${CLASS_NAME}__scroll-line`} />
+					<span>Scroll</span>
+				</div>
 			</div>
 		</section>
 	);

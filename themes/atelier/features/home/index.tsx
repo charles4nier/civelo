@@ -204,9 +204,11 @@ export default async function HomePage() {
 	// différemment. Le Hero ne change jamais, quelle que soit la variante. Le
 	// diaporama est 2ᵉ bloc en tourisme, 3ᵉ en défaut (le Hero n'est jamais
 	// compté comme un bloc). L'agenda n'est plus intégré à « L'essentiel en un
-	// clic » (`QuickAccess`) : il devient son propre bloc, sous les dernières
-	// actualités municipales — `QuickAccess` ne reçoit donc pas `nextEvent`
-	// dans cette variante, pour ne pas l'afficher deux fois.
+	// clic » (`QuickAccess`, dont le style repris de style-edito-test n'a plus
+	// de place pour l'accueillir) : dans les deux variantes, c'est désormais
+	// son propre bloc (`Agenda`) — en tourisme sous les dernières actualités
+	// municipales, en défaut juste après `QuickAccess` (son emplacement
+	// précédent, quand il vivait encore dans la carte).
 	if (variant === 'tourisme') {
 		return (
 			<div className="tourisme-layout">
@@ -216,7 +218,7 @@ export default async function HomePage() {
 				{news}
 				{nextEvent && <Agenda event={nextEvent} />}
 				{mayorWord}
-				<QuickAccess items={quickAccessItems} overlapPrevious={false} />
+				<QuickAccess items={quickAccessItems} />
 				{cta}
 			</div>
 		);
@@ -225,7 +227,8 @@ export default async function HomePage() {
 	return (
 		<>
 			{hero}
-			<QuickAccess items={quickAccessItems} nextEvent={nextEvent} />
+			<QuickAccess items={quickAccessItems} />
+			{nextEvent && <Agenda event={nextEvent} />}
 			{news}
 			{slideshow}
 			{mayorWord}

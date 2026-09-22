@@ -119,24 +119,24 @@ $spacing-5xl: 80px;
 $spacing-6xl: 96px;
 $spacing-7xl: 112px;
 
-$section-padding-y-desktop: $spacing-7xl;
-$section-padding-y-tablet:  $spacing-5xl;
+$section-padding-y-desktop: 92px;
+$section-padding-y-tablet:  92px;
 $section-padding-y-mobile:  $spacing-4xl;
 
 /* =========================
    📐 Container
    ========================= */
 
-$container-max-width:          1400px;
-$container-padding-x-desktop:  $spacing-5xl;
-$container-padding-x-tablet:   $spacing-2xl;
-$container-padding-x-mobile:   $spacing-lg;
+$container-max-width:          1180px;
+$container-padding-x-desktop:  $spacing-lg;
+$container-padding-x-tablet:   $spacing-lg;
+$container-padding-x-mobile:   $spacing-md;
 
 /* =========================
    📝 Typographie
    ========================= */
 
-$font-display: Georgia, serif;
+$font-display: var(--font-script), Georgia, serif;
 $font-body:    system-ui, sans-serif;
 $font-script:  var(--font-script), cursive;
 
@@ -145,28 +145,31 @@ $font-weight-medium:   500;
 $font-weight-semibold: 600;
 $font-weight-bold:     700;
 
-$line-height-tight:   1.05;
-$line-height-snug:    1.25;
+$line-height-tight:   0.94;
+$line-height-snug:    1;
 $line-height-normal:  1.5;
 $line-height-relaxed: 1.65;
 $line-height-loose:   1.75;
 
-$h1-size-desktop: clamp(44px, 5vw, 64px);
-$h2-size-desktop: clamp(30px, 3.5vw, 44px);
+$h1-size-desktop: clamp(43px, 5vw, 72px);
+$h2-size-desktop: clamp(35px, 4vw, 56px);
 $h3-size-desktop: clamp(20px, 2vw, 26px);
 $body-size-desktop: 16px;
 $small-size-desktop: 14px;
 $xs-size-desktop: 11px;
 
-$h1-size-md: clamp(36px, 5vw, 48px);
-$h2-size-md: clamp(26px, 3.5vw, 36px);
-$h3-size-md: clamp(18px, 2.5vw, 22px);
-$body-size-md: 15px;
+// Maquette : pas de palier tablette dédié pour les titres, ils restent en
+// fluide jusqu'au seul point de rupture mobile (repris de style-edito-test).
+$h1-size-md: clamp(43px, 5vw, 72px);
+$h2-size-md: clamp(35px, 4vw, 56px);
+$h3-size-md: clamp(20px, 2vw, 26px);
+$body-size-md: 16px;
 
-$h1-size-sm: clamp(32px, 8vw, 40px);
-$h2-size-sm: clamp(24px, 6vw, 30px);
+// Maquette mobile : tailles fixes, plus de clamp (repris de style-edito-test).
+$h1-size-sm: 42px;
+$h2-size-sm: 38px;
 $h3-size-sm: clamp(17px, 3.5vw, 20px);
-$body-size-sm: 15px;
+$body-size-sm: 16px;
 
 $title-margin-bottom-desktop: $spacing-md;
 $title-margin-bottom-mobile:  $spacing-sm;

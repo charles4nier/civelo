@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import { ArrowUpRight, CalendarDays, ArrowRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { LucideIconByName } from '@shared/lib/icons';
 import './style.scss';
 
@@ -13,45 +12,20 @@ export type QuickAccessItemData = {
 	href: string;
 };
 
+// Conservé ici (plutôt que dans `Agenda`) pour ne pas casser l'import de
+// `Agenda/index.tsx` (`import type { NextEventData } from '../QuickAccess'`)
+// — le prochain rendez-vous est désormais son propre bloc (`Agenda`), plus
+// intégré à cette carte (voir `themes/atelier/features/home/index.tsx`).
 export type NextEventData = {
 	title: string;
 	date: string; // ISO
 };
 
-type Props = {
-	items: QuickAccessItemData[];
-	nextEvent?: NextEventData | null;
-	// Le chevauchement `-80px` (voir style.scss) est calibré pour flotter
-	// par-dessus le bas du Hero (grande photo sombre en pleine largeur) —
-	// c'est le seul cas où ce bloc suit directement le Hero (variante
-	// défaut). En variante tourisme, il suit `MayorWord` (section claire,
-	// padding normal) : le même chevauchement mordrait dans le padding bas
-	// de `MayorWord` sans jamais l'atteindre visuellement, laissant un
-	// grand vide entre les deux. `overlapPrevious: false` désactive ce
-	// chevauchement dans ce cas.
-	overlapPrevious?: boolean;
-};
+type Props = { items: QuickAccessItemData[] };
 
-const monthShort = [
-	'JANV.',
-	'FÉVR.',
-	'MARS',
-	'AVR.',
-	'MAI',
-	'JUIN',
-	'JUIL.',
-	'AOÛT',
-	'SEPT.',
-	'OCT.',
-	'NOV.',
-	'DÉC.'
-];
-
-export default function QuickAccess({ items, nextEvent, overlapPrevious = true }: Props) {
-	const nextEventDate = nextEvent ? new Date(nextEvent.date) : null;
-
+export default function QuickAccess({ items }: Props) {
 	return (
-		<section id="demarches" className={`${CLASS_NAME}${overlapPrevious ? '' : ` ${CLASS_NAME}--flush`}`}>
+		<section id="demarches" className={CLASS_NAME}>
 			<div className="container">
 				<div className={`${CLASS_NAME}__card`}>
 					<div className={`${CLASS_NAME}__header`}>
@@ -76,28 +50,6 @@ export default function QuickAccess({ items, nextEvent, overlapPrevious = true }
 							);
 						})}
 					</div>
-
-					{nextEvent && nextEventDate && (
-						<div className={`${CLASS_NAME}__agenda`}>
-							<div className={`${CLASS_NAME}__agenda-date`}>
-								<span className={`${CLASS_NAME}__agenda-date-day`}>{nextEventDate.getDate()}</span>
-								<span className={`${CLASS_NAME}__agenda-date-month`}>
-									{monthShort[nextEventDate.getMonth()]}
-								</span>
-							</div>
-							<div className={`${CLASS_NAME}__agenda-body`}>
-								<p className={`${CLASS_NAME}__agenda-eyebrow`}>
-									<CalendarDays size={14} aria-hidden="true" />
-									Prochain rendez-vous
-								</p>
-								<p className={`${CLASS_NAME}__agenda-title`}>{nextEvent.title}</p>
-							</div>
-							<Link href="/agenda" className={`${CLASS_NAME}__agenda-link`}>
-								Voir l&rsquo;agenda
-								<ArrowRight size={16} aria-hidden="true" />
-							</Link>
-						</div>
-					)}
 				</div>
 			</div>
 		</section>
