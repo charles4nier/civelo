@@ -1,4 +1,4 @@
-import { Caveat, Cormorant } from 'next/font/google';
+import { Roboto } from 'next/font/google';
 import '@themes/atelier/styles/index.scss';
 
 import Header from '@themes/atelier/components/Header';
@@ -6,26 +6,18 @@ import Footer from '@themes/atelier/components/Footer';
 import FloatingButtons from '@themes/atelier/components/FloatingButtons';
 import type { RootLayoutProps } from '../registry';
 
-const cormorant = Cormorant({
+// Police unique pour tout le thème (voir styles/variables.scss) — sans-serif
+// épuré façon metropole.toulouse.fr, qui utilise Roboto partout.
+const roboto = Roboto({
 	subsets: ['latin'],
-	weight: ['400', '500', '600', '700'],
-	style: ['normal', 'italic'],
-	variable: '--font-script',
-	display: 'swap',
-	preload: false
-});
-
-const caveat = Caveat({
-	subsets: ['latin'],
-	weight: ['500', '600', '700'],
-	variable: '--font-caveat',
-	display: 'swap',
-	preload: false
+	weight: ['400', '500', '700', '900'],
+	variable: '--font-atelier',
+	display: 'swap'
 });
 
 export default function RootLayout({ navLinks, identite, boutonEntete, footer, children }: RootLayoutProps) {
 	return (
-		<html lang="fr" className={`theme-atelier ${cormorant.variable} ${caveat.variable}`}>
+		<html lang="fr" className={`theme-atelier ${roboto.variable}`}>
 			<body>
 				<nav className="skip-links" aria-label="Liens d'évitement">
 					<a href="#contenu" className="skip-link">
