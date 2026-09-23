@@ -1,10 +1,10 @@
 import Hero, { type HeroData } from './Hero';
 import QuickAccess, { type QuickAccessItemData, type NextEventData } from './QuickAccess';
-import Discover, { DiscoverGrid, type DiscoverCardData } from './Discover';
+import Discover, { type DiscoverCardData } from './Discover';
 import Slideshow, { type SlideshowItemData } from './Slideshow';
 import Agenda from './Agenda';
 import MayorWord, { type MayorWordData } from './MayorWord';
-import News, { NewsGrid, type NewsItemData } from './News';
+import News, { type NewsItemData } from './News';
 import CTA, { type CTAData } from './CTA';
 import { getAccueilData, getAgendaItems, getActualitesItems, pickHomeActus, getCurrentVariant, getIdentiteData } from '@lib/payload';
 import { events as fallbackEvents } from '@themes/atelier/features/agenda/data';
@@ -207,23 +207,18 @@ export default async function HomePage() {
 	// municipales, en défaut juste après `QuickAccess` (son emplacement
 	// précédent, quand il vivait encore dans la carte).
 	//
-	// Les wrappers de section (`<section id="decouvrir" class="discover">` et
-	// `<section class="news">`, avec leur bande décorative éventuelle) restent
-	// chacun à leur position habituelle — seul le CONTENU (`DiscoverGrid`/
-	// `NewsGrid`) est échangé entre les deux, pour que Tourisme & Patrimoine
-	// apparaisse juste après le Hero et Actualités juste après le Diaporama.
+	// Les wrappers de section (`Discover` et `News`, avec leur bande décorative
+	// éventuelle) restent chacun à leur position habituelle — seul le CONTENU
+	// (`DiscoverGrid`/`NewsGrid`, choisi par leur prop `variant`) est échangé
+	// entre les deux, pour qu'Actualités apparaisse juste après le Hero et
+	// Tourisme & Patrimoine juste après le Diaporama.
 	if (variant === 'tourisme') {
 		return (
 			<div className="tourisme-layout">
 				{hero}
-				<section id="decouvrir" className="discover">
-					<div className="discover__decoration" aria-hidden="true" />
-					<NewsGrid articles={newsArticles} />
-				</section>
+				<Discover cards={discoverCards} articles={newsArticles} variant="tourisme" />
 				{slideshow}
-				<section className="news">
-					<DiscoverGrid cards={discoverCards} />
-				</section>
+				<News articles={newsArticles} cards={discoverCards} variant="tourisme" />
 				{upcomingEvents.length > 0 && <Agenda events={upcomingEvents} />}
 				{mayorWord}
 				<QuickAccess items={quickAccessItems} />

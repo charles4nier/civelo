@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Calendar, ArrowRight, Download } from 'lucide-react';
+import { DiscoverGrid, type DiscoverCardData } from '../Discover';
 import './style.scss';
 
 const CLASS_NAME = 'news';
@@ -81,12 +82,19 @@ export function NewsGrid({ articles }: GridProps) {
 	);
 }
 
-type Props = { articles: NewsItemData[] };
+type Props = {
+	articles: NewsItemData[];
+	// Variante tourisme : ce bloc (juste après le Diaporama) porte le contenu
+	// « Tourisme & Patrimoine » à la place d'Actualités — l'inverse de
+	// `Discover`. Seul le CONTENU est échangé, pas les wrappers de section.
+	variant?: 'tourisme' | 'defaut';
+	cards?: DiscoverCardData[];
+};
 
-export default function News({ articles }: Props) {
+export default function News({ articles, variant = 'defaut', cards = [] }: Props) {
 	return (
 		<section className={CLASS_NAME}>
-			<NewsGrid articles={articles} />
+			{variant === 'tourisme' ? <DiscoverGrid cards={cards} /> : <NewsGrid articles={articles} />}
 		</section>
 	);
 }

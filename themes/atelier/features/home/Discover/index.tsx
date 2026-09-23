@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { NewsGrid, type NewsItemData } from '../News';
 import './style.scss';
 
 const CLASS_NAME = 'discover';
@@ -65,15 +66,23 @@ export function DiscoverGrid({ cards }: GridProps) {
 	);
 }
 
-type Props = { cards: DiscoverCardData[] };
+type Props = {
+	cards: DiscoverCardData[];
+	// Variante tourisme : ce bloc (juste après le Hero) porte le contenu
+	// « Actualités » à la place de Tourisme & Patrimoine — l'inverse est fait
+	// par `features/home/index.tsx`, qui met `DiscoverGrid` dans le wrapper
+	// `<section class="news">`. Seul le CONTENU est échangé, pas les wrappers.
+	variant?: 'tourisme' | 'defaut';
+	articles?: NewsItemData[];
+};
 
-export default function Discover({ cards }: Props) {
+export default function Discover({ cards, variant = 'defaut', articles = [] }: Props) {
 	return (
 		<section id="decouvrir" className={CLASS_NAME}>
 			{/* Décoratif — même bande que "Édito municipal" (`MayorWord/index.tsx`),
 			    mais jaune et ferrée à droite au lieu de verte à gauche. */}
 			<div className={`${CLASS_NAME}__decoration`} aria-hidden="true" />
-			<DiscoverGrid cards={cards} />
+			{variant === 'tourisme' ? <NewsGrid articles={articles} /> : <DiscoverGrid cards={cards} />}
 		</section>
 	);
 }
