@@ -27,12 +27,6 @@ export default function Hero({ data }: Props) {
 				sizes="100vw"
 				className={`${CLASS_NAME}__image`}
 			/>
-			{/* Accent décoratif — comble le coin bas-gauche resté vide sous la
-			    photo (le panneau `QuickAccess` remonte à droite, pas jusque-là),
-			    même esprit que le rond orange de toulouse.fr. Pas de sens en
-			    tourisme (le Hero n'y est pas suivi de `QuickAccess`, cf.
-			    `tourisme.scss`), qui le masque. */}
-			<div className={`${CLASS_NAME}__decoration`} aria-hidden="true" />
 		</section>
 	);
 }

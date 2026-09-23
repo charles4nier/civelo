@@ -1,5 +1,4 @@
 @import '@themes/atelier/styles/variables';
-@import '@themes/atelier/styles/home-colors';
 
 .theme-atelier {
 .hero {
@@ -14,23 +13,6 @@
 	&__image {
 		object-fit: cover;
 		object-position: center;
-	}
-
-	// Rond décoratif flouté, dans l'esprit du rond orange de toulouse.fr —
-	// mêmes ingrédients (cercle, `blur`, teinte alpha du thème) que les blobs
-	// de `EditorialLayout`/`AnnuaireLayout`. Coupé par `overflow: hidden` du
-	// Hero, comme la version originale déborde du cadre de la photo.
-	&__decoration {
-		position: absolute;
-		bottom: -160px;
-		left: -120px;
-		width: 420px;
-		height: 420px;
-		border-radius: 50%;
-		background: $hero-decoration-background;
-		filter: blur(70px);
-		pointer-events: none;
-		z-index: 2;
 	}
 
 	/* ---- Responsive ---- */

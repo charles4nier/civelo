@@ -115,8 +115,10 @@
 	&__logo-name {
 		margin: 0;
 		font-family: $font-display;
-		font-size: 18px;
-		font-weight: $font-weight-semibold;
+		font-size: 24px;
+		// 900 : hors échelle `$font-weight-*` (max 700), mais Roboto est chargée
+		// jusqu'à 900 (`RootLayout.tsx`) — même graisse que les titres de section.
+		font-weight: 900;
 		letter-spacing: -0.01em;
 		text-transform: uppercase;
 		color: $coral;
@@ -124,7 +126,7 @@
 		transition: $transition-smooth;
 
 		@media (max-width: $breakpoint-sm) {
-			font-size: 15px;
+			font-size: 18px;
 		}
 	}
 

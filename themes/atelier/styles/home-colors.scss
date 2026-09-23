@@ -12,9 +12,6 @@
 // copiée littéralement — jamais une référence à $coral/$sunshine/$leaf, pour
 // rester réellement découplé).
 
-/* ---- Hero ---- */
-$hero-decoration-background:       var(--color-hero-decoration-background, oklch(0.84 0.15 78 / 0.25));
-
 /* ---- News ---- */
 $news-title-color:                 var(--color-news-title-color, oklch(0.63 0.16 34));
 $news-card-foreground:             var(--color-news-card-foreground, oklch(1 0 0));

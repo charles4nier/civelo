@@ -27,14 +27,6 @@
 		font-size: clamp(36px, 5.5vw, 70px);
 	}
 
-	// Rond décoratif du Hero (`Hero/style.scss`) : comble le coin resté vide
-	// sous la photo à côté de `QuickAccess`, qui remonte dessus en variante
-	// défaut seulement. En tourisme, le Hero est suivi de Découvrir — pas de
-	// coin vide à combler, le rond n'a pas lieu d'être ici.
-	.hero__decoration {
-		display: none;
-	}
-
 	// ---- Alternance de fond ----
 	// Reprend le duo blanc/beige de saint-hilaire-discovery (une vraie
 	// alternance à deux tons, pas une simple teinte translucide) : Découvrir,
