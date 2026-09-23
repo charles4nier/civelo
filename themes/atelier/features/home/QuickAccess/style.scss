@@ -4,6 +4,12 @@
 .theme-atelier {
 .quick-access {
 	position: relative;
+	// Blanc explicite (pas le crème `$background` hérité de la page) : le
+	// panneau (`&__panel`) chevauche la photo du Hero par une marge négative,
+	// mais si ce chevauchement ne suffit pas à masquer totalement le bord bas
+	// de la photo, c'est le fond de CETTE section qui se voit dans l'interstice
+	// — doit rester blanc, pas la teinte crème du reste de la page.
+	background-color: $card;
 	// Pas de padding-bottom ici : le panneau (`&__panel`) porte déjà le sien —
 	// un padding séparé au niveau de la section laissait une fine bande du
 	// fond de page (écru) visible entre le panneau et le bloc suivant.
@@ -109,25 +115,93 @@
 		color: $foreground;
 	}
 
+	// Masqués par défaut (desktop) — la grille tient sur une seule ligne sans
+	// défiler, pas besoin d'indicateur de position. Réapparaissent en mobile,
+	// même look que les points du Diaporama (`Slideshow/style.scss`, `&__dots`).
+	&__dots {
+		display: none;
+	}
+
 	/* ---- Responsive ---- */
 
 	@media (max-width: $breakpoint-sm) {
 		&__panel {
 			margin-top: -$spacing-4xl;
-			padding: $spacing-2xl $spacing-lg $spacing-xl;
+			// Bord à bord (plus de `max-width`/`margin auto` recentré ni de
+			// gouttière du `.container`) — sur cette largeur, le panneau
+			// resserré à 960px laissait un filet visible entre son propre
+			// bord gauche et celui de la fenêtre, où la bande jaune
+			// décorative (`&::before`, pensée pour le desktop) apparaissait
+			// comme un bloc parasite au lieu d'un accent voulu.
+			max-width: none;
+			margin-inline: calc(50% - 50vw);
+			padding: $spacing-2xl $container-padding-x-mobile $spacing-xl;
+			background-color: $card;
+
+			// Plus nécessaires : le panneau porte déjà son propre fond
+			// (`background-color` ci-dessus) et occupe déjà toute la
+			// largeur — le débord de fond et la bande jaune n'ont plus de
+			// bord à combler.
+			&::after,
+			&::before {
+				content: none;
+			}
 		}
 
+		// Plus de 3-4 items ne tiennent pas sur une ligne à cette largeur —
+		// plutôt qu'un retour à la ligne (`flex-wrap: wrap` hérité du
+		// desktop), la rangée défile horizontalement avec un point d'arrêt
+		// par item (`scroll-snap`, voir `&__item`), pilotée par `index.tsx`
+		// (IntersectionObserver) pour les points ci-dessous.
 		&__grid {
+			flex-wrap: nowrap;
+			justify-content: flex-start;
 			gap: $spacing-xl $spacing-lg;
+			overflow-x: auto;
+			scroll-snap-type: x mandatory;
+			-webkit-overflow-scrolling: touch;
+			// Scrollbar native masquée — les points en dessous jouent déjà ce rôle.
+			scrollbar-width: none;
+
+			&::-webkit-scrollbar {
+				display: none;
+			}
 		}
 
 		&__item {
+			flex: 0 0 auto;
 			width: 92px;
+			scroll-snap-align: start;
 		}
 
 		&__item-icon {
 			width: 68px;
 			height: 68px;
+		}
+
+		&__dots {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			margin-top: $spacing-lg;
+
+			button {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				border: none;
+				padding: 0;
+				background-color: $border;
+				cursor: pointer;
+				transition: $transition-smooth;
+
+				&.is-active {
+					width: 20px;
+					border-radius: 4px;
+					background-color: $foreground;
+				}
+			}
 		}
 	}
 }

@@ -12,13 +12,22 @@
 }
 
 .theme-atelier {
-html {
+// `.theme-atelier` est porté directement par `<html>` (voir `RootLayout.tsx`),
+// pas par un ancêtre — un sélecteur `.theme-atelier html` ne matche donc
+// jamais rien (un `<html>` ne peut pas être descendant de lui-même). Ça
+// désactivait silencieusement `box-sizing: border-box` sur tout le site :
+// tous les éléments retombaient en `content-box` par héritage
+// (`*, *::before, *::after { box-sizing: inherit }` plus bas), donc tout
+// bloc combinant une largeur et un padding déborde de sa largeur prévue —
+// cause des débords horizontaux mobile (Diaporama, panneaux...). `&` cible
+// directement le `<html class="theme-atelier">` réel.
+& {
 	box-sizing: border-box;
 	-webkit-text-size-adjust: 100%;
 	scroll-behavior: smooth;
 }
 
-html,
+&,
 body {
 	overflow-x: clip;
 	min-height: 100%;

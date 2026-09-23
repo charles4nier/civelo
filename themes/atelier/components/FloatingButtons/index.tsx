@@ -3,12 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Phone, MessageCircle, Map, X, Mail, MapPin, Send } from 'lucide-react';
+import { Phone, MessageCircle, Map, X, Mail, MapPin, Send, Search } from 'lucide-react';
 import './style.scss';
 
 const CLASS_NAME = 'floating';
 
-type Modal = 'contact' | 'bot' | null;
+type Modal = 'contact' | 'bot' | 'search' | null;
 
 type ModalProps = {
 	onClose: () => void;
@@ -178,6 +178,64 @@ function ContactModal({ onClose, closing, titleId, closeButtonRef, modalRef }: M
 	);
 }
 
+// Ex-barre de recherche du Hero (`themes/atelier/features/home/Hero`,
+// `themes/atelier/features/home/QuickAccess`, item "Rechercher" en tête de
+// liste) — même repli honnête : UI seule, pas encore branchée à une vraie
+// recherche.
+function SearchModal({ onClose, closing, titleId, closeButtonRef, modalRef }: ModalProps) {
+	return (
+		<div
+			ref={modalRef}
+			className={`${CLASS_NAME}__modal ${closing ? `${CLASS_NAME}__modal--closing` : ''}`}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby={titleId}
+			aria-hidden={closing || undefined}
+		>
+			<div className={`${CLASS_NAME}__modal-header`}>
+				<button
+					ref={closeButtonRef}
+					className={`${CLASS_NAME}__modal-close`}
+					onClick={onClose}
+					aria-label="Fermer"
+				>
+					<X size={18} aria-hidden="true" />
+				</button>
+				<div className={`${CLASS_NAME}__modal-title-group`}>
+					<div className={`${CLASS_NAME}__modal-icon ${CLASS_NAME}__modal-icon--primary`}>
+						<Search size={16} aria-hidden="true" />
+					</div>
+					<h2 id={titleId} className={`${CLASS_NAME}__modal-title`}>
+						Rechercher
+					</h2>
+				</div>
+			</div>
+
+			<div className={`${CLASS_NAME}__modal-body`}>
+				<form className={`${CLASS_NAME}__form`} onSubmit={(e) => e.preventDefault()}>
+					<div className={`${CLASS_NAME}__field`}>
+						<label htmlFor="floating-search-input" className={`${CLASS_NAME}__label`}>
+							Rechercher sur le site
+						</label>
+						<input
+							id="floating-search-input"
+							name="search"
+							className={`${CLASS_NAME}__input`}
+							type="search"
+							placeholder="Comment pouvons-nous vous aider ?"
+							autoFocus
+						/>
+					</div>
+					<button type="submit" className={`${CLASS_NAME}__submit`}>
+						<Search size={14} aria-hidden="true" />
+						Rechercher
+					</button>
+				</form>
+			</div>
+		</div>
+	);
+}
+
 const suggestions = [
 	'Démarches administratives',
 	'Horaires de la mairie',
@@ -298,6 +356,12 @@ export default function FloatingButtons() {
 
 	const contactBtnRef = useRef<HTMLButtonElement>(null);
 	const botBtnRef = useRef<HTMLButtonElement>(null);
+	// Jamais attaché à un vrai bouton — ce composant n'a pas de bouton flottant
+	// "Recherche" (déclenchée depuis `QuickAccess`, voir l'écouteur plus bas).
+	// Le focus ne revient donc nulle part de précis à la fermeture, comme déjà
+	// le cas pour Contact quand il est ouvert depuis `QuickAccess` plutôt que
+	// depuis son propre bouton flottant.
+	const searchBtnRef = useRef<HTMLButtonElement>(null);
 	const closeBtnRef = useRef<HTMLButtonElement>(null);
 	const modalRef = useRef<HTMLDivElement>(null);
 	const buttonsRowRef = useRef<HTMLDivElement>(null);
@@ -348,6 +412,7 @@ export default function FloatingButtons() {
 		const onOpenModal = (e: Event) => {
 			const detail = (e as CustomEvent<Modal>).detail;
 			if (detail === 'contact') toggle('contact', contactBtnRef);
+			if (detail === 'search') toggle('search', searchBtnRef);
 		};
 		window.addEventListener('quick-access:open-modal', onOpenModal);
 		return () => window.removeEventListener('quick-access:open-modal', onOpenModal);
@@ -460,6 +525,15 @@ export default function FloatingButtons() {
 					onClose={handleClose}
 					closing={isClosing}
 					titleId="floating-bot-title"
+					closeButtonRef={closeBtnRef}
+					modalRef={modalRef}
+				/>
+			)}
+			{activeModal === 'search' && (
+				<SearchModal
+					onClose={handleClose}
+					closing={isClosing}
+					titleId="floating-search-title"
 					closeButtonRef={closeBtnRef}
 					modalRef={modalRef}
 				/>

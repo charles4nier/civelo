@@ -33,82 +33,10 @@
 		z-index: 2;
 	}
 
-	&__content {
-		position: relative;
-		z-index: 10;
-		min-height: 580px;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-
-	// H1 conservé pour le SEO/a11y (repère de page) mais plus affiché — le Hero
-	// n'a plus de gros titre visuel, voir `index.tsx`.
-	&__title {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-	}
-
-	&__search {
-		width: 100%;
-		max-width: 640px;
-		// Remonté par rapport au centre du Hero : laisse de la place à
-		// `L'essentiel en un clic` (QuickAccess) qui déborde sur le bas de
-		// la photo juste en dessous (voir QuickAccess/style.scss).
-		margin-bottom: $spacing-6xl;
-		display: flex;
-		align-items: center;
-		background-color: $hero-search-background;
-		box-shadow: $shadow-elegant;
-	}
-
-	&__search-input {
-		flex: 1;
-		min-width: 0;
-		border: none;
-		background: none;
-		padding: $spacing-lg $spacing-xl;
-		font-family: $font-body;
-		font-size: $body-size-desktop;
-		color: $foreground;
-
-		&::placeholder {
-			color: $muted-foreground;
-		}
-
-		&:focus {
-			outline: none;
-		}
-	}
-
-	&__search-btn {
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 56px;
-		height: 56px;
-		color: $hero-search-icon-color;
-		transition: $transition-smooth;
-
-		&:hover {
-			color: $foreground;
-		}
-	}
-
 	/* ---- Responsive ---- */
 
 	@media (max-width: $breakpoint-sm) {
 		height: 650px;
-
-		&__content {
-			min-height: 650px;
-			padding-inline: $container-padding-x-mobile;
-		}
 	}
 }
 }

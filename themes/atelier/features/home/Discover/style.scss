@@ -151,6 +151,11 @@
 
 	@media (max-width: $breakpoint-sm) {
 		padding: $section-padding-y-mobile 0;
+
+		&__decoration {
+			top: 336px;
+			bottom: -46px;
+		}
 	}
 }
 }

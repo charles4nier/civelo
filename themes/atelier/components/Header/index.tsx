@@ -227,9 +227,11 @@ export default function Header({ navLinks, identite, bouton }: Props) {
 				<div className={`${CLASS_NAME}__inner container`}>
 					<Link href="/" className={`${CLASS_NAME}__logo`}>
 						<div className={`${CLASS_NAME}__logo-text`}>
-							<span className={`${CLASS_NAME}__logo-name`}>
+							{/* H1 de la page (SEO/a11y) — présent sur toutes les pages via ce
+							    header partagé, le Hero n'en a plus (voir `Hero/index.tsx`). */}
+							<h1 className={`${CLASS_NAME}__logo-name`}>
 								{identite.titre}
-							</span>
+							</h1>
 							{identite.sousTitre && (
 								<span className={`${CLASS_NAME}__logo-sub`}>
 									{identite.sousTitre}

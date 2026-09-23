@@ -11,12 +11,7 @@ import { events as fallbackEvents } from '@themes/atelier/features/agenda/data';
 import './tourisme.scss';
 
 const fallbackHero: HeroData = {
-	image: '/saint-hilaire-bonneval-hero.jpg',
-	titre: 'Bienvenue sur le site de la Mairie de Saint-Martin, au cœur de la Haute-Vienne.',
-	description:
-		"Entre rivières, forêts et patrimoine vivant, la commune vous accueille. Retrouvez ici vos démarches, l'actualité municipale et toutes les informations utiles à la vie locale.",
-	boutonPrincipal: { label: 'Effectuer une démarche', href: '/demarches' },
-	boutonSecondaire: { label: 'Découvrir la commune', href: '/vivre/la-commune' }
+	image: '/saint-hilaire-bonneval-hero.jpg'
 };
 
 const fallbackQuickAccess: QuickAccessItemData[] = [
@@ -40,26 +35,10 @@ const fallbackQuickAccess: QuickAccessItemData[] = [
 		title: 'Services & Urgences',
 		desc: 'Numéros utiles et services publics à proximité.',
 		href: '/numeros-utiles'
-	},
-	// Mêmes raccourcis que les boutons flottants (`FloatingButtons`, Contact et
-	// Carte interactive) — retrouvés ici pour qu'ils restent accessibles dans
-	// le flux dès que `L'essentiel en un clic` est visible (les boutons
-	// flottants s'effacent alors, voir `FloatingButtons/index.tsx`).
-	{
-		key: 'contact',
-		icon: 'Mail',
-		title: 'Contact',
-		desc: 'Nous écrire ou nous joindre directement.',
-		href: '/contact',
-		opensModal: 'contact'
-	},
-	{
-		key: 'carte',
-		icon: 'Map',
-		title: 'Carte interactive',
-		desc: 'Étangs, sentiers, patrimoine et points d’intérêt.',
-		href: '/tourisme/carte-interactive'
 	}
+	// Contact et Carte interactive sont désormais ajoutés automatiquement par
+	// `QuickAccess` lui-même (`STRUCTURAL_ITEMS`), même quand `quickAccessItems`
+	// vient de Payload et ne les liste pas — plus besoin de les lister ici.
 ];
 
 const fallbackMayorWord: MayorWordData = {
