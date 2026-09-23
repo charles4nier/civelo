@@ -35,7 +35,7 @@
 
 	&__title {
 		font-family: $font-display;
-		font-size: clamp(28px, 3vw, 40px);
+		font-size: clamp(30px, 4vw, 55px);
 		font-weight: $font-weight-semibold;
 		line-height: $line-height-snug;
 		margin-top: $spacing-sm;
@@ -64,7 +64,7 @@
 		margin-top: $spacing-2xl;
 		padding: 14px 28px;
 		background-color: #ffffff;
-		color: $leaf;
+		color: $foreground;
 		font-family: $font-body;
 		font-size: $small-size-desktop;
 		font-weight: $font-weight-semibold;

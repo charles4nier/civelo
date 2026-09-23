@@ -7,23 +7,31 @@
 // branche tourisme, pour ne toucher aucun style partagé avec le mode défaut.
 .theme-atelier .tourisme-layout {
 	// ---- Titres de section ----
-	// Décision du 2026-09-16 — par cohérence, tous les titres principaux de
-	// la variante tourisme plafonnent à 55px, sauf le Hero (inchangé en
-	// contenu/position, seule sa taille diffère ici) qui reste le repère
-	// visuel le plus fort de la page, plafonné à 70px. En `clamp()`, pas en
-	// valeur fixe — sinon, contrairement au reste du site (tout est en
-	// `clamp()`, `styles/variables.scss`), ces titres ne rétréciraient pas
-	// entre 1024 et 1440px et casseraient plus vite que leurs voisins.
+	// Décision du 2026-09-16 — par cohérence, tous les titres principaux
+	// plafonnent à 55px, sauf le Hero (inchangé en contenu/position, seule
+	// sa taille diffère ici) qui reste le repère visuel le plus fort de la
+	// page, plafonné à 70px. En `clamp()`, pas en valeur fixe — sinon,
+	// contrairement au reste du site (tout est en `clamp()`,
+	// `styles/variables.scss`), ces titres ne rétréciraient pas entre
+	// 1024 et 1440px et casseraient plus vite que leurs voisins.
+	//
+	// Mise à jour du 2026-09-23 — `quick-access__title`, `slideshow__title`
+	// et `cta__title` plafonnaient bien plus bas en défaut (jusqu'à 30-40px),
+	// ce qui rendait ces titres trop peu marqués hors variante tourisme
+	// (ex. « L'essentiel en un clic »). Leur taille par défaut a été
+	// remontée à `clamp(30px, 4vw, 55px)` directement dans le style de
+	// chaque composant : les deux variantes partagent maintenant la même
+	// taille pour ces titres, d'où leur retrait d'ici. `news__title`,
+	// `mayor-word__title` et `discover__title` restent ci-dessous : ils
+	// héritent du `h2` de base (`$h2-size-desktop`, clamp(35px, 4vw, 56px)),
+	// déjà très proche mais pas strictement identique.
 	.hero__title {
 		font-size: clamp(36px, 5.5vw, 70px);
 	}
 
-	.quick-access__title,
 	.news__title,
 	.mayor-word__title,
-	.discover__title,
-	.slideshow__title,
-	.cta__title {
+	.discover__title {
 		font-size: clamp(30px, 4vw, 55px);
 	}
 
@@ -36,19 +44,25 @@
 	// ---- Alternance de fond ----
 	// Reprend le duo blanc/beige de saint-hilaire-discovery (une vraie
 	// alternance à deux tons, pas une simple teinte translucide) : Découvrir,
-	// Actualités, L'essentiel en un clic et Nous contacter sur le beige de
-	// base du thème (`$background`) ; Diaporama et Mot du Maire en blanc
+	// Actualités et L'essentiel en un clic sur le beige de base du thème
+	// (`$background`) ; Diaporama, Mot du Maire et Nous contacter en blanc
 	// franc (`$card`). L'Agenda garde son bandeau vert, hors de cette
 	// alternance.
+	//
+	// Mise à jour du 2026-09-23 — `.cta` (Nous contacter) est passé du beige
+	// au blanc : dans l'ordre tourisme (`features/home/index.tsx`), il suit
+	// directement `.quick-access`, déjà en beige — les deux collés faisaient
+	// un unique gros bloc beige. En reprenant le blanc du Mot du Maire
+	// juste avant lui dans la page, l'alternance reste lisible.
 	.discover,
 	.news,
-	.quick-access,
-	.cta {
+	.quick-access {
 		background-color: $background;
 	}
 
 	.slideshow,
-	.mayor-word {
+	.mayor-word,
+	.cta {
 		background-color: $card;
 	}
 
