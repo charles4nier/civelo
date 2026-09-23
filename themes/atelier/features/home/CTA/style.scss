@@ -1,9 +1,24 @@
 @import '@themes/atelier/styles/variables';
+@import '@themes/atelier/styles/home-colors';
 
 .theme-atelier {
 .cta {
+	background-color: $card;
 	padding-top: $section-padding-y-desktop;
 	padding-bottom: $section-padding-y-desktop;
+
+	// Même traitement que "AGENDA"/"ACTUALITÉS"/etc. — hors du bloc bleu,
+	// sur le fond blanc de la section.
+	&__title {
+		font-family: $font-display;
+		font-size: clamp(30px, 4vw, 55px);
+		font-weight: 900;
+		text-transform: uppercase;
+		line-height: $line-height-snug;
+		color: $cta-title-color;
+		letter-spacing: -0.01em;
+		margin-bottom: $spacing-3xl;
+	}
 
 	&__card {
 		position: relative;
@@ -11,7 +26,8 @@
 		background: $primary;
 		padding: $spacing-4xl $spacing-5xl;
 		color: $primary-foreground;
-		border-top: 4px solid $sunshine;
+		border-top-right-radius: 45px;
+		border-bottom-left-radius: 45px;
 	}
 
 	&__grid {
@@ -24,36 +40,9 @@
 
 	/* ---- Intro ---- */
 
-	&__eyebrow {
-		font-family: $font-body;
-		font-size: $xs-size-desktop;
-		font-weight: $font-weight-bold;
-		text-transform: uppercase;
-		letter-spacing: 0.22em;
-		color: $sunshine;
-	}
-
-	&__title {
-		font-family: $font-display;
-		font-size: clamp(30px, 4vw, 55px);
-		font-weight: $font-weight-semibold;
-		line-height: $line-height-snug;
-		margin-top: $spacing-sm;
-		color: #ffffff;
-		letter-spacing: -0.02em;
-	}
-
-	&__divider {
-		width: 64px;
-		height: 4px;
-		background-color: $sunshine;
-		margin-top: $spacing-md;
-	}
-
 	&__desc {
-		margin-top: $spacing-xl;
-		color: rgba(255, 255, 255, 0.9);
-		font-size: $body-size-desktop;
+		color: oklch(from #{$cta-desc-foreground} l c h / 0.9);
+		font-size: 1.15rem;
 		line-height: $line-height-relaxed;
 		max-width: 420px;
 	}
@@ -63,7 +52,7 @@
 		align-items: center;
 		margin-top: $spacing-2xl;
 		padding: 14px 28px;
-		background-color: #ffffff;
+		background-color: $cta-btn-background;
 		color: $foreground;
 		font-family: $font-body;
 		font-size: $small-size-desktop;
@@ -73,7 +62,7 @@
 		transition: $transition-smooth;
 
 		&:hover {
-			background-color: $sunshine;
+			background-color: $cta-btn-hover-background;
 			color: $foreground;
 		}
 	}
@@ -91,9 +80,8 @@
 		align-items: center;
 		gap: $spacing-md;
 		padding: $spacing-xl;
-		background: rgba(255, 255, 255, 0.15);
+		background: oklch(from #{$cta-contact-item-background} l c h / 0.15);
 		backdrop-filter: blur(8px);
-		border-left: 2px solid $sunshine;
 	}
 
 	&__contact-icon {
@@ -103,7 +91,7 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		background: rgba(255, 255, 255, 0.2);
+		background: oklch(from #{$cta-contact-icon-background} l c h / 0.2);
 	}
 
 	&__contact-label {
@@ -111,14 +99,14 @@
 		font-size: $xs-size-desktop;
 		text-transform: uppercase;
 		letter-spacing: 0.18em;
-		color: rgba(255, 255, 255, 0.75);
+		color: oklch(from #{$cta-contact-label-foreground} l c h / 0.75);
 	}
 
 	&__contact-value {
 		font-family: $font-body;
 		font-weight: $font-weight-medium;
 		margin-top: 2px;
-		color: #ffffff;
+		color: $cta-contact-value-color;
 	}
 
 	/* ---- Responsive ---- */

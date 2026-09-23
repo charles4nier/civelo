@@ -1,4 +1,5 @@
 @import '@themes/atelier/styles/variables';
+@import '@themes/atelier/styles/home-colors';
 
 .theme-atelier {
 .slideshow {
@@ -8,10 +9,35 @@
 	background-color: $card;
 
 	&__card {
+		position: relative;
+		z-index: 0;
 		display: grid;
 		grid-template-columns: 1.1fr 1fr;
 		align-items: stretch;
-		background-color: $card;
+
+		// Bande bleue liée à ce wrapper (pas au panneau texte) : déborde de
+		// 46px en haut, et descend jusque dans la section suivante (Édito
+		// municipal, cf. `MayorWord/style.scss`) : la section fait
+		// $section-padding-y-desktop (92px) de padding bas, + 46px de plus
+		// pour déborder visiblement dans Édito municipal, comme la bande de
+		// ce dernier déborde déjà de 46px au-dessus de sa propre section.
+		// Part de la moitié de la photo (colonne image = 1.1fr sur 2.1fr au
+		// total, donc sa moitié tombe à 1.1 / 2.1 / 2 ≈ 26 % de la largeur du
+		// bloc), et déborde jusqu'au bord droit de la fenêtre
+		// (`right: calc(50% - 50vw)` — suppose que `&__card` est centré sur
+		// la page au même titre que `.container`, sinon le débord ne tombe
+		// plus sur le bord réel de la fenêtre).
+		&::before {
+			content: '';
+			position: absolute;
+			top: -46px;
+			bottom: -138px;
+			left: 26%;
+			right: calc(50% - 50vw);
+			background-color: $primary;
+			border-top-left-radius: 45px;
+			z-index: -1;
+		}
 	}
 
 	/* ---- Image : pleine hauteur, à vif contre le panneau texte ---- */
@@ -19,6 +45,10 @@
 		position: relative;
 		min-height: 400px;
 		overflow: hidden;
+		// Fond blanc explicite — la bande bleue (`&::before`) descend
+		// maintenant sous cette colonne aussi ; sans fond opaque ici, elle se
+		// verrait par transparence tant que l'image n'est pas chargée.
+		background-color: $slideshow-image-background;
 
 		img {
 			object-fit: cover;
@@ -33,6 +63,10 @@
 
 	/* ---- Panneau texte : blanc, posé sur le fond de la section ---- */
 	&__panel {
+		// Fond blanc opaque explicite — sans lui, le panneau est transparent
+		// et laisse voir la bande bleue du wrapper juste derrière
+		// (`&__card::before`) au lieu de rester blanc.
+		background-color: $card;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -43,13 +77,16 @@
 		animation: fade-up-atelier 0.45s $ease-smooth both;
 	}
 
+	// Même traitement que "ACTUALITÉS" (police/couleur), en plus petit — ce
+	// panneau est plus resserré que les autres sections.
 	&__title {
 		font-family: $font-display;
-		font-size: clamp(30px, 4vw, 55px);
-		font-weight: $font-weight-semibold;
+		font-size: clamp(22px, 2.5vw, 30px);
+		font-weight: 900;
+		text-transform: uppercase;
+		letter-spacing: -0.01em;
 		line-height: $line-height-snug;
-		color: $foreground;
-		margin-top: $spacing-sm;
+		color: $slideshow-title-color;
 	}
 
 	&__desc {
@@ -64,7 +101,7 @@
 		align-items: center;
 		margin-top: $spacing-xl;
 		padding: 14px 28px;
-		background-color: $sunshine;
+		background-color: $slideshow-cta-background;
 		color: $foreground;
 		font-family: $font-body;
 		font-size: $small-size-desktop;
@@ -139,6 +176,13 @@
 
 		&__card {
 			grid-template-columns: 1fr;
+
+			// La colonne image passe à 100 % (empilée au-dessus du panneau) —
+			// le calcul des 26 % n'a plus de sens une fois les 2 colonnes
+			// superposées.
+			&::before {
+				content: none;
+			}
 		}
 
 		&__image {

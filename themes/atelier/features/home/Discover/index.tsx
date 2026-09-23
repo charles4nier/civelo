@@ -19,11 +19,14 @@ type Props = { cards: DiscoverCardData[] };
 export default function Discover({ cards }: Props) {
 	return (
 		<section id="decouvrir" className={CLASS_NAME}>
+			{/* Décoratif — même bande que "Édito municipal" (`MayorWord/index.tsx`),
+			    mais jaune et ferrée à droite au lieu de verte à gauche. */}
+			<div className={`${CLASS_NAME}__decoration`} aria-hidden="true" />
 			<div className="container">
 				<div className={`${CLASS_NAME}__intro`}>
-					<p className="eyebrow">Tourisme & Patrimoine</p>
-					<h2 className={`${CLASS_NAME}__title`}>Un territoire à vivre, au rythme de la nature</h2>
-					<div className="divider-line" />
+					{/* Même traitement que "AGENDA"/"ACTUALITÉS" (`Agenda`, `News`,
+					    `&__heading`/`&__title`) — plus d'eyebrow ni de divider. */}
+					<h2 className={`${CLASS_NAME}__title`}>Tourisme & Patrimoine</h2>
 					<p className={`${CLASS_NAME}__desc`}>
 						Entre Limoges et Brive, Saint-Martin vous invite à ralentir. Découvrez ses
 						paysages, son patrimoine bâti et la richesse d'un village où il fait bon vivre.
@@ -31,21 +34,17 @@ export default function Discover({ cards }: Props) {
 				</div>
 
 				<div className={`${CLASS_NAME}__grid`}>
-					{cards.map((card, i) => (
-						<article
-							key={card.key}
-							className={`${CLASS_NAME}__card ${i === 0 ? `${CLASS_NAME}__card--featured` : ''}`}
-						>
+					{cards.map((card) => (
+						<article key={card.key} className={`${CLASS_NAME}__card`}>
 							<Link href={card.href} className={`${CLASS_NAME}__card-image-wrap`}>
 								<Image
 									src={card.image}
 									alt={card.titre}
 									fill
-									sizes={i === 0 ? '(max-width: 1024px) 100vw, 33vw' : '(max-width: 1024px) 100vw, 22vw'}
+									sizes="(max-width: 1024px) 100vw, 33vw"
 									className={`${CLASS_NAME}__card-image`}
 									loading="lazy"
 								/>
-								<div className={`${CLASS_NAME}__card-overlay`} />
 								{card.etiquette && <span className={`${CLASS_NAME}__card-tag`}>{card.etiquette}</span>}
 								<div className={`${CLASS_NAME}__card-body`}>
 									<h3 className={`${CLASS_NAME}__card-title`}>{card.titre}</h3>

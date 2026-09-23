@@ -1,29 +1,56 @@
 @import '@themes/atelier/styles/variables';
+@import '@themes/atelier/styles/home-colors';
 
 .theme-atelier {
 .discover {
+	position: relative;
 	padding: $section-padding-y-desktop 0;
-	// Gris neutre pour marquer la section, sans couleur ni teinte crème.
-	background-color: $muted;
+	background-color: $card;
+
+	// Même bande que "Édito municipal" (`MayorWord/style.scss`,
+	// `&__decoration`), jaune et ferrée à droite au lieu de verte à gauche.
+	&__decoration {
+		position: absolute;
+		top: -46px;
+		bottom: -46px;
+		right: 0;
+		width: 180px;
+		background-color: $discover-decoration-background;
+		border-top-left-radius: 45px;
+		border-bottom-left-radius: 45px;
+		z-index: 0;
+	}
 
 	&__intro {
+		position: relative;
+		z-index: 1;
 		margin-bottom: $spacing-4xl;
 	}
 
+	// Même police/couleur que "AGENDA"/"ACTUALITÉS" (`Agenda/style.scss`,
+	// `&__heading` ; `News/style.scss`, `&__title`).
 	&__title {
-		margin-top: $spacing-sm;
-		line-height: $line-height-snug;
+		font-family: $font-display;
+		font-size: clamp(32px, 4vw, 48px);
+		font-weight: 900;
+		text-transform: uppercase;
+		letter-spacing: -0.01em;
+		color: $discover-title-color;
 	}
 
 	&__desc {
 		max-width: 760px;
 		margin-top: $spacing-md;
-		color: $muted-foreground;
+		// Même couleur que la citation de "Édito municipal" (`MayorWord/style.scss`,
+		// `&__quote-text`) — plus foncé que le gris clair d'avant.
+		color: $foreground-85;
 		font-size: 0.95rem;
 		line-height: 1.8;
 	}
 
 	&__grid {
+		position: relative;
+		z-index: 1;
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 20px;
@@ -53,37 +80,29 @@
 		transition: transform 0.7s $ease-smooth;
 	}
 
-	&__card-overlay {
-		position: absolute;
-		inset: 0;
-		background: linear-gradient(
-			to top,
-			$foreground-85 0%,
-			$foreground-20 50%,
-			transparent 100%
-		);
-	}
-
+	// Bleu — pas jaune, pour ne pas se confondre avec la bande de la section.
 	&__card-tag {
 		position: absolute;
 		top: $spacing-xl;
 		left: $spacing-xl;
 		padding: 6px $spacing-sm + 4px;
-		background: $sunshine;
+		background: $primary;
 		font-family: $font-body;
 		font-size: 12px;
 		font-weight: $font-weight-semibold;
-		color: $foreground;
+		color: $discover-card-foreground;
 		border-radius: 100px;
 	}
 
+	// Encart noir plein (plus de dégradé) qui remplit le bas de l'image.
 	&__card-body {
 		position: absolute;
 		bottom: 0;
 		left: 0;
 		right: 0;
 		padding: $spacing-lg;
-		color: #ffffff;
+		background-color: $foreground;
+		color: $discover-card-foreground;
 	}
 
 	&__card-title {
@@ -91,13 +110,13 @@
 		font-size: 1.8rem;
 		font-weight: $font-weight-semibold;
 		line-height: $line-height-snug;
-		color: #ffffff;
+		color: $discover-card-foreground;
 		letter-spacing: -0.01em;
 	}
 
 	&__card-desc {
 		margin-top: $spacing-sm;
-		color: rgba(255, 255, 255, 0.85);
+		color: oklch(from #{$discover-card-foreground} l c h / 0.85);
 		font-size: $small-size-desktop;
 		line-height: $line-height-relaxed;
 	}
@@ -110,11 +129,11 @@
 		font-family: $font-body;
 		font-size: $small-size-desktop;
 		font-weight: $font-weight-medium;
-		color: #ffffff;
+		color: $discover-card-foreground;
 		transition: $transition-smooth;
 
 		svg {
-			color: $coral;
+			color: $discover-card-link-icon-color;
 		}
 	}
 

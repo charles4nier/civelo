@@ -20,12 +20,12 @@ export default function CTA({ data, nomCommune }: Props) {
 	return (
 		<section id="contact" className={CLASS_NAME}>
 			<div className="container">
+				{/* Même traitement que "AGENDA"/"ACTUALITÉS"/etc. — sorti du bloc
+				    bleu, en corail. */}
+				<h2 className={`${CLASS_NAME}__title`}>{data.titre ?? 'Contacter votre mairie'}</h2>
 				<div className={`${CLASS_NAME}__card`}>
 					<div className={`${CLASS_NAME}__grid`}>
 						<div className={`${CLASS_NAME}__intro`}>
-							<p className={`${CLASS_NAME}__eyebrow`}>{nomCommune ? `Mairie de ${nomCommune}` : 'Mairie'}</p>
-							<h2 className={`${CLASS_NAME}__title`}>{data.titre ?? 'Nous contacter'}</h2>
-							<div className={`${CLASS_NAME}__divider`} />
 							{data.description && <p className={`${CLASS_NAME}__desc`}>{data.description}</p>}
 							<a href="/contact" className={`${CLASS_NAME}__btn`}>
 								{data.boutonLabel ?? 'Prendre rendez-vous'}

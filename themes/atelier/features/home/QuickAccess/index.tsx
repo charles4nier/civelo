@@ -1,4 +1,5 @@
-import { ArrowUpRight } from 'lucide-react';
+'use client';
+
 import { LucideIconByName } from '@shared/lib/icons';
 import './style.scss';
 
@@ -19,36 +20,35 @@ export type QuickAccessItemData = {
 export type NextEventData = {
 	title: string;
 	date: string; // ISO
+	category?: string;
+	time?: string;
+	desc?: string;
 };
 
 type Props = { items: QuickAccessItemData[] };
 
+// Repris de style-edito-test — inspiré du bandeau de raccourcis de
+// toulouse.fr : plus de titre visible ni de description, juste des icônes
+// rondes suggérées par un petit texte en dessous. Le `<h2>` reste dans le DOM
+// (nom de section pour les lecteurs d'écran) mais masqué visuellement.
 export default function QuickAccess({ items }: Props) {
 	return (
 		<section id="demarches" className={CLASS_NAME}>
 			<div className="container">
-				<div className={`${CLASS_NAME}__card`}>
-					<div className={`${CLASS_NAME}__header`}>
-						<div>
-							<p className="eyebrow">Services en ligne</p>
-							<h2 className={`${CLASS_NAME}__title`}>L'essentiel en un clic</h2>
-						</div>
-					</div>
-
+				<h2 className={`${CLASS_NAME}__title`}>L'essentiel en un clic</h2>
+				{/* Le fond de `__panel` déborde jusqu'au bord droit de la fenêtre
+				    (`::after`, voir style.scss) — reprend le déport de toulouse.fr —
+				    mais ce contenu, lui, reste centré dans le container normal. */}
+				<div className={`${CLASS_NAME}__panel`}>
 					<div className={`${CLASS_NAME}__grid`}>
-						{items.map((item, i) => {
-							const mod = ['primary', 'coral', 'leaf'][i % 3];
-							return (
-								<a key={item.key} href={item.href} className={`${CLASS_NAME}__item`}>
-									<div className={`${CLASS_NAME}__item-icon ${CLASS_NAME}__item-icon--${mod}`}>
-										<LucideIconByName name={item.icon} size={20} strokeWidth={2} aria-hidden="true" />
-									</div>
-									<h3 className={`${CLASS_NAME}__item-title`}>{item.title}</h3>
-									{item.desc && <p className={`${CLASS_NAME}__item-desc`}>{item.desc}</p>}
-									<ArrowUpRight size={16} className={`${CLASS_NAME}__item-arrow`} aria-hidden="true" />
-								</a>
-							);
-						})}
+						{items.map((item) => (
+							<a key={item.key} href={item.href} className={`${CLASS_NAME}__item`}>
+								<div className={`${CLASS_NAME}__item-icon`}>
+									<LucideIconByName name={item.icon} size={28} strokeWidth={1.75} aria-hidden="true" />
+								</div>
+								<span className={`${CLASS_NAME}__item-label`}>{item.title}</span>
+							</a>
+						))}
 					</div>
 				</div>
 			</div>

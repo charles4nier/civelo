@@ -15,30 +15,24 @@
 	// `styles/variables.scss`), ces titres ne rétréciraient pas entre
 	// 1024 et 1440px et casseraient plus vite que leurs voisins.
 	//
-	// Mise à jour du 2026-09-23 — `quick-access__title`, `slideshow__title`
-	// et `cta__title` plafonnaient bien plus bas en défaut (jusqu'à 30-40px),
-	// ce qui rendait ces titres trop peu marqués hors variante tourisme
-	// (ex. « L'essentiel en un clic »). Leur taille par défaut a été
-	// remontée à `clamp(30px, 4vw, 55px)` directement dans le style de
-	// chaque composant : les deux variantes partagent maintenant la même
-	// taille pour ces titres, d'où leur retrait d'ici. `news__title`,
-	// `mayor-word__title` et `discover__title` restent ci-dessous : ils
-	// héritent du `h2` de base (`$h2-size-desktop`, clamp(35px, 4vw, 56px)),
-	// déjà très proche mais pas strictement identique.
+	// Mise à jour du 2026-09-23 — `quick-access__title`, `slideshow__title`,
+	// `cta__title`, `news__title`, `discover__title` et `mayor-word__title`
+	// ont chacun reçu leur propre traitement (police/couleur d'« AGENDA »)
+	// directement dans le style de leur composant : les deux variantes
+	// partagent maintenant la même taille pour tous ces titres, d'où leur
+	// retrait d'ici — seul le Hero garde un réglage propre à la variante
+	// (repère visuel le plus fort de la page, plafonné à 70px au lieu de 68px
+	// en défaut).
 	.hero__title {
 		font-size: clamp(36px, 5.5vw, 70px);
 	}
 
-	.news__title,
-	.mayor-word__title,
-	.discover__title {
-		font-size: clamp(30px, 4vw, 55px);
-	}
-
-	// Le titre plus large (55px) déborde plus vite sur 2 lignes à la largeur
-	// par défaut (650px, `News/style.scss`) — un peu plus de place ici.
-	.news__header-text {
-		max-width: 700px;
+	// Rond décoratif du Hero (`Hero/style.scss`) : comble le coin resté vide
+	// sous la photo à côté de `QuickAccess`, qui remonte dessus en variante
+	// défaut seulement. En tourisme, le Hero est suivi de Découvrir — pas de
+	// coin vide à combler, le rond n'a pas lieu d'être ici.
+	.hero__decoration {
+		display: none;
 	}
 
 	// ---- Alternance de fond ----
@@ -64,6 +58,19 @@
 	.mayor-word,
 	.cta {
 		background-color: $card;
+	}
+
+	// Le débord (`::after` + `margin-top` négatif, voir `QuickAccess/style.scss`)
+	// n'a de sens qu'en variante défaut, où ce bloc suit directement le Hero.
+	// En tourisme, il suit Mot du Maire : panneau à plat, fond beige porté par
+	// la section elle-même (alternance blanc/beige ci-dessus).
+	.quick-access__panel {
+		margin-top: 0;
+
+		&::after,
+		&::before {
+			content: none;
+		}
 	}
 
 }

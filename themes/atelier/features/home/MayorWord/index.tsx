@@ -21,6 +21,10 @@ type Props = { data: MayorWordData; nomCommune?: string };
 export default function MayorWord({ data, nomCommune }: Props) {
 	return (
 		<section className={CLASS_NAME}>
+			{/* Décoratif — bande verte pleine hauteur, calée sur le bord gauche de
+			    la fenêtre (avant `.container` dans le DOM : peinte dessous),
+			    décalée derrière la photo. */}
+			<div className={`${CLASS_NAME}__decoration`} aria-hidden="true" />
 			<div className="container">
 				<div className={`${CLASS_NAME}__grid`}>
 					<div className={`${CLASS_NAME}__image-col`}>
@@ -45,12 +49,12 @@ export default function MayorWord({ data, nomCommune }: Props) {
 					</div>
 
 					<div className={`${CLASS_NAME}__content`}>
-						<p className="eyebrow">Édito municipal</p>
-						<h2 className={`${CLASS_NAME}__title`}>Le mot du Maire</h2>
-						<div className="divider-line" />
+						{/* Même traitement que "AGENDA"/"ACTUALITÉS"/"TOURISME & PATRIMOINE"
+						    — plus d'eyebrow séparée ni de divider, juste ce titre. */}
+						<h2 className={`${CLASS_NAME}__title`}>Édito municipal</h2>
 
 						<div className={`${CLASS_NAME}__quote-block`}>
-							<Quote size={20} className={`${CLASS_NAME}__quote-icon`} aria-hidden="true" />
+							<Quote size={36} className={`${CLASS_NAME}__quote-icon`} aria-hidden="true" />
 							<p className={`${CLASS_NAME}__quote-text`}>{data.citation}</p>
 						</div>
 

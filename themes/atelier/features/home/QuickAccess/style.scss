@@ -1,154 +1,133 @@
 @import '@themes/atelier/styles/variables';
+@import '@themes/atelier/styles/home-colors';
 
 .theme-atelier {
 .quick-access {
 	position: relative;
-	margin-top: 0;
-	z-index: 1;
-	padding: $section-padding-y-desktop 0;
-	// Blanc plutôt qu'une teinte : contraste avec le gris de la section au-dessus.
-	background-color: $card;
+	// Pas de padding-bottom ici : le panneau (`&__panel`) porte déjà le sien —
+	// un padding séparé au niveau de la section laissait une fine bande du
+	// fond de page (écru) visible entre le panneau et le bloc suivant.
 
-	&__card {
-		padding: 0;
-	}
-
-	&__header {
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
-		flex-wrap: wrap;
-		gap: $spacing-md;
-		padding-bottom: 0;
-		border-bottom: 0;
-		margin-bottom: $spacing-xl;
-	}
-
+	// Titre de section conservé pour les lecteurs d'écran (nom de la zone),
+	// mais plus affiché — suggéré uniquement par les icônes + leur légende.
 	&__title {
-		font-family: $font-display;
-		font-size: clamp(30px, 4vw, 55px);
-		font-weight: $font-weight-semibold;
-		margin-top: $spacing-sm;
-		color: $foreground;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
 	}
 
-	&__all-link {
-		display: inline-flex;
-		align-items: center;
-		gap: $spacing-xs;
-		font-family: $font-body;
-		font-size: $small-size-desktop;
-		font-weight: $font-weight-semibold;
-		color: $leaf;
-		transition: $transition-smooth;
+	// Le panneau (fond compris) est plafonné à 960px et centré — plus étroit
+	// que `.container` (1180px). Avec seulement 3-4 icônes, un simple
+	// `max-width` sur `&__grid` n'avait aucun effet visible (leur largeur
+	// naturelle est déjà bien en dessous de 960px) : c'est le panneau
+	// lui-même qu'il fallait resserrer, pour un fond blanc plus compact —
+	// comme toulouse.fr, où seul le FOND déborde à droite au-delà du
+	// container, jusqu'au bord de la fenêtre (le `::after`, cf. plus bas).
+	// Porte aussi le débord sur la photo du Hero (n'a de sens que juste
+	// après le Hero, variante défaut : neutralisé en tourisme, où ce bloc
+	// suit Mot du Maire — voir `tourisme.scss`).
+	&__panel {
+		position: relative;
+		z-index: 0;
+		max-width: 960px;
+		margin-inline: auto;
+		margin-top: -$spacing-7xl;
+		// Plus resserré que le premier jet — moins de vide autour des icônes.
+		padding: $spacing-2xl $spacing-2xl $spacing-lg;
 
-		&:hover {
-			text-decoration: underline;
+		// Fond blanc du panneau : couvre sa propre largeur (alignée sur le
+		// container, à gauche) puis déborde jusqu'au bord droit de la fenêtre,
+		// au-delà du padding/max-width du container. `right: calc(50% - 50vw)`
+		// suppose que `&__panel` est centré sur la page au même titre que
+		// `.container` (aucune largeur/marge asymétrique posée dessus) — sinon
+		// le calcul ne tombe plus sur le bord réel de la fenêtre.
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0 calc(50% - 50vw) 0 0;
+			background-color: $card;
+			z-index: -1;
+		}
+
+		// Bande jaune décorative — même principe que le débord du fond
+		// ci-dessus mais côté gauche (`left: calc(50% - 50vw)`) et bornée à
+		// gauche du panneau (`right: 100%`), sur la moitié basse seulement,
+		// en couleur pleine (pas d'alpha).
+		&::before {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: calc(50% - 50vw);
+			right: 100%;
+			height: 50%;
+			background-color: $quick-access-panel-accent;
+			border-top-left-radius: 45px;
+			z-index: -1;
 		}
 	}
 
 	&__grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 0;
-		border-top: 1px solid $border;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: $spacing-lg $spacing-2xl;
 	}
 
 	&__item {
-		position: relative;
-		display: block;
-		padding: $spacing-xl;
-		border-right: 1px solid $border;
-		transition: $transition-smooth;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: $spacing-md;
+		width: 132px;
+		text-align: center;
 
-		&:last-child {
-			border-right: 0;
-		}
-
-		&:hover {
-			background-color: $secondary;
-		}
-
-		&:hover .quick-access__item-arrow {
-			opacity: 1;
+		&:hover .quick-access__item-icon {
+			background-color: oklch(from #{$quick-access-icon-color} l c h / 0.15);
 		}
 	}
 
 	&__item-icon {
-		width: 44px;
-		height: 44px;
+		width: 84px;
+		height: 84px;
+		flex-shrink: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-
-		&--primary {
-			background: $primary-10;
-			color: $primary;
-		}
-
-		&--coral {
-			background: $coral-15;
-			color: $coral;
-		}
-
-		&--leaf {
-			background: $leaf-15;
-			color: $leaf;
-		}
+		border-radius: 50%;
+		background-color: $secondary;
+		color: $quick-access-icon-color;
+		transition: $transition-smooth;
 	}
 
-	&__item-title {
-		margin-top: $spacing-xl;
-		font-family: $font-display;
-		font-size: 16px;
-		font-weight: $font-weight-semibold;
+	&__item-label {
+		font-family: $font-body;
+		font-size: $small-size-desktop;
+		font-weight: $font-weight-medium;
 		line-height: $line-height-snug;
 		color: $foreground;
 	}
 
-	&__item-desc {
-		margin-top: $spacing-sm;
-		font-size: $small-size-desktop;
-		color: $muted-foreground;
-		line-height: $line-height-relaxed;
-	}
-
-	&__item-arrow {
-		position: absolute;
-		top: $spacing-xl;
-		right: $spacing-xl;
-		color: $muted-foreground;
-		opacity: 0;
-		transition: $transition-smooth;
-	}
-
 	/* ---- Responsive ---- */
 
-	@media (max-width: $breakpoint-md) {
-		&__card {
-			padding: 0;
-		}
-
-		&__grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
 	@media (max-width: $breakpoint-sm) {
-		margin-top: 0;
-		padding: $section-padding-y-mobile 0;
+		&__panel {
+			margin-top: -$spacing-4xl;
+			padding: $spacing-2xl $spacing-lg $spacing-xl;
+		}
 
 		&__grid {
-			grid-template-columns: 1fr;
+			gap: $spacing-xl $spacing-lg;
 		}
 
 		&__item {
-			border-right: 0;
-			border-bottom: 1px solid $border;
+			width: 92px;
+		}
 
-			&:last-child {
-				border-bottom: 0;
-			}
+		&__item-icon {
+			width: 68px;
+			height: 68px;
 		}
 	}
 }

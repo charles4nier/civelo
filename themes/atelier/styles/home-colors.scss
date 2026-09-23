@@ -1,0 +1,53 @@
+@import './variables';
+
+/* =========================
+   🎨 Couleurs scopées — accueil (home)
+   ========================= */
+
+// Une variable par usage précis plutôt que des tokens nommés par teinte
+// ($coral, $sunshine, $leaf...) : deux emplacements qui partagent
+// aujourd'hui la même couleur restent deux variables indépendantes, chacune
+// surchargeable séparément plus tard par commune depuis le BO (même motif
+// `var(--color-x, <valeur>)` que `styles/variables.scss`, valeur de repli
+// copiée littéralement — jamais une référence à $coral/$sunshine/$leaf, pour
+// rester réellement découplé).
+
+/* ---- Agenda (agenda-highlight) ---- */
+$agenda-heading-color:             var(--color-agenda-heading-color, oklch(0.63 0.16 34));
+$agenda-item-accent-2:             var(--color-agenda-item-accent-2, oklch(0.63 0.16 34));
+$agenda-item-accent-3:             var(--color-agenda-item-accent-3, oklch(0.63 0.12 153));
+$agenda-item-accent-4:             var(--color-agenda-item-accent-4, oklch(0.84 0.15 78));
+$agenda-item-accent-4-foreground:  var(--color-agenda-item-accent-4-foreground, #7c6217);
+$agenda-item-foreground:           var(--color-agenda-item-foreground, oklch(1 0 0));
+$agenda-item-tag-background:       var(--color-agenda-item-tag-background, oklch(1 0 0));
+
+/* ---- QuickAccess ---- */
+$quick-access-icon-color:          var(--color-quick-access-icon-color, oklch(0.63 0.16 34));
+$quick-access-panel-accent:        var(--color-quick-access-panel-accent, oklch(0.84 0.15 78));
+
+/* ---- Slideshow ---- */
+$slideshow-image-background:       var(--color-slideshow-image-background, oklch(1 0 0));
+$slideshow-title-color:            var(--color-slideshow-title-color, oklch(0.63 0.16 34));
+$slideshow-cta-background:         var(--color-slideshow-cta-background, oklch(0.84 0.15 78));
+
+/* ---- MayorWord ---- */
+$mayor-word-decoration-background:       var(--color-mayor-word-decoration-background, oklch(0.63 0.12 153));
+$mayor-word-title-color:                 var(--color-mayor-word-title-color, oklch(0.63 0.16 34));
+$mayor-word-quote-icon-color:            var(--color-mayor-word-quote-icon-color, oklch(0.84 0.15 78));
+$mayor-word-signature-avatar-foreground: var(--color-mayor-word-signature-avatar-foreground, oklch(1 0 0));
+
+/* ---- Discover ---- */
+$discover-decoration-background:   var(--color-discover-decoration-background, oklch(0.84 0.15 78));
+$discover-title-color:             var(--color-discover-title-color, oklch(0.63 0.16 34));
+$discover-card-foreground:         var(--color-discover-card-foreground, oklch(1 0 0));
+$discover-card-link-icon-color:    var(--color-discover-card-link-icon-color, oklch(0.63 0.16 34));
+
+/* ---- CTA ---- */
+$cta-title-color:                  var(--color-cta-title-color, oklch(0.63 0.16 34));
+$cta-desc-foreground:              var(--color-cta-desc-foreground, oklch(1 0 0));
+$cta-btn-background:                var(--color-cta-btn-background, oklch(1 0 0));
+$cta-btn-hover-background:          var(--color-cta-btn-hover-background, oklch(0.84 0.15 78));
+$cta-contact-item-background:      var(--color-cta-contact-item-background, oklch(1 0 0));
+$cta-contact-icon-background:      var(--color-cta-contact-icon-background, oklch(1 0 0));
+$cta-contact-label-foreground:     var(--color-cta-contact-label-foreground, oklch(1 0 0));
+$cta-contact-value-color:          var(--color-cta-contact-value-color, oklch(1 0 0));

@@ -25,12 +25,15 @@ $muted-foreground:    var(--color-muted-foreground, oklch(0.50 0.03 250));
 $border:              var(--color-border, oklch(0.91 0.012 240));
 $input:               var(--color-input, oklch(0.91 0.012 240));
 
-$primary:             var(--color-primary, oklch(0.52 0.17 240));
+// Palette commune Meuzac (meuzac.fr) : teintes reprises du logo et des
+// classes utilitaires de leur thème (`.jaune` #FFBC42, `.saumon` #D95F43,
+// lien/menu #157A6E, hover/accent #499F68).
+$primary:             var(--color-primary, oklch(0.52 0.09 183));
 $primary-foreground:  var(--color-primary-foreground, oklch(0.99 0.005 110));
-$primary-glow:        var(--color-primary-glow, oklch(0.70 0.16 220));
-$coral:               var(--color-coral, oklch(0.72 0.18 18));
-$sunshine:            var(--color-sunshine, oklch(0.84 0.17 88));
-$leaf:                var(--color-leaf, oklch(0.62 0.16 150));
+$primary-glow:        var(--color-primary-glow, oklch(0.70 0.10 178));
+$coral:               var(--color-coral, oklch(0.63 0.16 34));
+$sunshine:            var(--color-sunshine, oklch(0.84 0.15 78));
+$leaf:                var(--color-leaf, oklch(0.63 0.12 153));
 $terracotta:          var(--color-terracotta, oklch(0.68 0.19 28));
 $sky:                 var(--color-sky, oklch(0.78 0.12 220));
 $berry:               var(--color-berry, oklch(0.55 0.20 340));
@@ -59,7 +62,10 @@ $sunshine-30:         oklch(from #{$sunshine} l c h / 0.3);
 // pixel près sans un outil de vérification visuelle. Une commune qui
 // personnalise $sunshine devra donc aussi choisir son propre
 // $sunshine-foreground pour rester lisible/conforme.
-$sunshine-foreground: var(--color-sunshine-foreground, #8a6d1a);
+// Recalculé pour le jaune Meuzac (#FFBC42) : #8a6d1a d'origine tombait à
+// 4.21:1 sur $sunshine-25 avec ce nouveau jaune (sous le seuil AA 4.5:1
+// texte normal) — assombri à 4.98:1.
+$sunshine-foreground: var(--color-sunshine-foreground, #7c6217);
 $foreground-20:       oklch(from #{$foreground} l c h / 0.2);
 $foreground-50:       oklch(from #{$foreground} l c h / 0.5);
 $foreground-80:       oklch(from #{$foreground} l c h / 0.8);

@@ -168,9 +168,11 @@ export default async function HomePage() {
 
 	const today = new Date(new Date().toDateString());
 	const events: NextEventData[] = agendaItems ?? fallbackEvents.map((e) => ({ title: e.title, date: e.date }));
-	const nextEvent: NextEventData | undefined = events
+	// 1 événement principal + jusqu'à 3 autres (voir `Agenda/index.tsx`,
+	// inspiré du bloc « Actualités » de toulouse.fr : un gros + trois petits).
+	const upcomingEvents = events
 		.filter((e) => new Date(e.date) >= today)
-		.sort((a, b) => a.date.localeCompare(b.date))[0];
+		.sort((a, b) => a.date.localeCompare(b.date));
 
 	const newsArticles: NewsItemData[] = actualiteItems
 		? pickHomeActus(actualiteItems).map((a) => ({
@@ -213,10 +215,10 @@ export default async function HomePage() {
 		return (
 			<div className="tourisme-layout">
 				{hero}
-				{discover}
-				{slideshow}
 				{news}
-				{nextEvent && <Agenda event={nextEvent} />}
+				{slideshow}
+				{discover}
+				{upcomingEvents.length > 0 && <Agenda events={upcomingEvents} />}
 				{mayorWord}
 				<QuickAccess items={quickAccessItems} />
 				{cta}
@@ -228,7 +230,7 @@ export default async function HomePage() {
 		<>
 			{hero}
 			<QuickAccess items={quickAccessItems} />
-			{nextEvent && <Agenda event={nextEvent} />}
+			{upcomingEvents.length > 0 && <Agenda events={upcomingEvents} />}
 			{news}
 			{slideshow}
 			{mayorWord}

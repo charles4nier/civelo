@@ -1,10 +1,32 @@
 @import '@themes/atelier/styles/variables';
+@import '@themes/atelier/styles/home-colors';
 
 .theme-atelier {
 .mayor-word {
+	position: relative;
+	// z-index explicite : passe par-dessus le débord bas de la bande bleue de
+	// Diaporama (`Slideshow/style.scss`, `&__card::before`), qui plonge
+	// désormais jusque dans cette section.
+	z-index: 1;
 	padding: $section-padding-y-desktop 0;
 
+	// Bande pleine, pas de flou (contrairement au rond du Hero) — calée sur
+	// le bord gauche de la fenêtre, pleine hauteur de la section, décalée
+	// derrière la photo (voir `index.tsx`, avant `.container` dans le DOM).
+	&__decoration {
+		position: absolute;
+		top: -46px;
+		bottom: -46px;
+		left: 0;
+		width: 180px;
+		background-color: $mayor-word-decoration-background;
+		border-top-right-radius: 45px;
+		z-index: 0;
+	}
+
 	&__grid {
+		position: relative;
+		z-index: 1;
 		display: grid;
 		grid-template-columns: 1fr 1.25fr;
 		gap: 0;
@@ -33,7 +55,7 @@
 		left: 0;
 		background-color: $card;
 		padding: $spacing-xl $spacing-xl;
-		border-left: 4px solid $coral;
+		border-top-right-radius: 45px;
 		max-width: 240px;
 
 		@media (max-width: $breakpoint-sm) {
@@ -47,8 +69,9 @@
 	&__stat-number {
 		font-family: $font-display;
 		font-size: 32px;
-		font-weight: $font-weight-semibold;
-		color: $primary;
+		// Même graisse très forte que les titres "AGENDA"/"ACTUALITÉS".
+		font-weight: 900;
+		color: $foreground;
 		letter-spacing: -0.02em;
 	}
 
@@ -67,23 +90,27 @@
 		padding-left: $spacing-4xl;
 	}
 
+	// Même police/couleur que "AGENDA"/"ACTUALITÉS"/"TOURISME & PATRIMOINE".
 	&__title {
-		margin-top: $spacing-sm;
-		line-height: $line-height-snug;
+		font-family: $font-display;
+		font-size: clamp(32px, 4vw, 48px);
+		font-weight: 900;
+		text-transform: uppercase;
+		letter-spacing: -0.01em;
+		color: $mayor-word-title-color;
 	}
 
 	&__quote-block {
 		position: relative;
 		padding-left: $spacing-xl;
-		border-left: 2px solid $primary-30;
 		margin-top: $spacing-2xl;
 	}
 
 	&__quote-icon {
 		position: absolute;
-		left: -10px;
-		top: 0;
-		color: $primary;
+		left: -14px;
+		top: -4px;
+		color: $mayor-word-quote-icon-color;
 		background: $background;
 	}
 
@@ -107,14 +134,14 @@
 		height: 42px;
 		border-radius: 999px;
 		flex-shrink: 0;
-		background: $gradient-forest;
+		background: $primary;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-family: $font-display;
 		font-size: 22px;
 		font-weight: $font-weight-semibold;
-		color: #ffffff;
+		color: $mayor-word-signature-avatar-foreground;
 	}
 
 	&__signature-name {
