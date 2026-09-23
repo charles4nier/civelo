@@ -304,6 +304,23 @@ export default function FloatingButtons() {
 	// Whichever trigger opened the current modal — focus comes back here on close.
 	const triggerRef = useRef<HTMLButtonElement | null>(null);
 
+	// Masqués (en desktop, voir `style.scss`) tant que `L'essentiel en un
+	// clic` (QuickAccess, `#demarches`) est visible à l'écran — ses
+	// raccourcis Contact/Carte interactive font déjà doublon. Toujours
+	// présent en haut de chaque page (`home/index.tsx`, toutes variantes et
+	// tous gabarits), donc l'élément à observer existe dès le premier rendu.
+	const [hideForQuickAccess, setHideForQuickAccess] = useState(false);
+	useEffect(() => {
+		const target = document.getElementById('demarches');
+		if (!target) return;
+
+		const observer = new IntersectionObserver(([entry]) => setHideForQuickAccess(entry.isIntersecting), {
+			threshold: 0
+		});
+		observer.observe(target);
+		return () => observer.disconnect();
+	}, []);
+
 	const handleClose = () => {
 		setIsClosing(true);
 		setTimeout(() => {
@@ -321,6 +338,21 @@ export default function FloatingButtons() {
 			triggerRef.current = btnRef.current;
 		}
 	};
+
+	// D'autres endroits de la page (ex. `L'essentiel en un clic`, voir
+	// `QuickAccess/index.tsx`) déclenchent la popin Contact via cet événement
+	// plutôt que de dupliquer sa logique (focus trap, `inert`, Échap...). Nom
+	// littéral partagé par convention — pas d'import direct depuis `shared`
+	// vers une feature de page.
+	useEffect(() => {
+		const onOpenModal = (e: Event) => {
+			const detail = (e as CustomEvent<Modal>).detail;
+			if (detail === 'contact') toggle('contact', contactBtnRef);
+		};
+		window.addEventListener('quick-access:open-modal', onOpenModal);
+		return () => window.removeEventListener('quick-access:open-modal', onOpenModal);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [activeModal]);
 
 	// True only while the modal is the actual live/focused surface — false
 	// during the 280ms closing fade, once focus has already left it. Inert
@@ -434,7 +466,7 @@ export default function FloatingButtons() {
 			)}
 
 			<div
-				className={`${CLASS_NAME}__buttons`}
+				className={`${CLASS_NAME}__buttons ${hideForQuickAccess ? `${CLASS_NAME}__buttons--hidden` : ''}`}
 				ref={buttonsRowRef}
 				id="actions-rapides"
 				tabIndex={-1}
@@ -445,6 +477,8 @@ export default function FloatingButtons() {
 						className={`${CLASS_NAME}__btn ${CLASS_NAME}__btn--sunshine`}
 						title="Carte interactive"
 						aria-label="Carte interactive"
+						aria-hidden={hideForQuickAccess || undefined}
+						tabIndex={hideForQuickAccess ? -1 : undefined}
 					>
 						<Map size={20} aria-hidden="true" />
 					</Link>
@@ -455,6 +489,8 @@ export default function FloatingButtons() {
 					onClick={() => toggle('bot', botBtnRef)}
 					title="Assistant"
 					aria-label="Assistant"
+					aria-hidden={hideForQuickAccess || undefined}
+					tabIndex={hideForQuickAccess ? -1 : undefined}
 				>
 					<MessageCircle size={20} aria-hidden="true" />
 				</button>
@@ -464,6 +500,8 @@ export default function FloatingButtons() {
 					onClick={() => toggle('contact', contactBtnRef)}
 					title="Contact"
 					aria-label="Contact"
+					aria-hidden={hideForQuickAccess || undefined}
+					tabIndex={hideForQuickAccess ? -1 : undefined}
 				>
 					<Phone size={20} aria-hidden="true" />
 				</button>

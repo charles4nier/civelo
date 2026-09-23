@@ -1,10 +1,10 @@
 import Hero, { type HeroData } from './Hero';
 import QuickAccess, { type QuickAccessItemData, type NextEventData } from './QuickAccess';
-import Discover, { type DiscoverCardData } from './Discover';
+import Discover, { DiscoverGrid, type DiscoverCardData } from './Discover';
 import Slideshow, { type SlideshowItemData } from './Slideshow';
 import Agenda from './Agenda';
 import MayorWord, { type MayorWordData } from './MayorWord';
-import News, { type NewsItemData } from './News';
+import News, { NewsGrid, type NewsItemData } from './News';
 import CTA, { type CTAData } from './CTA';
 import { getAccueilData, getAgendaItems, getActualitesItems, pickHomeActus, getCurrentVariant, getIdentiteData } from '@lib/payload';
 import { events as fallbackEvents } from '@themes/atelier/features/agenda/data';
@@ -40,6 +40,25 @@ const fallbackQuickAccess: QuickAccessItemData[] = [
 		title: 'Services & Urgences',
 		desc: 'Numéros utiles et services publics à proximité.',
 		href: '/numeros-utiles'
+	},
+	// Mêmes raccourcis que les boutons flottants (`FloatingButtons`, Contact et
+	// Carte interactive) — retrouvés ici pour qu'ils restent accessibles dans
+	// le flux dès que `L'essentiel en un clic` est visible (les boutons
+	// flottants s'effacent alors, voir `FloatingButtons/index.tsx`).
+	{
+		key: 'contact',
+		icon: 'Mail',
+		title: 'Contact',
+		desc: 'Nous écrire ou nous joindre directement.',
+		href: '/contact',
+		opensModal: 'contact'
+	},
+	{
+		key: 'carte',
+		icon: 'Map',
+		title: 'Carte interactive',
+		desc: 'Étangs, sentiers, patrimoine et points d’intérêt.',
+		href: '/tourisme/carte-interactive'
 	}
 ];
 
@@ -86,7 +105,6 @@ const fallbackSlideshow: SlideshowItemData[] = [
 	{
 		key: 'fete-remparts',
 		image: '/saint-hilaire-bonneval-village.jpg',
-		etiquette: 'Grande manifestation',
 		titre: 'Fête des Remparts',
 		description:
 			'Le week-end des 12 et 13 juillet, le village remonte le temps : artisanat, costumes, animations et repas champêtre au cœur du bourg. Un rendez-vous à ne pas manquer.',
@@ -98,7 +116,6 @@ const fallbackSlideshow: SlideshowItemData[] = [
 	{
 		key: 'commerces',
 		image: '/saint-hilaire-bonneval-hero.jpg',
-		etiquette: 'Vivre au village',
 		titre: 'Commerces & hébergements',
 		description:
 			'Restaurants, boulangerie, épicerie, artisans, gîtes et chambres d’hôtes : au cœur du bourg, tout ce qu’il faut pour goûter la vie du village — de passage ou pour tout un séjour.',
@@ -108,7 +125,6 @@ const fallbackSlideshow: SlideshowItemData[] = [
 	{
 		key: 'carte-interactive',
 		image: '/saint-hilaire-bonneval-lake.jpg',
-		etiquette: 'Explorez le territoire',
 		titre: 'La carte interactive',
 		description:
 			'Étangs, sentiers balisés, patrimoine et points d’intérêt : suivez la carte interactive pour préparer vos balades et explorer chaque recoin de la commune.',
@@ -211,13 +227,24 @@ export default async function HomePage() {
 	// son propre bloc (`Agenda`) — en tourisme sous les dernières actualités
 	// municipales, en défaut juste après `QuickAccess` (son emplacement
 	// précédent, quand il vivait encore dans la carte).
+	//
+	// Les wrappers de section (`<section id="decouvrir" class="discover">` et
+	// `<section class="news">`, avec leur bande décorative éventuelle) restent
+	// chacun à leur position habituelle — seul le CONTENU (`DiscoverGrid`/
+	// `NewsGrid`) est échangé entre les deux, pour que Tourisme & Patrimoine
+	// apparaisse juste après le Hero et Actualités juste après le Diaporama.
 	if (variant === 'tourisme') {
 		return (
 			<div className="tourisme-layout">
 				{hero}
-				{news}
+				<section id="decouvrir" className="discover">
+					<div className="discover__decoration" aria-hidden="true" />
+					<NewsGrid articles={newsArticles} />
+				</section>
 				{slideshow}
-				{discover}
+				<section className="news">
+					<DiscoverGrid cards={discoverCards} />
+				</section>
 				{upcomingEvents.length > 0 && <Agenda events={upcomingEvents} />}
 				{mayorWord}
 				<QuickAccess items={quickAccessItems} />

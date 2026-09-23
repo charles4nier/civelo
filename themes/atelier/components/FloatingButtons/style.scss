@@ -36,10 +36,24 @@ $b: 'floating';
 	gap: 12px;
 	z-index: 100;
 	border-radius: 16px;
+	transition: $transition-smooth;
 
 	@media (max-width: $breakpoint-sm) {
 		bottom: 20px;
 		right: 16px;
+	}
+
+	// Masqués tant que `L'essentiel en un clic` (QuickAccess, `#demarches`)
+	// est visible à l'écran — ses raccourcis (Contact, Carte interactive)
+	// font déjà doublon avec ces boutons flottants. Uniquement en desktop :
+	// en mobile, `L'essentiel` défile vite et les boutons flottants restent
+	// le seul accès permanent à ces actions.
+	@media (min-width: $breakpoint-sm + 1) {
+		&--hidden {
+			opacity: 0;
+			pointer-events: none;
+			transform: translateY(12px);
+		}
 	}
 }
 

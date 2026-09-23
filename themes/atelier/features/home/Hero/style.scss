@@ -1,10 +1,12 @@
 @import '@themes/atelier/styles/variables';
+@import '@themes/atelier/styles/home-colors';
 
 .theme-atelier {
 .hero {
 	position: relative;
-	// Compense le header fixe (80px) pour que le hero ne démarre pas sous le menu.
-	margin-top: 80px;
+	// Compense le bloc fixe (bandeau + header, `$header-stack-height`) pour
+	// que le hero ne démarre pas dessous.
+	margin-top: $header-stack-height;
 	height: 580px;
 	width: 100%;
 	overflow: hidden;
@@ -14,11 +16,21 @@
 		object-position: center;
 	}
 
-	&__overlay {
+	// Rond décoratif flouté, dans l'esprit du rond orange de toulouse.fr —
+	// mêmes ingrédients (cercle, `blur`, teinte alpha du thème) que les blobs
+	// de `EditorialLayout`/`AnnuaireLayout`. Coupé par `overflow: hidden` du
+	// Hero, comme la version originale déborde du cadre de la photo.
+	&__decoration {
 		position: absolute;
-		inset: 0;
-		background: $gradient-hero;
-		z-index: 1;
+		bottom: -160px;
+		left: -120px;
+		width: 420px;
+		height: 420px;
+		border-radius: 50%;
+		background: $hero-decoration-background;
+		filter: blur(70px);
+		pointer-events: none;
+		z-index: 2;
 	}
 
 	&__content {
@@ -27,69 +39,65 @@
 		min-height: 580px;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		padding-block: $spacing-4xl;
-	}
-
-	&__body {
-		max-width: 760px;
-	}
-
-	&__title {
-		color: #ffffff;
-		font-size: clamp(36px, 5.5vw, 68px);
-		font-weight: $font-weight-semibold;
-		line-height: $line-height-tight;
-		letter-spacing: -0.025em;
-	}
-
-	&__title-highlight {
-		color: #ffffff;
-	}
-
-	&__divider {
-		width: 80px;
-		height: 4px;
-		background-color: $coral;
-		margin-top: $spacing-md;
-	}
-
-	&__desc {
-		margin-top: $spacing-xl;
-		color: rgba(255, 255, 255, 0.9);
-		font-size: 16px;
-		max-width: 672px;
-		line-height: 1.8;
-	}
-
-	&__actions {
-		margin-top: $spacing-xl;
-		display: flex;
-		flex-wrap: wrap;
-		gap: $spacing-sm;
-	}
-
-	&__scroll-hint {
-		display: none;
-		position: absolute;
-		bottom: 40px;
-		right: 0;
 		align-items: center;
-		gap: $spacing-sm;
-		color: rgba(255, 255, 255, 0.8);
-		font-size: 11px;
-		letter-spacing: 0.2em;
-		text-transform: uppercase;
+		justify-content: center;
+	}
 
-		@media (min-width: $breakpoint-sm + 1) {
-			display: flex;
+	// H1 conservé pour le SEO/a11y (repère de page) mais plus affiché — le Hero
+	// n'a plus de gros titre visuel, voir `index.tsx`.
+	&__title {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+	}
+
+	&__search {
+		width: 100%;
+		max-width: 640px;
+		// Remonté par rapport au centre du Hero : laisse de la place à
+		// `L'essentiel en un clic` (QuickAccess) qui déborde sur le bas de
+		// la photo juste en dessous (voir QuickAccess/style.scss).
+		margin-bottom: $spacing-6xl;
+		display: flex;
+		align-items: center;
+		background-color: $hero-search-background;
+		box-shadow: $shadow-elegant;
+	}
+
+	&__search-input {
+		flex: 1;
+		min-width: 0;
+		border: none;
+		background: none;
+		padding: $spacing-lg $spacing-xl;
+		font-family: $font-body;
+		font-size: $body-size-desktop;
+		color: $foreground;
+
+		&::placeholder {
+			color: $muted-foreground;
+		}
+
+		&:focus {
+			outline: none;
 		}
 	}
 
-	&__scroll-line {
-		width: 48px;
-		height: 1px;
-		background: rgba(255, 255, 255, 0.4);
+	&__search-btn {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 56px;
+		height: 56px;
+		color: $hero-search-icon-color;
+		transition: $transition-smooth;
+
+		&:hover {
+			color: $foreground;
+		}
 	}
 
 	/* ---- Responsive ---- */
@@ -99,24 +107,7 @@
 
 		&__content {
 			min-height: 650px;
-		}
-
-		&__desc {
-			font-size: 16px;
-		}
-
-		&__actions {
-			flex-direction: column;
-			align-items: stretch;
-
-			.btn-primary,
-			.btn-secondary {
-				justify-content: center;
-			}
-		}
-
-		&__arrow {
-			display: none;
+			padding-inline: $container-padding-x-mobile;
 		}
 	}
 }

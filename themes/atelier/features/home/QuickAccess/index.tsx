@@ -5,12 +5,20 @@ import './style.scss';
 
 const CLASS_NAME = 'quick-access';
 
+// Nom de l'événement DOM utilisé pour ouvrir une modale déjà gérée ailleurs
+// (aujourd'hui : la popin "Contact" de `FloatingButtons`) sans dupliquer sa
+// logique (focus trap, `inert`, Échap...) ni faire remonter son état jusqu'ici.
+export const OPEN_MODAL_EVENT = 'quick-access:open-modal';
+
 export type QuickAccessItemData = {
 	key: string;
 	icon: string;
 	title: string;
 	desc?: string;
 	href: string;
+	// Quand renseigné, l'item ouvre cette modale (voir `OPEN_MODAL_EVENT`) au
+	// lieu de naviguer vers `href`.
+	opensModal?: 'contact';
 };
 
 // Conservé ici (plutôt que dans `Agenda`) pour ne pas casser l'import de
@@ -41,14 +49,33 @@ export default function QuickAccess({ items }: Props) {
 				    mais ce contenu, lui, reste centré dans le container normal. */}
 				<div className={`${CLASS_NAME}__panel`}>
 					<div className={`${CLASS_NAME}__grid`}>
-						{items.map((item) => (
-							<a key={item.key} href={item.href} className={`${CLASS_NAME}__item`}>
-								<div className={`${CLASS_NAME}__item-icon`}>
-									<LucideIconByName name={item.icon} size={28} strokeWidth={1.75} aria-hidden="true" />
-								</div>
-								<span className={`${CLASS_NAME}__item-label`}>{item.title}</span>
-							</a>
-						))}
+						{items.map((item) => {
+							const content = (
+								<>
+									<div className={`${CLASS_NAME}__item-icon`}>
+										<LucideIconByName name={item.icon} size={28} strokeWidth={1.75} aria-hidden="true" />
+									</div>
+									<span className={`${CLASS_NAME}__item-label`}>{item.title}</span>
+								</>
+							);
+
+							return item.opensModal ? (
+								<button
+									key={item.key}
+									type="button"
+									className={`${CLASS_NAME}__item`}
+									onClick={() =>
+										window.dispatchEvent(new CustomEvent(OPEN_MODAL_EVENT, { detail: item.opensModal }))
+									}
+								>
+									{content}
+								</button>
+							) : (
+								<a key={item.key} href={item.href} className={`${CLASS_NAME}__item`}>
+									{content}
+								</a>
+							);
+						})}
 					</div>
 				</div>
 			</div>

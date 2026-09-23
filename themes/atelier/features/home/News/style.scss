@@ -1,25 +1,30 @@
 @import '@themes/atelier/styles/variables';
+@import '@themes/atelier/styles/home-colors';
 
 .theme-atelier {
 .news {
-	padding: $section-padding-y-desktop 0;
+	// Moins d'air en haut qu'un padding de section classique — resserre
+	// l'écart avec Agenda juste au-dessus (lui-même resserré en bas,
+	// `Agenda/style.scss`). Garde le padding standard en dessous.
+	padding: $spacing-2xl 0 $section-padding-y-desktop;
 
 	&__header {
 		display: flex;
-		align-items: flex-end;
+		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: $spacing-xl;
+		gap: $spacing-lg;
 		margin-bottom: $spacing-4xl;
 	}
 
-	&__header-text {
-		max-width: 650px;
-	}
-
+	// Même police/couleur que "AGENDA" (`Agenda/style.scss`, `&__heading`).
 	&__title {
-		margin-top: $spacing-sm;
-		line-height: $line-height-snug;
+		font-family: $font-display;
+		font-size: clamp(32px, 4vw, 48px);
+		font-weight: 900;
+		text-transform: uppercase;
+		letter-spacing: -0.01em;
+		color: $news-title-color;
 	}
 
 	&__grid {
@@ -28,18 +33,16 @@
 		gap: 32px;
 	}
 
+	// Blocs noirs, texte blanc — plus de carte blanche sur fond de section.
 	&__card {
-		padding-top: 1.3rem;
-		border-top: 2px solid $primary;
+		padding: $spacing-xl;
+		background-color: $foreground;
+		color: $news-card-foreground;
 		cursor: pointer;
 		transition: $transition-smooth;
 
-		&:hover {
-			border-top-color: $coral;
-		}
-
 		&:hover .news__card-title {
-			color: $primary;
+			color: $news-card-category-color;
 		}
 
 		&:hover .news__card-link {
@@ -64,7 +67,7 @@
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		color: $muted-foreground;
+		color: $background-70;
 		font-family: $font-body;
 	}
 
@@ -72,7 +75,7 @@
 		width: 4px;
 		height: 4px;
 		border-radius: 50%;
-		background: $muted-foreground-50;
+		background: $background-50;
 	}
 
 	&__card-cat {
@@ -81,7 +84,7 @@
 		font-weight: $font-weight-bold;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
-		color: $primary;
+		color: $news-card-category-color;
 	}
 
 	&__card-title {
@@ -90,7 +93,7 @@
 		font-size: 18px;
 		font-weight: $font-weight-semibold;
 		line-height: $line-height-snug;
-		color: $foreground;
+		color: $news-card-foreground;
 		transition: $transition-smooth;
 		letter-spacing: -0.01em;
 	}
@@ -98,7 +101,7 @@
 	&__card-excerpt {
 		margin-top: $spacing-sm;
 		font-size: $small-size-desktop;
-		color: $muted-foreground;
+		color: $background-85;
 		line-height: $line-height-relaxed;
 	}
 
@@ -112,7 +115,7 @@
 		font-weight: $font-weight-bold;
 		text-transform: uppercase;
 		letter-spacing: 0.1em;
-		color: $foreground;
+		color: $news-card-foreground;
 		transition: $transition-smooth;
 	}
 

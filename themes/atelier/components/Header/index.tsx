@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef, useId } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import Image from 'next/image';
-import { Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { Menu, X, ChevronDown, ChevronRight, Facebook, Clock } from 'lucide-react';
 import './style.scss';
 
 const CLASS_NAME = 'header';
@@ -203,17 +202,30 @@ export default function Header({ navLinks, identite, bouton }: Props) {
 
 	return (
 		<>
+			{/* Bandeau permanent au-dessus du header — pas encore piloté par Payload
+			    (lien Facebook toujours affiché ici ; "si y a" deviendra un champ
+			    optionnel `identite.facebookUrl` côté CMS, masqué quand vide). */}
+			<div className={`${CLASS_NAME}-topbar`}>
+				<div className={`${CLASS_NAME}-topbar__inner container`}>
+					<a
+						href="https://www.facebook.com/"
+						target="_blank"
+						rel="noopener noreferrer"
+						className={`${CLASS_NAME}-topbar__link`}
+					>
+						<Facebook size={14} aria-hidden="true" />
+						Facebook
+					</a>
+					<Link href="/mairie/horaires" className={`${CLASS_NAME}-topbar__link`}>
+						<Clock size={14} aria-hidden="true" />
+						Horaires de la mairie
+					</Link>
+				</div>
+			</div>
+
 			<header className={`${CLASS_NAME} scrolled`}>
 				<div className={`${CLASS_NAME}__inner container`}>
 					<Link href="/" className={`${CLASS_NAME}__logo`}>
-						<div className={`${CLASS_NAME}__logo-badge`}>
-							<Image
-								src={identite.logoUrl}
-								alt={`Blason de ${identite.titre}`}
-								width={36}
-								height={36}
-							/>
-						</div>
 						<div className={`${CLASS_NAME}__logo-text`}>
 							<span className={`${CLASS_NAME}__logo-name`}>
 								{identite.titre}

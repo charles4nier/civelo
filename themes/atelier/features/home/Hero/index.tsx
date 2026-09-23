@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
+import { Search } from 'lucide-react';
 import './style.scss';
 
 const CLASS_NAME = 'hero';
@@ -14,6 +14,11 @@ export type HeroData = {
 
 type Props = { data: HeroData };
 
+// Repris de style-edito-test — inspiré du Hero de toulouse.fr : plus de gros
+// titre/sous-titre/boutons, juste la photo et une barre de recherche centrée ;
+// `L'essentiel en un clic` (QuickAccess) remonte par dessus le bas de la photo
+// (voir QuickAccess/style.scss). `data.titre` reste le H1 de la page (SEO/a11y)
+// mais n'est plus affiché visuellement.
 export default function Hero({ data }: Props) {
 	return (
 		<section className={CLASS_NAME}>
@@ -25,34 +30,27 @@ export default function Hero({ data }: Props) {
 				sizes="100vw"
 				className={`${CLASS_NAME}__image`}
 			/>
-			<div className={`${CLASS_NAME}__overlay`} />
+			{/* Accent décoratif — comble le coin bas-gauche resté vide sous la
+			    photo (le panneau `QuickAccess` remonte à droite, pas jusque-là),
+			    même esprit que le rond orange de toulouse.fr. Pas de sens en
+			    tourisme (le Hero n'y est pas suivi de `QuickAccess`, cf.
+			    `tourisme.scss`), qui le masque. */}
+			<div className={`${CLASS_NAME}__decoration`} aria-hidden="true" />
 
 			<div className={`${CLASS_NAME}__content container`}>
-				<div className={`${CLASS_NAME}__body animate-fade-up`}>
-					<h1 className={`${CLASS_NAME}__title`}>{data.titre}</h1>
+				<h1 className={`${CLASS_NAME}__title`}>{data.titre}</h1>
 
-					<div className={`${CLASS_NAME}__divider`} />
-
-					{data.description && <p className={`${CLASS_NAME}__desc`}>{data.description}</p>}
-
-					<div className={`${CLASS_NAME}__actions`}>
-						{data.boutonPrincipal && (
-							<a href={data.boutonPrincipal.href ?? '#'} className="btn-primary">
-								{data.boutonPrincipal.label}
-								<ArrowRight size={16} className={`${CLASS_NAME}__arrow`} aria-hidden="true" />
-							</a>
-						)}
-						{data.boutonSecondaire && (
-							<a href={data.boutonSecondaire.href ?? '#'} className="btn-secondary">
-								{data.boutonSecondaire.label}
-							</a>
-						)}
-					</div>
-				</div>
-
-				<div className={`${CLASS_NAME}__scroll-hint`}>
-					<div className={`${CLASS_NAME}__scroll-line`} />
-					<span>Scroll</span>
+				<div className={`${CLASS_NAME}__search animate-fade-up`}>
+					{/* Pas encore branché — UI seule pour valider le look avant de câbler une vraie recherche. */}
+					<input
+						type="text"
+						className={`${CLASS_NAME}__search-input`}
+						placeholder="Comment pouvons-nous vous aider ?"
+						aria-label="Rechercher sur le site"
+					/>
+					<button type="button" className={`${CLASS_NAME}__search-btn`} aria-label="Rechercher">
+						<Search size={20} aria-hidden="true" />
+					</button>
 				</div>
 			</div>
 		</section>

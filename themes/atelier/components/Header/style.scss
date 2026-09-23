@@ -1,9 +1,49 @@
 @import '@themes/atelier/styles/variables';
 
 .theme-atelier {
-.header {
+// Bandeau utilitaire permanent, au-dessus du header — voir `index.tsx`.
+.header-topbar {
 	position: fixed;
 	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 51;
+	height: $topbar-height;
+	background-color: $foreground;
+
+	&__inner {
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: $spacing-xl;
+	}
+
+	&__link {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-xs;
+		font-family: $font-body;
+		font-size: 12px;
+		font-weight: $font-weight-medium;
+		color: $background-85;
+		transition: $transition-smooth;
+
+		&:hover {
+			color: #ffffff;
+		}
+	}
+
+	@media (max-width: $breakpoint-sm) {
+		&__link:first-child {
+			display: none;
+		}
+	}
+}
+
+.header {
+	position: fixed;
+	top: $topbar-height;
 	left: 0;
 	right: 0;
 	z-index: 50;
@@ -13,7 +53,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		height: 80px;
+		height: $header-height;
 		position: relative;
 	}
 
@@ -30,13 +70,8 @@
 		-webkit-backdrop-filter: blur(20px);
 		box-shadow: 0 1px 0 $border, $shadow-soft;
 
-		.header__logo-badge {
-			background: $card;
-			border: 1px solid $border;
-		}
-
 		.header__logo-name {
-			color: $foreground;
+			color: $coral;
 			text-shadow: none;
 		}
 
@@ -71,19 +106,6 @@
 		}
 	}
 
-	&__logo-badge {
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		flex-shrink: 0;
-		background: rgba(255, 255, 255, 0.95);
-		box-shadow: $shadow-soft;
-		overflow: hidden;
-	}
-
 	&__logo-text {
 		display: flex;
 		flex-direction: column;
@@ -96,7 +118,7 @@
 		font-weight: $font-weight-semibold;
 		letter-spacing: -0.01em;
 		text-transform: uppercase;
-		color: #ffffff;
+		color: $coral;
 		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 		transition: $transition-smooth;
 
