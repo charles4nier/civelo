@@ -79,15 +79,16 @@ const STRUCTURAL_ITEMS: QuickAccessItemData[] = [
 export default function QuickAccess({ items }: Props) {
 	const allItems = [SEARCH_ITEM, ...items, ...STRUCTURAL_ITEMS];
 
-	// Mobile uniquement (voir `style.scss`, `&__grid` en `nowrap` + `overflow-x`
-	// sous `$breakpoint-sm`) : au-delà de 3-4 items, la rangée ne tient plus
-	// sur une ligne — plutôt qu'un retour à la ligne, elle défile
+	// Quand les items ne tiennent plus sur une ligne (desktop comme mobile — voir
+	// `style.scss`, `&__grid` en `nowrap` + `overflow-x`), la rangée défile
 	// horizontalement, avec ces points pour indiquer la position. Suivi par
 	// IntersectionObserver (pas un calcul sur `scrollLeft`) : robuste même si
-	// les items n'ont pas tous exactement la même largeur.
+	// les items n'ont pas tous exactement la même largeur. Les points ne sont
+	// rendus que si la rangée déborde réellement (`overflowing`).
 	const scrollerRef = useRef<HTMLDivElement>(null);
 	const itemRefs = useRef<(HTMLAnchorElement | HTMLButtonElement | null)[]>([]);
 	const [activeIndex, setActiveIndex] = useState(0);
+	const [overflowing, setOverflowing] = useState(false);
 
 	useEffect(() => {
 		const scroller = scrollerRef.current;
@@ -106,7 +107,15 @@ export default function QuickAccess({ items }: Props) {
 		);
 
 		itemRefs.current.forEach((el) => el && observer.observe(el));
-		return () => observer.disconnect();
+		const measure = () => setOverflowing(scroller.scrollWidth > scroller.clientWidth + 1);
+		measure();
+		const resizeObserver = new ResizeObserver(measure);
+		resizeObserver.observe(scroller);
+
+		return () => {
+			observer.disconnect();
+			resizeObserver.disconnect();
+		};
 	}, [allItems.length]);
 
 	const scrollToIndex = (index: number) => {
@@ -161,7 +170,7 @@ export default function QuickAccess({ items }: Props) {
 						})}
 					</div>
 
-					{allItems.length > 1 && (
+					{overflowing && (
 						<div className={`${CLASS_NAME}__dots`} role="tablist" aria-label="Position dans les accès rapides">
 							{allItems.map((item, index) => (
 								<button

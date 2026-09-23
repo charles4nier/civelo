@@ -19,7 +19,7 @@ type GridProps = { cards: DiscoverCardData[] };
 
 // Contenu seul (intro + grille), sans la section/bande décorative — exporté
 // à part pour pouvoir être appelé depuis le `<section class="news">` en
-// variante tourisme (`features/home/index.tsx`), qui échange le CONTENU de
+// variante tourisme (prop `variant`), qui échange le CONTENU de
 // Découvrir et Actualités sans déplacer les wrappers de section eux-mêmes.
 // Garde les noms de classes `discover__*` : c'est ce qui embarque le style
 // (`Discover/style.scss`) quel que soit l'endroit où ce contenu est rendu.
@@ -68,10 +68,10 @@ export function DiscoverGrid({ cards }: GridProps) {
 
 type Props = {
 	cards: DiscoverCardData[];
-	// Variante tourisme : ce bloc (juste après le Hero) porte le contenu
-	// « Actualités » à la place de Tourisme & Patrimoine — l'inverse est fait
-	// par `features/home/index.tsx`, qui met `DiscoverGrid` dans le wrapper
-	// `<section class="news">`. Seul le CONTENU est échangé, pas les wrappers.
+	// Variante tourisme : le DOM ne change pas (mêmes blocs, même ordre, mêmes
+	// bandes décoratives) — seul le CONTENU de ce bloc (en bas de page, après
+	// Mot du Maire) est échangé avec celui de `News` : il porte Actualités à la
+	// place de Tourisme & Patrimoine.
 	variant?: 'tourisme' | 'defaut';
 	articles?: NewsItemData[];
 };

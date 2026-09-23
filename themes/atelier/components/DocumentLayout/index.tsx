@@ -64,7 +64,7 @@ export default function DocumentLayout({ filters, items }: Props) {
 		if (!sentinel) return;
 		const observer = new IntersectionObserver(
 			([entry]) => setStuck(!entry.isIntersecting),
-			{ rootMargin: '-80px 0px 0px 0px', threshold: 0 }
+			{ rootMargin: '-116px 0px 0px 0px', threshold: 0 }
 		);
 		observer.observe(sentinel);
 		return () => observer.disconnect();

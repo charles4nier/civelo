@@ -22,7 +22,7 @@ function formatShortDate(iso: string) {
 
 // Contenu seul (en-tête + grille), sans la section elle-même — exporté à
 // part pour pouvoir être appelé depuis le `<section class="discover">` en
-// variante tourisme (`features/home/index.tsx`), qui échange le CONTENU
+// variante tourisme (prop `variant`), qui échange le CONTENU
 // d'Actualités et de Découvrir sans déplacer les wrappers de section
 // eux-mêmes. Garde les noms de classes `news__*` : c'est ce qui embarque le
 // style (`News/style.scss`) quel que soit l'endroit où ce contenu est rendu.
@@ -84,9 +84,10 @@ export function NewsGrid({ articles }: GridProps) {
 
 type Props = {
 	articles: NewsItemData[];
-	// Variante tourisme : ce bloc (juste après le Diaporama) porte le contenu
-	// « Tourisme & Patrimoine » à la place d'Actualités — l'inverse de
-	// `Discover`. Seul le CONTENU est échangé, pas les wrappers de section.
+	// Variante tourisme : le DOM ne change pas (mêmes blocs, même ordre, mêmes
+	// bandes décoratives) — seul le CONTENU de ce bloc (en haut de page, après
+	// l'Agenda) est échangé avec celui de `Discover` : il porte Tourisme &
+	// Patrimoine à la place d'Actualités.
 	variant?: 'tourisme' | 'defaut';
 	cards?: DiscoverCardData[];
 };

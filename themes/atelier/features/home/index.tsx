@@ -8,7 +8,6 @@ import News, { type NewsItemData } from './News';
 import CTA, { type CTAData } from './CTA';
 import { getAccueilData, getAgendaItems, getActualitesItems, pickHomeActus, getCurrentVariant, getIdentiteData } from '@lib/payload';
 import { events as fallbackEvents } from '@themes/atelier/features/agenda/data';
-import './tourisme.scss';
 
 const fallbackHero: HeroData = {
 	image: '/saint-hilaire-bonneval-hero.jpg'
@@ -18,16 +17,9 @@ const fallbackQuickAccess: QuickAccessItemData[] = [
 	{
 		key: 'demarches',
 		icon: 'FileText',
-		title: 'Démarches administratives',
+		title: 'Démarches administratives & délibérations',
 		desc: 'État civil, urbanisme, demandes en quelques clics.',
 		href: '/demarches'
-	},
-	{
-		key: 'deliberations',
-		icon: 'Gavel',
-		title: 'Délibérations & Actes',
-		desc: 'Comptes-rendus du conseil municipal et arrêtés.',
-		href: '/mairie/publications'
 	},
 	{
 		key: 'urgences',
@@ -191,42 +183,16 @@ export default async function HomePage() {
 	// sans vider le contenu déjà saisi.
 	const slideshow =
 		accueil?.afficherSlideshow !== false && slides.length > 0 ? <Slideshow slides={slides} /> : null;
-	const news = <News articles={newsArticles} />;
+	const news = <News articles={newsArticles} cards={discoverCards} variant={variant} />;
 	const mayorWord = <MayorWord data={accueil?.mayorWord ?? fallbackMayorWord} nomCommune={nomCommune} />;
-	const discover = <Discover cards={discoverCards} />;
+	const discover = <Discover cards={discoverCards} articles={newsArticles} variant={variant} />;
 	const cta = <CTA data={accueil?.cta ?? fallbackCTA} nomCommune={nomCommune} />;
 
-	// Variante tourisme (`Tenants.variante`, pour l'instant uniquement gérée
-	// par le thème édito) — mêmes blocs que la variante par défaut, disposés
-	// différemment. Le Hero ne change jamais, quelle que soit la variante. Le
-	// diaporama est 2ᵉ bloc en tourisme, 3ᵉ en défaut (le Hero n'est jamais
-	// compté comme un bloc). L'agenda n'est plus intégré à « L'essentiel en un
-	// clic » (`QuickAccess`, dont le style repris de style-edito-test n'a plus
-	// de place pour l'accueillir) : dans les deux variantes, c'est désormais
-	// son propre bloc (`Agenda`) — en tourisme sous les dernières actualités
-	// municipales, en défaut juste après `QuickAccess` (son emplacement
-	// précédent, quand il vivait encore dans la carte).
-	//
-	// Les wrappers de section (`Discover` et `News`, avec leur bande décorative
-	// éventuelle) restent chacun à leur position habituelle — seul le CONTENU
-	// (`DiscoverGrid`/`NewsGrid`, choisi par leur prop `variant`) est échangé
-	// entre les deux, pour qu'Actualités apparaisse juste après le Hero et
-	// Tourisme & Patrimoine juste après le Diaporama.
-	if (variant === 'tourisme') {
-		return (
-			<div className="tourisme-layout">
-				{hero}
-				<Discover cards={discoverCards} articles={newsArticles} variant="tourisme" />
-				{slideshow}
-				<News articles={newsArticles} cards={discoverCards} variant="tourisme" />
-				{upcomingEvents.length > 0 && <Agenda events={upcomingEvents} />}
-				{mayorWord}
-				<QuickAccess items={quickAccessItems} />
-				{cta}
-			</div>
-		);
-	}
-
+	// Variante tourisme (`Tenants.variante`) — le DOM ne change pas : mêmes
+	// blocs, même ordre, mêmes bandes décoratives que la variante par défaut.
+	// Seul le CONTENU de deux blocs est échangé, via leur prop `variant` : `News`
+	// (en haut, après l'Agenda) porte Tourisme & Patrimoine, et `Discover` (en
+	// bas, après Mot du Maire) porte Actualités.
 	return (
 		<>
 			{hero}

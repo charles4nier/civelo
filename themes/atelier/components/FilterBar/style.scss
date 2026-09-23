@@ -5,8 +5,14 @@ $b: 'filter-bar';
 
 .#{$b} {
 	position: sticky;
-	top: 80px;
+	top: $header-stack-height;
 	z-index: 10;
+	// Pleine largeur de la fenêtre : la barre est rendue dans le `.container`
+	// de la page (Actualités, Agenda…), donc sans ça son fond s'arrête aux
+	// marges du container. Le contenu reste aligné sur ce même container par
+	// le `.container` interne (voir `index.tsx`).
+	width: 100vw;
+	margin-inline: calc(50% - 50vw);
 	background: $background;
 	padding-top: $spacing-lg;
 	padding-bottom: $spacing-lg;

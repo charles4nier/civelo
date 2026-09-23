@@ -4,12 +4,6 @@
 .theme-atelier {
 .quick-access {
 	position: relative;
-	// Blanc explicite (pas le crème `$background` hérité de la page) : le
-	// panneau (`&__panel`) chevauche la photo du Hero par une marge négative,
-	// mais si ce chevauchement ne suffit pas à masquer totalement le bord bas
-	// de la photo, c'est le fond de CETTE section qui se voit dans l'interstice
-	// — doit rester blanc, pas la teinte crème du reste de la page.
-	background-color: $card;
 	// Pas de padding-bottom ici : le panneau (`&__panel`) porte déjà le sien —
 	// un padding séparé au niveau de la section laissait une fine bande du
 	// fond de page (écru) visible entre le panneau et le bloc suivant.
@@ -74,11 +68,27 @@
 		}
 	}
 
+	// Une seule ligne, jamais de retour à la ligne : si les items ne tiennent
+	// pas dans le panneau (desktop comme mobile — 6 items ou plus une fois les
+	// raccourcis saisis en CMS), la rangée défile horizontalement avec un
+	// point d'arrêt par item (`scroll-snap`, voir `&__item`), pilotée par
+	// `index.tsx` (IntersectionObserver) pour les points de `&__dots`. Les
+	// items sont centrés par des marges `auto` sur le premier/dernier (et non
+	// `justify-content: center`, qui rendrait le début de la rangée
+	// inatteignable dès qu'elle déborde).
 	&__grid {
 		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
+		flex-wrap: nowrap;
 		gap: $spacing-lg $spacing-2xl;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+		// Scrollbar native masquée — les points en dessous jouent déjà ce rôle.
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
 	}
 
 	&__item {
@@ -86,8 +96,18 @@
 		flex-direction: column;
 		align-items: center;
 		gap: $spacing-md;
+		flex: 0 0 auto;
 		width: 132px;
+		scroll-snap-align: start;
 		text-align: center;
+
+		&:first-child {
+			margin-left: auto;
+		}
+
+		&:last-child {
+			margin-right: auto;
+		}
 
 		&:hover .quick-access__item-icon {
 			background-color: oklch(from #{$quick-access-icon-color} l c h / 0.15);
@@ -115,11 +135,32 @@
 		color: $foreground;
 	}
 
-	// Masqués par défaut (desktop) — la grille tient sur une seule ligne sans
-	// défiler, pas besoin d'indicateur de position. Réapparaissent en mobile,
-	// même look que les points du Diaporama (`Slideshow/style.scss`, `&__dots`).
+	// Points de position — rendus par `index.tsx` seulement quand la rangée
+	// déborde (voir `overflowing`), même look que ceux du Diaporama
+	// (`Slideshow/style.scss`, `&__dots`).
 	&__dots {
-		display: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		margin-top: $spacing-lg;
+
+		button {
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			border: none;
+			padding: 0;
+			background-color: $border;
+			cursor: pointer;
+			transition: $transition-smooth;
+
+			&.is-active {
+				width: 20px;
+				border-radius: 4px;
+				background-color: $foreground;
+			}
+		}
 	}
 
 	/* ---- Responsive ---- */
@@ -148,60 +189,17 @@
 			}
 		}
 
-		// Plus de 3-4 items ne tiennent pas sur une ligne à cette largeur —
-		// plutôt qu'un retour à la ligne (`flex-wrap: wrap` hérité du
-		// desktop), la rangée défile horizontalement avec un point d'arrêt
-		// par item (`scroll-snap`, voir `&__item`), pilotée par `index.tsx`
-		// (IntersectionObserver) pour les points ci-dessous.
 		&__grid {
-			flex-wrap: nowrap;
-			justify-content: flex-start;
 			gap: $spacing-xl $spacing-lg;
-			overflow-x: auto;
-			scroll-snap-type: x mandatory;
-			-webkit-overflow-scrolling: touch;
-			// Scrollbar native masquée — les points en dessous jouent déjà ce rôle.
-			scrollbar-width: none;
-
-			&::-webkit-scrollbar {
-				display: none;
-			}
 		}
 
 		&__item {
-			flex: 0 0 auto;
 			width: 92px;
-			scroll-snap-align: start;
 		}
 
 		&__item-icon {
 			width: 68px;
 			height: 68px;
-		}
-
-		&__dots {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			gap: 6px;
-			margin-top: $spacing-lg;
-
-			button {
-				width: 8px;
-				height: 8px;
-				border-radius: 50%;
-				border: none;
-				padding: 0;
-				background-color: $border;
-				cursor: pointer;
-				transition: $transition-smooth;
-
-				&.is-active {
-					width: 20px;
-					border-radius: 4px;
-					background-color: $foreground;
-				}
-			}
 		}
 	}
 }
