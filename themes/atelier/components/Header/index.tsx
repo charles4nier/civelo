@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useId } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { Menu, X, ChevronDown, ChevronRight, Facebook, Clock } from 'lucide-react';
+import type { IdentiteData } from '@lib/payload';
 import './style.scss';
 
 const CLASS_NAME = 'header';
@@ -21,7 +22,7 @@ type Props = {
 	// jusqu'ici en dur, viennent maintenant des globals `Identite`/
 	// `BoutonEntete` (lib/payload.ts, avec repli sur les mêmes valeurs
 	// qu'avant si Payload est injoignable).
-	identite: { titre: string; sousTitre?: string; logoUrl: string };
+	identite: Pick<IdentiteData, 'titre' | 'sousTitre' | 'logo' | 'afficherTitre'>;
 	bouton: { label: string; href: string };
 };
 
@@ -178,7 +179,18 @@ function MobileNavItem({
 	);
 }
 
+// Logo facultatif. Sans logo, le titre est toujours affiché. Avec logo : titre
+// masqué par défaut (il passe alors dans l'`alt` de l'image, qui nomme le lien
+// et le H1) ; « Afficher le titre » coché, le titre est affiché à côté du logo
+// et l'image devient décorative (`alt` vide, sinon le titre serait annoncé
+// deux fois).
+function brandDisplay(identite: Props['identite']) {
+	const showTitle = !identite.logo || identite.afficherTitre;
+	return { showTitle, logoAlt: identite.afficherTitre ? '' : identite.titre };
+}
+
 export default function Header({ navLinks, identite, bouton }: Props) {
+	const { showTitle, logoAlt } = brandDisplay(identite);
 	const [isOpen, setIsOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
 
@@ -230,7 +242,18 @@ export default function Header({ navLinks, identite, bouton }: Props) {
 							{/* H1 de la page (SEO/a11y) — présent sur toutes les pages via ce
 							    header partagé, le Hero n'en a plus (voir `Hero/index.tsx`). */}
 							<h1 className={`${CLASS_NAME}__logo-name`}>
-								{identite.titre}
+								{identite.logo && (
+									// `<img>` plutôt que `next/image` : le logo est libre (SVG
+									// compris), sa taille est fixée par le CSS (`__logo-img`).
+									<img
+										className={`${CLASS_NAME}__logo-img`}
+										src={identite.logo.url}
+										alt={logoAlt}
+										width={identite.logo.width}
+										height={identite.logo.height}
+									/>
+								)}
+								{showTitle && identite.titre}
 							</h1>
 							{identite.sousTitre && (
 								<span className={`${CLASS_NAME}__logo-sub`}>
@@ -288,11 +311,22 @@ export default function Header({ navLinks, identite, bouton }: Props) {
 									className={`${CLASS_NAME}__drawer-logo`}
 									onClick={() => setIsOpen(false)}
 								>
-									<span
-										className={`${CLASS_NAME}__drawer-logo-name`}
-									>
-										{identite.titre}
-									</span>
+									{identite.logo && (
+										<img
+											className={`${CLASS_NAME}__drawer-logo-img`}
+											src={identite.logo.url}
+											alt={logoAlt}
+											width={identite.logo.width}
+											height={identite.logo.height}
+										/>
+									)}
+									{showTitle && (
+										<span
+											className={`${CLASS_NAME}__drawer-logo-name`}
+										>
+											{identite.titre}
+										</span>
+									)}
 									{identite.sousTitre && (
 										<span
 											className={`${CLASS_NAME}__drawer-logo-sub`}

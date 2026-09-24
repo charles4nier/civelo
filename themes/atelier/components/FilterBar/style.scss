@@ -6,6 +6,10 @@ $b: 'filter-bar';
 .#{$b} {
 	position: sticky;
 	top: $header-stack-height;
+
+	@media (max-width: $breakpoint-sm) {
+		top: $header-stack-height-mobile;
+	}
 	z-index: 10;
 	// Pleine largeur de la fenêtre : la barre est rendue dans le `.container`
 	// de la page (Actualités, Agenda…), donc sans ça son fond s'arrête aux

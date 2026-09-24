@@ -1079,7 +1079,19 @@ export function resolvePageHref(
 // les valeurs qui étaient codées en dur (même logique que DEFAULT_NAV_LINKS)
 // si Payload est injoignable, pour ne jamais casser le rendu du site.
 
-export type IdentiteData = { titre: string; sousTitre?: string; logoUrl: string };
+export type IdentiteData = {
+	titre: string;
+	sousTitre?: string;
+	// Repli sur le blason de Saint-Hilaire-Bonneval quand rien n'est uploadé —
+	// lu tel quel par les thèmes qui affichent toujours un blason (Footer…).
+	logoUrl: string;
+	// Logo réellement uploadé, sans repli : `undefined` quand la commune n'en
+	// a pas (facultatif) — l'en-tête n'affiche alors que le titre.
+	logo?: { url: string; width?: number; height?: number };
+	// Décoché (défaut) : le titre passe dans l'`alt` du logo au lieu d'être
+	// affiché. Sans logo, le titre est toujours affiché quoi qu'il arrive.
+	afficherTitre: boolean;
+};
 
 export async function getIdentiteData(): Promise<IdentiteData> {
 	try {
@@ -1095,7 +1107,12 @@ export async function getIdentiteData(): Promise<IdentiteData> {
 			limit: 1
 		});
 		const identite = docs[0] as unknown as
-			| { titre?: string; sousTitre?: string; logo?: PayloadUpload }
+			| {
+					titre?: string;
+					sousTitre?: string;
+					logo?: PayloadUpload | (Exclude<PayloadUpload, string> & { width?: number | null; height?: number | null });
+					afficherTitre?: boolean;
+				 }
 			| undefined;
 		if (!identite) throw new Error('Aucune identité en base pour ce tenant.');
 		return {
@@ -1105,11 +1122,20 @@ export async function getIdentiteData(): Promise<IdentiteData> {
 			// l'instant (seule celle de Saint-Hilaire-Bonneval existe) — à
 			// remplacer par un vrai blason par défaut quand une commune n'a
 			// pas encore uploadé le sien.
-			logoUrl: uploadUrl(identite.logo, '/saint-hilaire-bonneval-logo.png')
+			logoUrl: uploadUrl(identite.logo, '/saint-hilaire-bonneval-logo.png'),
+			logo:
+				typeof identite.logo === 'object' && identite.logo?.url
+					? {
+							url: identite.logo.url,
+							width: 'width' in identite.logo ? identite.logo.width ?? undefined : undefined,
+							height: 'height' in identite.logo ? identite.logo.height ?? undefined : undefined
+						}
+					: undefined,
+			afficherTitre: identite.afficherTitre === true
 		};
 	} catch (err) {
 		console.warn('[payload] getIdentiteData() : base injoignable, repli sur les données par défaut.', err);
-		return { titre: 'Votre commune', sousTitre: undefined, logoUrl: '/saint-hilaire-bonneval-logo.png' };
+		return { titre: 'Votre commune', sousTitre: undefined, logoUrl: '/saint-hilaire-bonneval-logo.png', logo: undefined, afficherTitre: false };
 	}
 }
 

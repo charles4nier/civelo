@@ -37,7 +37,17 @@ export const Identite: CollectionConfig = {
 			type: 'upload',
 			relationTo: 'media',
 			label: 'Logo',
-			admin: { description: "Le blason ou logo affiché dans l'en-tête et le pied de page du site." }
+			admin: { description: "Le blason ou logo affiché dans l'en-tête et le pied de page du site. Facultatif." }
+		},
+		{
+			name: 'afficherTitre',
+			type: 'checkbox',
+			label: 'Afficher le titre',
+			defaultValue: false,
+			admin: {
+				description:
+					"Décoché : le titre n'est pas affiché à l'écran, il sert de texte alternatif au logo. Coché : il est affiché à côté du logo. Sans logo, le titre est toujours affiché."
+			}
 		}
 	]
 };

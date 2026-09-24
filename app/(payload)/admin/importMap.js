@@ -37,6 +37,7 @@ import { default as default_1ab560c54c2176dcebd531ed2fc0caf8 } from '../../../ad
 import { default as default_0093e585c2b8179db0a2ec805741a8fa } from '../../../admin/Nav'
 import { default as default_8ecc5f2ff0510d3ad8701a53f4d66d9e } from '../../../admin/BreadcrumbHome'
 import { default as default_38999c7e0eefa9c4f332b92da59fb7fe } from '../../../admin/LoginLogo'
+import { default as default_cfb77763d1c57f971456a8dc861fd1dd } from '../../../admin/SuperAdminReturnButton'
 import { GlobalViewRedirect as GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { TenantSelector as TenantSelector_d6d5f193a167989e2ee7d14202901e62 } from '@payloadcms/plugin-multi-tenant/rsc'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
@@ -85,6 +86,7 @@ export const importMap = {
   "/admin/Nav#default": default_0093e585c2b8179db0a2ec805741a8fa,
   "/admin/BreadcrumbHome#default": default_8ecc5f2ff0510d3ad8701a53f4d66d9e,
   "/admin/LoginLogo#default": default_38999c7e0eefa9c4f332b92da59fb7fe,
+  "/admin/SuperAdminReturnButton#default": default_cfb77763d1c57f971456a8dc861fd1dd,
   "@payloadcms/plugin-multi-tenant/rsc#GlobalViewRedirect": GlobalViewRedirect_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/plugin-multi-tenant/rsc#TenantSelector": TenantSelector_d6d5f193a167989e2ee7d14202901e62,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,

@@ -55,6 +55,10 @@
 		justify-content: space-between;
 		height: $header-height;
 		position: relative;
+
+		@media (max-width: $breakpoint-sm) {
+			height: $header-height-mobile;
+		}
 	}
 
 	// Regroupées ici plutôt qu'en `.scrolled &` dispersés dans chaque
@@ -113,6 +117,10 @@
 	}
 
 	&__logo-name {
+		// Le H1 porte le logo (facultatif) et/ou le titre — voir `index.tsx`.
+		display: flex;
+		align-items: center;
+		gap: $spacing-sm + 4px;
 		margin: 0;
 		font-family: $font-display;
 		font-size: 24px;
@@ -127,6 +135,23 @@
 
 		@media (max-width: $breakpoint-sm) {
 			font-size: 18px;
+		}
+	}
+
+	// Hauteur fixée, largeur libre : le logo garde ses proportions, quel que
+	// soit son format.
+	&__logo-img {
+		display: block;
+		height: $header-logo-height;
+		width: auto;
+		max-width: 220px;
+		object-fit: contain;
+		// Le H1 est en `text-transform`/`text-shadow` : sans effet sur l'image,
+		// mais `flex-shrink` évite qu'elle s'écrase à côté d'un long titre.
+		flex-shrink: 0;
+
+		@media (max-width: $breakpoint-sm) {
+			height: $header-logo-height-mobile;
 		}
 	}
 
@@ -351,6 +376,14 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
+	}
+
+	&__drawer-logo-img {
+		display: block;
+		height: 36px;
+		width: auto;
+		max-width: 200px;
+		object-fit: contain;
 	}
 
 	&__drawer-logo-name {

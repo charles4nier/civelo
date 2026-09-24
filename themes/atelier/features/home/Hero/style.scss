@@ -18,6 +18,7 @@
 	/* ---- Responsive ---- */
 
 	@media (max-width: $breakpoint-sm) {
+		margin-top: $header-stack-height-mobile;
 		height: 650px;
 	}
 }

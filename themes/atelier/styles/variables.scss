@@ -1,3 +1,4 @@
+
 $background:          var(--color-background, oklch(0.99 0.006 90));
 $foreground:          var(--color-foreground, oklch(0.20 0.05 250));
 $card:                var(--color-card, oklch(1 0 0));
@@ -104,9 +105,16 @@ $section-padding-y-mobile:  $spacing-4xl;
    🎩 Header (bandeau + barre de navigation)
    ========================= */
 
+// Hauteur du logo (blason) du header (`Header/style.scss`, `&__logo-img`) et
+// marge au-dessus/en dessous : la hauteur du `.header` en découle, pour que
+// la barre blanche épouse le blason avec 5px d'air de chaque côté.
+$header-logo-height:        44px;
+$header-logo-height-mobile: 36px;
+$header-logo-padding-y:     5px;
 // Hauteur du `.header` seul (`Header/style.scss`, `&__inner`) — reprise ici
 // pour calculer `$header-stack-height` sans dupliquer le nombre.
-$header-height:       80px;
+$header-height:        $header-logo-height + 2 * $header-logo-padding-y;
+$header-height-mobile: $header-logo-height-mobile + 2 * $header-logo-padding-y;
 // Bandeau noir permanent au-dessus du header (`Header/index.tsx`, réseaux
 // sociaux/horaires/location de salle).
 $topbar-height:        36px;
@@ -116,6 +124,7 @@ $topbar-height:        36px;
 // fixe de 80px (Hero, FilterBar, blobs décoratifs de plusieurs features,
 // `$header-h` local de `features/carte`) doivent utiliser cette variable.
 $header-stack-height: $topbar-height + $header-height;
+$header-stack-height-mobile: $topbar-height + $header-height-mobile;
 
 /* =========================
    📐 Container
