@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Calendar, ChevronRight, Newspaper, Download, Tag } from 'lucide-react';
+import { Calendar, ChevronRight, Newspaper, Download, Tag, ArrowRight } from 'lucide-react';
 import FilterBar from '@themes/clocher/components/FilterBar';
 import type { IconVariant } from '@themes/clocher/components/ContactCard';
 import './style.scss';
@@ -16,6 +16,9 @@ export type ActualiteItemData = {
 	categoryVariant: IconVariant;
 	date: string; // ISO
 	excerpt: string;
+	// Décision 98 — adresse de la fiche : la carte entière y mène. Absente
+	// des données statiques de repli (cartes non cliquables, comme avant).
+	href?: string;
 	documentHref?: string;
 };
 
@@ -114,7 +117,28 @@ export default function ActualitesLayout({ filters, items }: Props) {
 
 					<div className={`${CLASS_NAME}__grid`}>
 						{filtered.map((article) =>
-							article.documentHref ? (
+							article.href ? (
+								<Link key={article.key} href={article.href} className={`${CLASS_NAME}__card ${CLASS_NAME}__card--document`}>
+									<div className={`${CLASS_NAME}__card-top`}>
+										<span
+											className={`${CLASS_NAME}__card-cat ${CLASS_NAME}__card-cat--${article.categoryVariant}`}
+										>
+											<Tag size={11} aria-hidden="true" />
+											{article.category}
+										</span>
+										<span className={`${CLASS_NAME}__card-date`}>
+											<Calendar size={12} aria-hidden="true" />
+											{formatDate(article.date)}
+										</span>
+									</div>
+									<h2 className={`${CLASS_NAME}__card-title`}>{article.title}</h2>
+									<p className={`${CLASS_NAME}__card-excerpt`}>{article.excerpt}</p>
+									<div className={`${CLASS_NAME}__card-link`}>
+										Lire la suite
+										<ArrowRight size={14} aria-hidden="true" />
+									</div>
+								</Link>
+							) : article.documentHref ? (
 								<Link
 									key={article.key}
 									href={article.documentHref}

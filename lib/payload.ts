@@ -1,4 +1,4 @@
-import { getPayload } from 'payload';
+import { getPayload, type Where } from 'payload';
 import { draftMode } from 'next/headers';
 import config from '../payload.config';
 import type { AnnuaireCardData } from '@themes/atelier/components/AnnuaireLayout';
@@ -326,48 +326,189 @@ export async function getAgendaItems(slug: string) {
 	}
 }
 
-type PayloadActualiteItem = {
+// Décision 98 — une actualité est une fiche (collection `fiches`), rattachée
+// à sa page Liste. Plus un élément du tableau `liste.itemsActualites`.
+type PayloadFiche = {
+	id: number | string;
 	titre: string;
-	categorie: PayloadCategory | string;
-	date: string;
-	extrait: string;
+	slug: string;
+	type?: string;
+	date?: string;
+	chapo: string;
+	categorie?: PayloadCategory | string | null;
 	epinglee?: boolean;
-	lienDocument?: { slug?: string } | string;
+	image?: { url?: string; alt?: string; width?: number; height?: number } | string | null;
+	contenu?: unknown;
+	piecesJointes?: ({ url?: string; filename?: string; filesize?: number; mimeType?: string; titre?: string } | string)[] | null;
+	pageLiee?: { slug?: string; title?: string } | string | null;
+	seo?: { titre?: string; description?: string };
+	updatedAt?: string;
+	_status?: 'draft' | 'published';
 };
 
-// Item 13 — carte "actualites" du gabarit Liste. `epinglee` est lue ici
-// (utile pour la page elle-même comme pour le futur bloc Accueil, décision
-// 16/36) même si cette fonction ne l'exploite pas encore côté tri.
+// Hors aperçu, un visiteur ne voit que les fiches publiées. Filtre explicite :
+// une fiche créée en brouillon et jamais publiée vit quand même dans la
+// table principale (`_status: 'draft'`), que l'API locale renverrait sinon.
+async function ficheStatusWhere(): Promise<Where[]> {
+	return (await isPreviewing()) ? [] : [{ _status: { equals: 'published' } }];
+}
+
+async function findPageListe(
+	payload: Awaited<ReturnType<typeof getPayloadClient>>,
+	tenantId: unknown,
+	slug: string
+) {
+	const { docs } = await payload.find({
+		collection: 'pages',
+		draft: await isPreviewing(),
+		where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenantId } }] },
+		depth: 0,
+		limit: 1,
+		select: { title: true, slug: true, gabarit: true, liste: true }
+	});
+	return docs[0] as unknown as
+		| { id: number | string; title: string; slug: string; gabarit?: string; liste?: { layoutType?: string } }
+		| undefined;
+}
+
+// Item 13 — carte "actualites" du gabarit Liste, désormais lue dans les
+// fiches rattachées à la page (décision 98). Même forme de sortie qu'avant
+// (thèmes et replis statiques inchangés), plus `href` : l'adresse de la
+// fiche. `null` si Payload est injoignable, si la page n'existe pas ou si
+// elle n'a aucune fiche publiée — l'appelant retombe alors sur ses données
+// statiques, comme avant.
 export async function getActualitesItems(slug: string) {
 	try {
 		const payload = await getPayloadClient();
 		const tenant = await requireTenant(payload);
-		const { docs } = await payload.find({
-			collection: 'pages',
-			draft: await isPreviewing(),
-			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
-			depth: 2,
-			limit: 1
-		});
-		const page = docs[0] as unknown as { liste?: { itemsActualites?: PayloadActualiteItem[] } } | undefined;
-		const items = page?.liste?.itemsActualites;
-		if (!items || items.length === 0) return null;
+		const page = await findPageListe(payload, tenant.id, slug);
+		if (!page) return null;
 
-		return items.map((item, i) => {
-			const cat = typeof item.categorie === 'object' ? item.categorie : undefined;
+		const { docs } = await payload.find({
+			collection: 'fiches',
+			draft: await isPreviewing(),
+			where: {
+				and: [{ page: { equals: page.id } }, { tenant: { equals: tenant.id } }, ...(await ficheStatusWhere())]
+			},
+			sort: '-date',
+			depth: 1,
+			limit: 0,
+			pagination: false
+		});
+		const fiches = docs as unknown as PayloadFiche[];
+		if (fiches.length === 0) return null;
+
+		return fiches.map((fiche) => {
+			const cat = typeof fiche.categorie === 'object' && fiche.categorie ? fiche.categorie : undefined;
+			const image = typeof fiche.image === 'object' && fiche.image ? fiche.image : undefined;
 			return {
-				key: String(i),
-				title: item.titre,
+				key: String(fiche.id),
+				title: fiche.titre,
 				category: cat?.nom ?? '',
 				categoryVariant: toIconVariant(cat?.couleur),
-				date: item.date,
-				excerpt: item.extrait,
-				epinglee: item.epinglee ?? false,
-				documentHref: resolvePageHref(item.lienDocument)
+				date: fiche.date ?? '',
+				excerpt: fiche.chapo,
+				epinglee: fiche.epinglee ?? false,
+				href: `/${page.slug}/${fiche.slug}`,
+				image: image?.url ? { url: image.url, alt: image.alt ?? '' } : undefined,
+				documentHref: resolvePageHref(fiche.pageLiee ?? undefined)
 			};
 		});
 	} catch (err) {
 		console.warn(`[payload] getActualitesItems("${slug}") : base injoignable, repli sur les données statiques.`, err);
+		return null;
+	}
+}
+
+export type PieceJointeData = { url: string; nom: string; format: string; poids?: string };
+
+export type FicheData = {
+	id: string;
+	type: string;
+	titre: string;
+	chapo: string;
+	date?: string;
+	categorie?: { nom: string; variant: IconVariant };
+	image?: { url: string; alt: string; width?: number; height?: number };
+	contenu?: unknown;
+	piecesJointes: PieceJointeData[];
+	pageLiee?: { href: string; titre: string };
+	seo: { titre: string; description: string };
+	page: { titre: string; href: string };
+	updatedAt?: string;
+};
+
+function formatPoids(octets?: number): string | undefined {
+	if (!octets) return undefined;
+	if (octets < 1024 * 1024) return `${Math.max(1, Math.round(octets / 1024))} Ko`;
+	return `${(octets / (1024 * 1024)).toFixed(1).replace('.', ',')} Mo`;
+}
+
+function formatFichier(mimeType?: string, filename?: string): string {
+	if (mimeType === 'application/pdf') return 'PDF';
+	const ext = filename?.split('.').pop();
+	return ext ? ext.toUpperCase() : 'Fichier';
+}
+
+// Décision 98 — une fiche seule, pour sa page publique
+// (`/<page liste>/<fiche>`, route `app/(frontend)/[...slug]`). `null` si la
+// page liste, la fiche ou Payload manquent : la route répond alors 404.
+export async function getFiche(pageSlug: string, ficheSlug: string): Promise<FicheData | null> {
+	try {
+		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
+		const page = await findPageListe(payload, tenant.id, pageSlug);
+		if (!page || page.gabarit !== 'liste') return null;
+
+		const { docs } = await payload.find({
+			collection: 'fiches',
+			draft: await isPreviewing(),
+			where: {
+				and: [
+					{ slug: { equals: ficheSlug } },
+					{ page: { equals: page.id } },
+					{ tenant: { equals: tenant.id } },
+					...(await ficheStatusWhere())
+				]
+			},
+			depth: 2,
+			limit: 1
+		});
+		const fiche = docs[0] as unknown as PayloadFiche | undefined;
+		if (!fiche) return null;
+
+		const cat = typeof fiche.categorie === 'object' && fiche.categorie ? fiche.categorie : undefined;
+		const image = typeof fiche.image === 'object' && fiche.image ? fiche.image : undefined;
+		const pageLiee = typeof fiche.pageLiee === 'object' && fiche.pageLiee ? fiche.pageLiee : undefined;
+		return {
+			id: String(fiche.id),
+			type: fiche.type ?? page.liste?.layoutType ?? '',
+			titre: fiche.titre,
+			chapo: fiche.chapo,
+			date: fiche.date,
+			categorie: cat ? { nom: cat.nom, variant: toIconVariant(cat.couleur) } : undefined,
+			image: image?.url
+				? { url: image.url, alt: image.alt ?? '', width: image.width, height: image.height }
+				: undefined,
+			contenu: fiche.contenu ?? undefined,
+			piecesJointes: (fiche.piecesJointes ?? [])
+				.filter((pj): pj is Exclude<typeof pj, string> => typeof pj === 'object' && Boolean(pj?.url))
+				.map((pj) => ({
+					url: pj.url as string,
+					nom: pj.titre || pj.filename || 'Document',
+					format: formatFichier(pj.mimeType, pj.filename),
+					poids: formatPoids(pj.filesize)
+				})),
+			pageLiee: pageLiee?.slug ? { href: `/${pageLiee.slug}`, titre: pageLiee.title ?? pageLiee.slug } : undefined,
+			seo: {
+				titre: fiche.seo?.titre || fiche.titre,
+				description: fiche.seo?.description || fiche.chapo
+			},
+			page: { titre: page.title, href: `/${page.slug}` },
+			updatedAt: fiche.updatedAt
+		};
+	} catch (err) {
+		console.warn(`[payload] getFiche("${pageSlug}", "${ficheSlug}") : base injoignable.`, err);
 		return null;
 	}
 }

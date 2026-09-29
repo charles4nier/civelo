@@ -52,7 +52,6 @@ const remapArray = (map: IdMap, ids: unknown): unknown => (Array.isArray(ids) ? 
 const CATEGORY_FIELDS: { array: string; field: string }[] = [
 	{ array: 'itemsAnnuaire', field: 'categorie' },
 	{ array: 'itemsDemarches', field: 'categorie' },
-	{ array: 'itemsActualites', field: 'categorie' },
 	{ array: 'itemsAgenda', field: 'categorie' },
 	{ array: 'itemsDocument', field: 'type' }
 ];
@@ -67,8 +66,6 @@ function remapListe(liste: any, maps: { categories: IdMap; documents: IdMap; ico
 	if (Array.isArray(out.itemsDocument)) out.itemsDocument = out.itemsDocument.map((it: any) => ({ ...it, fichier: remap(maps.documents, it.fichier) }));
 	if (Array.isArray(out.itemsBudgetProjet))
 		out.itemsBudgetProjet = out.itemsBudgetProjet.map((it: any) => (it.fichier ? { ...it, fichier: remap(maps.documents, it.fichier) } : it));
-	if (Array.isArray(out.itemsActualites))
-		out.itemsActualites = out.itemsActualites.map((it: any) => (it.lienDocument ? { ...it, lienDocument: remap(maps.pages, it.lienDocument) } : it));
 	return out;
 }
 
@@ -263,6 +260,47 @@ async function main() {
 		}
 	}
 	console.log('✓ pages, contenu complet');
+
+	// --- Fiches (décision 98 — dépendent des pages, catégories, médias,
+	// documents) ---
+	// `conserverSlug` : l'URL exportée est reprise telle quelle (sinon le hook
+	// de `Fiches.ts` la recalcule, et un suffixe -2 pourrait changer de fiche).
+	// Les images insérées dans le texte (nœuds `upload` Lexical) pointent vers
+	// des ids de médias : réécrits comme les autres relations.
+	const remapLexical = (node: any): any => {
+		if (!node || typeof node !== 'object') return node;
+		if (Array.isArray(node)) return node.map(remapLexical);
+		const out: any = { ...node };
+		if (out.type === 'upload' && out.relationTo && out.value !== undefined) {
+			const map = (relationMaps as Record<string, IdMap>)[out.relationTo];
+			const oldId = typeof out.value === 'object' && out.value !== null ? out.value.id : out.value;
+			out.value = map ? remap(map, oldId) : out.value;
+		}
+		if (out.children) out.children = remapLexical(out.children);
+		if (out.root) out.root = remapLexical(out.root);
+		return out;
+	};
+	const fichesData = (await readJson<any[]>('fiches').catch(() => null)) ?? [];
+	const fichesTriees = [...fichesData].sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)));
+	for (const fiche of fichesTriees) {
+		const { id, updatedAt, createdAt, tenant: _t, page, categorie, image, piecesJointes, pageLiee, contenu, ...rest } = fiche;
+		await payload.create({
+			collection: 'fiches',
+			overrideAccess: true,
+			context: { reprise: true, conserverSlug: true },
+			data: {
+				...rest,
+				tenant: tenant.id,
+				page: remap(pagesMap, page),
+				categorie: remap(categoriesMap, categorie),
+				image: remap(mediaMap, image),
+				piecesJointes: Array.isArray(piecesJointes) ? piecesJointes.map((d: any) => remap(documentsMap, d)) : piecesJointes,
+				pageLiee: remap(pagesMap, pageLiee),
+				contenu: remapLexical(contenu)
+			}
+		});
+	}
+	console.log(`✓ fiches (${fichesTriees.length})`);
 
 	// --- Identité / bouton d'en-tête / pied de page ---
 	const identite = await readJson<any>('identite');

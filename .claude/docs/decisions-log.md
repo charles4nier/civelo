@@ -1,6 +1,6 @@
 # Journal des décisions produit (archive)
 
-> **Archive chronologique, conservée verbatim.** Append-only : 97 entrées numérotées, certaines annulées ou amendées par des entrées ultérieures (ex. 22 → 49, 35 → 36, 82 → 84). Ne se lit pas en entier — c'est une référence pour retrouver le *pourquoi* d'une décision et son historique.
+> **Archive chronologique, conservée verbatim.** Append-only : 98 entrées numérotées, certaines annulées ou amendées par des entrées ultérieures (ex. 22 → 49, 35 → 36, 82 → 84). Ne se lit pas en entier — c'est une référence pour retrouver le *pourquoi* d'une décision et son historique.
 >
 > Pour l'état **actuel** du modèle de contenu : [`content-model.md`](content-model.md). Pour l'architecture : [`architecture.md`](architecture.md). Pour l'opérationnel : [`operations.md`](operations.md).
 
@@ -1061,6 +1061,23 @@ Mécanisme retenu, en 2 temps (`middleware.ts` + `app/(payload)/api/lock-tenant/
 Vérifié en conditions réelles (pas juste `tsc`), 8 scénarios via `curl` avec `Host` explicite contre un vrai serveur `next dev` + Postgres local : domaine super-admin non verrouillé, verrouillage correct sur 2 tenants de test différents (id conforme à la base), domaine inconnu laissé sans cookie `payload-tenant` (pas de faux verrouillage), garde anti-redirection-ouverte effective, requêtes répétées sur un même domaine ne re-déclenchent pas l'aller-retour, et surtout **reproduction exacte de l'incident corrigée** : un cookie `tenant-locked-host` resté sur un premier domaine déclenche bien un nouveau verrouillage dès que le `Host` change.
 
 Restant à faire, non traité par ce chantier : `SUPER_ADMIN_DOMAIN` n'a encore de valeur qu'en local (`localhost`) — la valeur de prod (probablement `admin.civelo.fr`, sous-domaine pas encore créé) reste à décider et poser sur Scalingo ; le sélecteur de tenant du plugin reste visuellement présent même verrouillé (protection réelle car reverrouillé à chaque requête suivante, mais pas encore masqué à l'affichage) ; le BO super-admin n'a pas encore de style distinct de celui d'un tenant verrouillé, pourtant validé avec le client.
+
+### 98. Les éléments de liste deviennent des « fiches » avec leur propre URL (2026-09-29)
+
+Déclencheur : brancher la recherche et la newsletter de l'accueil atelier (icônes présentes, services absents). En creusant, le vrai manque est en amont : un élément de liste (actualité, événement, démarche, commerce, document, projet) n'est qu'une ligne de tableau dans sa page liste. Il n'a ni URL (impossible de cliquer sur une carte, de référencer un contenu, ni de servir une redirection depuis l'ancien site d'une mairie), ni vrai contenu (une actualité n'a qu'un extrait, un document que son PDF, alors que les PDF des mairies sont presque toujours des scans : RGAA 13.3, une version accessible est due).
+
+Décisions, prises avec le client au fil de la discussion :
+
+- **Une collection `fiches` unique**, tenant-scopée, chaque fiche rattachée à une page Liste (relation obligatoire) dont elle hérite l'URL et les champs de son type. Écarté : ajouter slug + contenu aux tableaux existants (tout reste dans un seul document, pas de brouillon par élément, verrous entre éditeurs, admin ingérable après quelques années). Écarté aussi : une collection par type (6 collections pour un même comportement).
+- **« Fiche » est un mot montré à la mairie.** Une fiche est une sorte d'article de blog : socle commun (titre, image, chapô, texte riche restreint H2/H3, pièces jointes, brouillon, référencement) + champs propres au type.
+- **Les pages liste restent** (URL, menu, nom, intro, encart, cible des liens) mais ne contiennent plus les éléments. Les autres pages ne changent pas, et la mairie continue d'en modifier le contenu. Côté visiteur, rien ne change, sauf que chaque carte de grille ouvre sa fiche.
+- **Un seul chemin dans l'admin** : le groupe « Publier une fiche », avec une entrée par page liste, nommée comme la page et construite depuis les pages de la commune (pas écrite en dur). Écarté : une liste des fiches + bouton Créer dans la page elle-même en plus du menu, car deux entrées vers la même chose perturberaient les éditeurs. La page affiche seulement un panneau qui renvoie vers « Publier une fiche ». Bouton générique « Nouvelle fiche ». « Publier » seul a été écarté, car modifier une page c'est aussi publier.
+- **Création de pages : reste super-admin** (règle de la décision 10 confirmée, après avoir envisagé de l'ouvrir au rôle `admin`). Une page liste créée par le super-admin fait apparaître d'elle-même son entrée dans « Publier une fiche ». Garde-fous : slug depuis le titre, redirection automatique au renommage, brouillon d'abord, suppression bloquée si la page a des fiches ou est liée depuis l'accueil.
+- **Budget/Projet se sépare** : budget = Publication de type Budget, projet = fiche Projets.
+- **Hors fiches** : élus, numéros utiles, fermetures, blocs de l'accueil. Salles, POI et sentiers : peut-être plus tard.
+- **Recherche et newsletter viennent après**, sur ce modèle.
+
+Plan détaillé et ordre de réalisation : `chantier-fiches.md`. Actualités et publications ont la date dans leur URL (`2026-09-29-titre`), les autres types seulement le titre.
 
 ## Catalogue des gabarits (état actuel)
 

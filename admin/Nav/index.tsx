@@ -1,6 +1,7 @@
 import type { ServerProps } from 'payload';
 import AdminNavClient from './Client';
 import { getSelectedTenantId, isTenantLocked } from '../lib/getSelectedTenantId';
+import { LAYOUTS_EN_FICHES } from '../../collections/fichesTypes';
 
 // Décision 43/46 — sidebar sur-mesure. Server Component (reçoit `payload`
 // via les ServerProps que Payload injecte automatiquement dans les
@@ -31,6 +32,30 @@ export default async function AdminNav({ payload }: ServerProps) {
 
 	const pages = docs.map((p) => ({ id: String(p.id), title: String(p.title) }));
 
+	// Décision 98 — « Publier une fiche » : une entrée par page Liste dont le
+	// type est passé en fiches, avec le nom de la page, dans l'ordre du menu
+	// du site (`_order`). Construit depuis les pages, jamais écrit en dur :
+	// une page créée, renommée ou absente met la sidebar à jour d'elle-même.
+	const { docs: pagesFichesDocs } = await payload.find({
+		collection: 'pages',
+		limit: 0,
+		pagination: false,
+		depth: 0,
+		select: { title: true, liste: true },
+		where: {
+			and: [
+				{ gabarit: { equals: 'liste' } },
+				{ 'liste.layoutType': { in: [...LAYOUTS_EN_FICHES] } },
+				...(tenantId ? [{ tenant: { equals: tenantId } }] : [])
+			]
+		}
+	});
+	const pagesFiches = pagesFichesDocs.map((p) => ({
+		id: String(p.id),
+		title: String(p.title),
+		layoutType: String((p.liste as { layoutType?: string } | undefined)?.layoutType ?? '')
+	}));
+
 	const hideTenantSelector = await isTenantLocked();
 
 	// Résolu dès qu'un tenant est sélectionné (verrouillé OU choisi depuis
@@ -50,6 +75,6 @@ export default async function AdminNav({ payload }: ServerProps) {
 	}
 
 	return (
-		<AdminNavClient pages={pages} siteName={siteName} hideTenantSelector={hideTenantSelector} tenantId={tenantId ?? null} />
+		<AdminNavClient pages={pages} pagesFiches={pagesFiches} siteName={siteName} hideTenantSelector={hideTenantSelector} tenantId={tenantId ?? null} />
 	);
 }

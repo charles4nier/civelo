@@ -2,6 +2,8 @@
 
 État **actuel** du modèle éditorial, distillé du journal des décisions (`decisions-log.md`). Le journal reste la source pour le *pourquoi* et l'historique (supersessions incluses) ; ce fichier dit ce qui est vrai aujourd'hui.
 
+> **Chantier en cours (décision 98, 2026-09-29)** : les éléments des pages Liste (§4) vont sortir des pages pour devenir des **fiches** (collection `fiches`, menu admin « Publier une fiche »). Tant que ce n'est pas livré, ce fichier décrit l'état réel. Plan cible : [`chantier-fiches.md`](chantier-fiches.md).
+
 Principe qui chapeaute tout : **on vend une architecture, pas juste un site.** Le classement du menu et le catalogue de gabarits sont le produit éprouvé — pas un réglage laissé à chaque commune.
 
 ---

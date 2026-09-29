@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { FileText } from 'lucide-react';
 import { RichText } from '@payloadcms/richtext-lexical/react';
@@ -13,6 +14,11 @@ import ContactLayout from '@themes/atelier/components/ContactLayout';
 import NumerosUtilesLayout from '@themes/atelier/components/NumerosUtilesLayout';
 import EditorialLayout from '@themes/atelier/components/EditorialLayout';
 import EditorialSections from '@themes/atelier/components/EditorialLayout/Sections';
+import AtelierFicheLayout from '@themes/atelier/components/FicheLayout';
+import ClocherFicheLayout from '@themes/clocher/components/FicheLayout';
+import PreauFicheLayout from '@themes/preau/components/FicheLayout';
+import BelvedereFicheLayout from '@themes/belvedere/components/FicheLayout';
+import { getCurrentTheme, pickTheme } from '@shared/lib/theme';
 import {
 	getPageBySlug,
 	getAnnuaireItems,
@@ -25,7 +31,9 @@ import {
 	getCatalogueLieuxItems,
 	getContactData,
 	getNumerosUtilesData,
-	getEditorialData
+	getEditorialData,
+	getFiche,
+	getPayloadClient
 } from '../../../lib/payload';
 
 // Item 14 (phase 5) — route générique : sert les pages créées depuis l'admin
@@ -56,11 +64,62 @@ function withTous(values: (string | undefined)[]): string[] {
 
 type Props = { params: Promise<{ slug: string[] }> };
 
+// Décision 98 — `/<page liste>/<fiche>` : quand le chemin complet n'est pas
+// une page, on tente « page liste parente + fiche ». Les routes statiques
+// (`app/(frontend)/mairie/actualites/page.tsx`…) ne captent que leur propre
+// chemin, jamais `/mairie/actualites/<fiche>`, qui arrive donc ici.
+async function resolveFiche(slugParts: string[]) {
+	if (slugParts.length < 2) return null;
+	return getFiche(slugParts.slice(0, -1).join('/'), slugParts[slugParts.length - 1]);
+}
+
+// Chaque thème a son `FicheLayout` (en-tête du thème + corps commun
+// `shared/components/FicheContent`).
+async function ficheLayoutDuTheme() {
+	const payload = await getPayloadClient().catch(() => null);
+	const theme = payload ? await getCurrentTheme(payload) : 'atelier';
+	return pickTheme(theme, {
+		atelier: AtelierFicheLayout,
+		clocher: ClocherFicheLayout,
+		preau: PreauFicheLayout,
+		belvedere: BelvedereFicheLayout
+	});
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+	const { slug: slugParts } = await params;
+	const slug = slugParts.join('/');
+	if (await getPageBySlug(slug)) return {};
+	const fiche = await resolveFiche(slugParts);
+	if (!fiche) return {};
+	return {
+		title: fiche.seo.titre,
+		description: fiche.seo.description,
+		alternates: { canonical: `/${slug}` },
+		openGraph: {
+			type: 'article',
+			title: fiche.seo.titre,
+			description: fiche.seo.description,
+			url: `/${slug}`,
+			...(fiche.date ? { publishedTime: fiche.date } : {}),
+			...(fiche.updatedAt ? { modifiedTime: fiche.updatedAt } : {}),
+			...(fiche.image ? { images: [{ url: fiche.image.url, alt: fiche.image.alt }] } : {})
+		}
+	};
+}
+
 export default async function DynamicPage({ params }: Props) {
 	const { slug: slugParts } = await params;
 	const slug = slugParts.join('/');
 	const page = await getPageBySlug(slug);
-	if (!page) notFound();
+	if (!page) {
+		const fiche = await resolveFiche(slugParts);
+		if (fiche) {
+			const FicheLayout = await ficheLayoutDuTheme();
+			return <FicheLayout fiche={fiche} />;
+		}
+		notFound();
+	}
 
 	const title = String(page.title ?? '');
 	const gabarit = page.gabarit as string | undefined;

@@ -16,6 +16,14 @@ import { seedTenants, type Seeded } from './_seed';
 let s: Seeded;
 let tenantAId: unknown;
 
+// Mode aperçu (`isPreviewing`, `lib/payload.ts`) : `draftMode()` n'existe
+// pas hors d'une vraie requête Next.js non plus — fixé à « pas d'aperçu »,
+// le cas d'un visiteur.
+vi.mock('next/headers', () => ({
+	draftMode: vi.fn(async () => ({ isEnabled: false })),
+	headers: vi.fn(async () => new Headers())
+}));
+
 vi.mock('@shared/lib/tenant', () => ({
 	getCurrentTenant: vi.fn(async () => ({ id: tenantAId, domaine: 'tenant-a.test' }))
 }));
@@ -51,5 +59,30 @@ describe('isolation — lib/payload.ts (tenant A résolu)', () => {
 		// manquait, elle apparaîtrait en double ou remplacerait celle de A.
 		const contactLinks = allHrefs.filter((h) => h === '/contact');
 		expect(contactLinks.length).toBeLessThanOrEqual(1);
+	});
+
+	// Décision 98 — fiches (collection `fiches`, lue par `getActualitesItems`
+	// et `getFiche`, `read` public limité aux publiées).
+	it("getActualitesItems ne renvoie que les fiches publiées de A", async () => {
+		const { getActualitesItems } = await import('../../lib/payload');
+		const items = (await getActualitesItems('mairie/actualites')) ?? [];
+		const chapos = items.map((i) => i.excerpt);
+		expect(chapos).toContain('Actualité de A');
+		expect(chapos).not.toContain('Actualité de B');
+		expect(chapos).not.toContain('Brouillon de A');
+	});
+
+	it("getFiche résout l'URL commune aux deux communes vers la fiche de A", async () => {
+		const { getFiche } = await import('../../lib/payload');
+		const slug = String((s.ficheA as { slug?: string }).slug);
+		expect(slug).toBe(String((s.ficheB as { slug?: string }).slug));
+		const fiche = await getFiche('mairie/actualites', slug);
+		expect(fiche?.chapo).toBe('Actualité de A');
+	});
+
+	it("getFiche ne sert jamais un brouillon hors aperçu", async () => {
+		const { getFiche } = await import('../../lib/payload');
+		const slug = String((s.brouillonA as { slug?: string }).slug);
+		expect(await getFiche('mairie/actualites', slug)).toBeNull();
 	});
 });

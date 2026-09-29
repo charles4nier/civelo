@@ -36,7 +36,8 @@ Une seule application Next.js + Payload CMS, une seule base Postgres, qui sert j
 | Stack, modèle multi-tenant, 3 rôles, console super-admin, carte du repo, variables d'env | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
 | Modèle de contenu Payload : gabarits, menu, collections, ce que l'éditeur peut / ne peut pas | [`.claude/docs/content-model.md`](.claude/docs/content-model.md) |
 | Dev local + pièges, déploiement, migrations, infra, sauvegardes, monitoring, export | [`.claude/docs/operations.md`](.claude/docs/operations.md) |
+| Chantier « fiches » en cours : éléments de liste → fiches avec URL, menu « Publier une fiche », puis recherche et newsletter | [`.claude/docs/chantier-fiches.md`](.claude/docs/chantier-fiches.md) |
 | Feuille de route + historique daté de ce qui a été fait | [`.claude/docs/roadmap.md`](.claude/docs/roadmap.md) |
-| Journal chronologique des décisions produit (97 entrées, archive verbatim) | [`.claude/docs/decisions-log.md`](.claude/docs/decisions-log.md) |
+| Journal chronologique des décisions produit (98 entrées, archive verbatim) | [`.claude/docs/decisions-log.md`](.claude/docs/decisions-log.md) |
 
 Ordre de lecture conseillé pour une reprise de contexte à froid : `architecture.md` → `operations.md` → `content-model.md`. Le journal ne se lit pas en entier : c'est une référence à consulter au besoin.

@@ -1,5 +1,6 @@
-import type { CollectionConfig, Field, PayloadRequest } from 'payload';
-import { SignJWT } from 'jose';
+import type { CollectionConfig, Field } from 'payload';
+import { buildPreviewURL } from './preview';
+import { LAYOUTS_EN_FICHES } from './fichesTypes';
 import { isSuperAdmin, isLoggedIn, isSuperAdminField } from './access';
 
 // Décision 19 — une seule collection pour tous les gabarits (multi-instances
@@ -130,49 +131,16 @@ export const boutonFields = (prefix: string, label: string): Field[] => [
 	)
 ];
 
-// Mode brouillon/preview (roadmap 2026-09-14) — le bouton "Aperçu" doit
-// ouvrir le VRAI domaine de la commune, en Next.js Draft Mode. Le `token` que
-// Payload propose de base est le JWT de session (valide 2h par défaut, cf.
-// `payload/dist/collections/config/defaults.js`) — trop puissant à faire
-// transiter dans une URL (donnerait un accès complet à l'API à quiconque
-// l'intercepterait), quelle que soit sa durée. On signe donc ici un jeton
-// dédié, minimal (juste l'id de la page et de l'utilisateur, rien d'autre) —
-// revérifié intégralement côté serveur par `app/(payload)/api/preview`
-// (jamais fait confiance à ces seules données, juste à leur fraîcheur).
-// Expire en 1h, pas 2 minutes comme au premier jet : ce lien est généré au
-// CHARGEMENT de la page d'édition (`admin.preview` s'exécute au rendu de la
-// vue, pas au clic sur le bouton — vérifié dans le code de Payload) donc une
-// expiration trop courte rendait le bouton inutilisable dès qu'on passait
-// plus de 2 minutes à éditer avant de cliquer (signalé le 2026-09-16). Une
-// heure reste très supérieure au risque : ce jeton ne permet RIEN d'autre que
-// voir CETTE page précise en brouillon, contrairement au JWT de session.
-const generatePreviewURL: NonNullable<CollectionConfig['admin']>['preview'] = async (doc, { req }) => {
-	if (!doc?.id || !req.user) return null;
-
-	const tenant = doc.tenant as { domaine?: string; id?: unknown } | number | string | null | undefined;
-	const tenantId = typeof tenant === 'object' && tenant !== null ? tenant.id : tenant;
-	if (!tenantId) return null;
-
-	let domaine = typeof tenant === 'object' && tenant !== null ? tenant.domaine : undefined;
-	if (!domaine) {
-		const tenantDoc = await req.payload
-			.findByID({ collection: 'tenants', id: tenantId as number | string, overrideAccess: true })
-			.catch(() => null);
-		domaine = tenantDoc?.domaine as string | undefined;
-	}
-	if (!domaine) return null;
-
-	const secret = process.env.PAYLOAD_SECRET;
-	if (!secret) return null;
-
-	const path = doc.gabarit === 'accueil' ? '/' : `/${doc.slug ?? ''}`;
-	const token = await new SignJWT({ pageId: doc.id, purpose: 'page-preview', userId: req.user.id })
-		.setProtectedHeader({ alg: 'HS256' })
-		.setExpirationTime('1h')
-		.sign(new TextEncoder().encode(secret));
-
-	return `https://${domaine}/api/preview?token=${encodeURIComponent(token)}&path=${encodeURIComponent(path)}`;
-};
+// Mode brouillon/preview (roadmap 2026-09-14) — mécanique commune avec les
+// fiches, voir `collections/preview.ts`.
+const generatePreviewURL: NonNullable<CollectionConfig['admin']>['preview'] = (doc, { req }) =>
+	buildPreviewURL({
+		req,
+		collection: 'pages',
+		docId: doc?.id,
+		tenant: doc?.tenant as Parameters<typeof buildPreviewURL>[0]['tenant'],
+		path: doc?.gabarit === 'accueil' ? '/' : `/${doc?.slug ?? ''}`
+	});
 
 export const Pages: CollectionConfig = {
 	slug: 'pages',
@@ -415,48 +383,19 @@ export const Pages: CollectionConfig = {
 					]
 				}),
 
-				// layoutType "actualites" — retour à un `array` (décision 36,
-				// annule décision 35) : les items restent ici, comme tous les
-				// autres layoutType, pour garder un modèle éditeur unique
-				// ("j'ouvre la page, je gère son contenu dedans"). L'épinglage
-				// (décision 16) se fait item par item via `epinglee`, pas via
-				// une relation Payload séparée.
-				withAddRowTop({
-					name: 'itemsActualites',
-					type: 'array',
-					labels: { singular: 'Actualité', plural: 'Actualités' },
+				// layoutType "actualites" — décision 98 : les actualités ne vivent
+				// plus dans la page (ancien tableau `itemsActualites`, décision 36)
+				// mais dans la collection `fiches`, rattachées à cette page. Ici,
+				// seulement un panneau qui renvoie vers « Publier une fiche ».
+				{
+					name: 'panneauFiches',
+					type: 'ui',
 					admin: {
-						condition: (_, siblingData) => siblingData?.layoutType === 'actualites',
-						components: { Label: '/admin/DynamicArrayLabel',
-						RowLabel: {
-							path: '/admin/RowLabel',
-							clientProps: { prefix: 'Actualité', titleField: 'titre' }
-						} }
-					},
-					fields: [
-						withInfo({ name: 'titre', type: 'text', required: true }, "Le titre de l'actualité."),
-						categoryField(),
-						withInfo({ name: 'date', type: 'date', required: true }, "La date de publication de l'actualité."),
-						withInfo({ name: 'extrait', type: 'textarea', required: true }, 'Le texte de l\'actualité, affiché dans la liste.'),
-						{
-							name: 'epinglee',
-							type: 'checkbox',
-							defaultValue: false,
-							admin: {
-								description:
-									'Épingle cette actu sur l\'Accueil (décision 16). Si plusieurs actus sont épinglées, la plus récente ("date") est prioritaire.'
-							}
-						},
-						{
-							name: 'lienDocument',
-							type: 'relationship',
-							relationTo: 'pages',
-							admin: {
-								description: 'Optionnel — remplace "Lire la suite" par "Voir le document"'
-							}
-						}
-					]
-				}),
+						condition: (_, siblingData) =>
+							(LAYOUTS_EN_FICHES as readonly string[]).includes(String(siblingData?.layoutType ?? '')),
+						components: { Field: '/admin/PanneauFiches' }
+					}
+				},
 
 				// layoutType "document"
 				withAddRowTop({
@@ -1016,7 +955,7 @@ export const Pages: CollectionConfig = {
 					]
 				},
 				// Décision 16/36 — pas de champ ici : l'épinglage vit sur chaque
-				// actu (`liste.itemsActualites[].epinglee`, page "Actualités").
+				// actu (fiche `epinglee`, décision 98 — collection `fiches`).
 				// Au rendu, l'Accueil va chercher cette page et prend l'item
 				// épinglé le plus récent (ou les 3 dernières par défaut, sans
 				// épinglage).
@@ -1269,7 +1208,7 @@ export const Pages: CollectionConfig = {
 					return new Date(dateB ?? 0).getTime() - new Date(dateA ?? 0).getTime();
 				};
 
-				for (const key of ['itemsActualites', 'itemsAgenda', 'itemsDocument', 'itemsBudgetProjet']) {
+				for (const key of ['itemsAgenda', 'itemsDocument', 'itemsBudgetProjet']) {
 					const items = liste[key];
 					if (Array.isArray(items)) {
 						liste[key] = [...items].sort(byDateDesc);

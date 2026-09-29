@@ -1,0 +1,33 @@
+@import '@themes/atelier/styles/variables';
+
+.panneau-fiches {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	flex-wrap: wrap;
+	margin: 8px 0 24px;
+	padding: 16px 20px;
+	border-radius: 16px;
+	border: 2px solid $terracotta;
+	background: oklch(0.68 0.19 28 / 0.08);
+}
+
+.panneau-fiches__text {
+	margin: 0;
+	max-width: 60ch;
+}
+
+.panneau-fiches__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-weight: 700;
+	color: $terracotta;
+	text-decoration: none;
+
+	&:hover,
+	&:focus-visible {
+		text-decoration: underline;
+	}
+}

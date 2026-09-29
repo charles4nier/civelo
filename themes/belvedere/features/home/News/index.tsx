@@ -3,7 +3,8 @@ import './style.scss';
 
 const CLASS_NAME = 'news';
 
-export type NewsActuData = { key: string; date: string; category?: string; title: string; excerpt: string; documentHref?: string };
+// `href` (décision 98) : adresse de la fiche de l'actualité.
+export type NewsActuData = { key: string; date: string; category?: string; title: string; excerpt: string; href?: string; documentHref?: string };
 export type NewsAgendaData = { key: string; date: string; title: string; location: string };
 
 const ACTU_MODS = ['coral', 'sky'] as const;
@@ -72,7 +73,7 @@ export default function News({ actus = fallbackActus, agenda = fallbackAgenda }:
 							</div>
 							<h3 className={`${CLASS_NAME}__card-title`}>{a.title}</h3>
 							<p className={`${CLASS_NAME}__card-desc`}>{a.excerpt}</p>
-							<a href={a.documentHref ?? '/mairie/actualites'} className={`${CLASS_NAME}__card-link`}>
+							<a href={a.href ?? a.documentHref ?? '/mairie/actualites'} className={`${CLASS_NAME}__card-link`}>
 								Lire la suite →
 							</a>
 						</article>

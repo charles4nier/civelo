@@ -33,7 +33,8 @@ import config from '../payload.config';
 // Collections tenant-scoped (voir `payload.config.ts`) — `icones` est
 // volontairement exclue de cette liste : bibliothèque partagée, pas liée à
 // un tenant, exportée en intégralité séparément (voir `exportIcones`).
-const TENANT_COLLECTIONS = ['pages', 'categories', 'media', 'documents', 'pois', 'sentiers'] as const;
+// `fiches` (décision 98) : éléments de liste devenus fiches, rattachés à une page.
+const TENANT_COLLECTIONS = ['pages', 'fiches', 'categories', 'media', 'documents', 'pois', 'sentiers'] as const;
 const TENANT_GLOBALS = ['identite', 'bouton-entete', 'footer'] as const;
 
 type Args = { domaine?: string; out?: string; 'base-url'?: string };

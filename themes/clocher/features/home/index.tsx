@@ -144,6 +144,7 @@ export default async function HomePage() {
 				category: a.category,
 				title: a.title,
 				excerpt: a.excerpt,
+				href: a.href,
 				documentHref: a.documentHref
 			}))
 		: fallbackNews;

@@ -1,0 +1,160 @@
+// Décision 98 — habillage du corps d'une fiche (`shared/components/FicheContent`),
+// commun aux 4 thèmes. À inclure DANS le bloc `.theme-x { … }` du
+// `FicheLayout/style.scss` de chaque thème, après l'import de ses variables :
+// les `$spacing-*`, `$primary`… utilisés ici sont ceux du thème. Les deux
+// couleurs qui n'existent pas partout sont passées en paramètre.
+@mixin fiche-body($texte, $fond-pieces-jointes, $rayon-image: 24px) {
+	.fiche__body {
+		max-width: 800px;
+		padding-top: $section-padding-y-mobile;
+		padding-bottom: $section-padding-y-desktop;
+
+		@media (min-width: $breakpoint-md) {
+			padding-top: $section-padding-y-tablet;
+		}
+	}
+
+	.fiche__figure {
+		margin: 0 0 $spacing-3xl;
+	}
+
+	.fiche__image {
+		display: block;
+		width: 100%;
+		height: auto;
+		border-radius: $rayon-image;
+		box-shadow: $shadow-soft;
+	}
+
+	.fiche__content {
+		color: $texte;
+		font-size: $body-size-desktop;
+		line-height: $line-height-relaxed;
+
+		// Payload enveloppe le texte dans une `div` : l'espacement se pose sur
+		// les blocs eux-mêmes, pas sur les enfants directs de `.fiche__content`.
+		p,
+		ul,
+		ol,
+		blockquote {
+			margin: 0 0 $spacing-lg;
+		}
+
+		h2,
+		h3 {
+			font-family: $font-display;
+			font-weight: $font-weight-semibold;
+			line-height: $line-height-snug;
+			color: $foreground;
+			margin: $spacing-3xl 0 $spacing-md;
+
+			&:first-child {
+				margin-top: 0;
+			}
+		}
+
+		h2 { font-size: $h3-size-desktop; }
+		h3 { font-size: $body-size-desktop; font-weight: $font-weight-bold; }
+
+		ul,
+		ol {
+			padding-left: 1.4em;
+		}
+
+		ul { list-style: disc; }
+		ol { list-style: decimal; }
+
+		li + li {
+			margin-top: $spacing-xs;
+		}
+
+		a {
+			color: $primary;
+			text-decoration: underline;
+			text-underline-offset: 3px;
+		}
+
+		blockquote {
+			padding-left: $spacing-lg;
+			border-left: 4px solid $primary;
+			font-style: italic;
+		}
+
+		img {
+			max-width: 100%;
+			height: auto;
+			border-radius: $rayon-image;
+		}
+	}
+
+	.fiche__attachments {
+		margin-top: $spacing-4xl;
+		padding: $spacing-2xl;
+		border-radius: $rayon-image;
+		background: $fond-pieces-jointes;
+	}
+
+	.fiche__attachments-title {
+		font-family: $font-display;
+		font-size: $h3-size-sm;
+		font-weight: $font-weight-semibold;
+		color: $foreground;
+		margin-bottom: $spacing-lg;
+	}
+
+	.fiche__attachments-list {
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-md;
+		list-style: none;
+		padding: 0;
+	}
+
+	.fiche__attachment {
+		display: inline-flex;
+		align-items: flex-start;
+		gap: $spacing-sm;
+		font-weight: $font-weight-semibold;
+		color: $primary;
+		text-decoration: none;
+
+		svg {
+			flex-shrink: 0;
+			margin-top: 2px;
+		}
+
+		&:hover,
+		&:focus-visible {
+			text-decoration: underline;
+		}
+	}
+
+	.fiche__attachment-info {
+		font-weight: $font-weight-regular;
+		color: $muted-foreground;
+	}
+
+	.fiche__footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: $spacing-lg;
+		margin-top: $spacing-4xl;
+		padding-top: $spacing-2xl;
+		border-top: 1px solid $border;
+	}
+
+	.fiche__back {
+		display: inline-flex;
+		align-items: center;
+		gap: $spacing-sm;
+		font-weight: $font-weight-semibold;
+		color: $foreground;
+
+		&:hover,
+		&:focus-visible {
+			color: $primary;
+		}
+	}
+}

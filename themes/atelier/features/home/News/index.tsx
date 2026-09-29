@@ -11,6 +11,8 @@ export type NewsItemData = {
 	category: string;
 	title: string;
 	excerpt: string;
+	// Décision 98 — adresse de la fiche de l'actualité (carte cliquable).
+	href?: string;
 	documentHref?: string;
 };
 
@@ -41,7 +43,24 @@ export function NewsGrid({ articles }: GridProps) {
 
 			<div className={`${CLASS_NAME}__grid`}>
 				{articles.map((article) =>
-					article.documentHref ? (
+					article.href ? (
+						<Link key={article.key} href={article.href} className={`${CLASS_NAME}__card ${CLASS_NAME}__card--document`}>
+							<div className={`${CLASS_NAME}__card-meta`}>
+								<span className={`${CLASS_NAME}__card-date`}>
+									<Calendar size={14} aria-hidden="true" />
+									{formatShortDate(article.date)}
+								</span>
+								<span className={`${CLASS_NAME}__card-sep`} />
+								<span className={`${CLASS_NAME}__card-cat`}>{article.category}</span>
+							</div>
+							<h3 className={`${CLASS_NAME}__card-title`}>{article.title}</h3>
+							<p className={`${CLASS_NAME}__card-excerpt`}>{article.excerpt}</p>
+							<div className={`${CLASS_NAME}__card-link`}>
+								Lire la suite
+								<ArrowRight size={16} aria-hidden="true" />
+							</div>
+						</Link>
+					) : article.documentHref ? (
 						<Link
 							key={article.key}
 							href={article.documentHref}

@@ -1,0 +1,105 @@
+@import '@themes/atelier/styles/variables';
+@import '@shared/styles/fiche-body';
+
+.theme-atelier {
+$b: 'fiche';
+
+/* ========================
+   En-tête — même dégradé et même rythme que les pages Liste/Éditorial
+   ======================== */
+
+.#{$b}__hero {
+	position: relative;
+	padding-top: 160px;
+	padding-bottom: $spacing-6xl;
+	padding-left: $spacing-lg;
+	padding-right: $spacing-lg;
+	overflow: hidden;
+	background: $gradient-primary;
+	color: #ffffff;
+	text-align: center;
+
+	@media (min-width: $breakpoint-md) {
+		padding-left: $spacing-5xl;
+		padding-right: $spacing-5xl;
+	}
+}
+
+.#{$b}__hero-blur {
+	position: absolute;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	filter: blur(80px);
+	pointer-events: none;
+
+	&--top    { top: -96px;    right: -96px; background: $sunshine-25; }
+	&--bottom { bottom: -128px; left: -96px; background: $primary-30; }
+}
+
+.#{$b}__hero-content {
+	position: relative;
+	max-width: 860px;
+	margin: 0 auto;
+}
+
+.#{$b}__meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: $spacing-md;
+	margin-top: $spacing-lg;
+}
+
+.#{$b}__cat {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 12px;
+	border-radius: 999px;
+	background: #ffffff;
+	color: $foreground;
+	font-size: $xs-size-desktop;
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+}
+
+.#{$b}__date {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	font-weight: $font-weight-medium;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.#{$b}__title {
+	font-family: $font-display;
+	font-size: clamp(32px, 5vw, 56px);
+	font-weight: $font-weight-semibold;
+	line-height: $line-height-tight;
+	color: #ffffff;
+	margin-top: $spacing-md;
+}
+
+.#{$b}__divider {
+	width: 80px;
+	height: 4px;
+	background: $sunshine;
+	margin: $spacing-lg auto 0;
+}
+
+.#{$b}__chapo {
+	margin-top: $spacing-2xl;
+	font-size: $body-size-desktop;
+	color: rgba(255, 255, 255, 0.9);
+	line-height: $line-height-relaxed;
+}
+
+/* ========================
+   Corps — commun aux 4 thèmes (`shared/styles/_fiche-body.scss`)
+   ======================== */
+
+@include fiche-body($foreground-85, $secondary-40, 45px);
+}

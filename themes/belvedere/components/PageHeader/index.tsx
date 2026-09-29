@@ -15,17 +15,26 @@ type Props = {
 	title: React.ReactNode;
 	subtitle: React.ReactNode;
 	tagline?: string;
+	// Décision 98 — niveau intermédiaire du fil d'Ariane, pour une fiche
+	// (Accueil › Actualités › <fiche>).
+	parent?: { label: string; href: string };
 };
 
 const E = 'page-header';
 
-export default function PageHeader({ breadcrumb, eyebrowIcon: EyebrowIcon, eyebrow, title, subtitle, tagline }: Props) {
+export default function PageHeader({ breadcrumb, eyebrowIcon: EyebrowIcon, eyebrow, title, subtitle, tagline, parent }: Props) {
 	return (
 		<section className={`${E}`}>
 			<div className={`${E}__inner`}>
 				<nav className={`${E}__breadcrumb`} aria-label="Fil d'ariane">
 					<Link href="/">Accueil</Link>
 					<ChevronRight size={12} />
+					{parent && (
+						<>
+							<Link href={parent.href}>{parent.label}</Link>
+							<ChevronRight size={12} />
+						</>
+					)}
 					<span>{breadcrumb}</span>
 				</nav>
 

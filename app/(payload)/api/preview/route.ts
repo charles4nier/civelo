@@ -27,16 +27,21 @@ export async function GET(request: NextRequest) {
 		return NextResponse.json({ message: 'Prévisualisation indisponible.' }, { status: 500 });
 	}
 
-	let pageId: unknown;
+	// Décision 98 — le jeton porte la collection (`pages` ou `fiches`, voir
+	// `collections/preview.ts`). Les jetons émis avant ce changement (1h de
+	// validité) n'avaient que `pageId` : lus comme une page.
+	let collection: 'pages' | 'fiches' = 'pages';
+	let docId: unknown;
 	let userId: unknown;
 	try {
 		const { payload: claims } = await jwtVerify(token, new TextEncoder().encode(secret));
-		pageId = claims.pageId;
+		collection = claims.collection === 'fiches' ? 'fiches' : 'pages';
+		docId = claims.docId ?? claims.pageId;
 		userId = claims.userId;
 	} catch {
 		return NextResponse.json({ message: 'Lien de prévisualisation expiré ou invalide.' }, { status: 401 });
 	}
-	if (!pageId || !userId) {
+	if (!docId || !userId) {
 		return NextResponse.json({ message: 'Lien de prévisualisation invalide.' }, { status: 401 });
 	}
 
@@ -58,14 +63,15 @@ export async function GET(request: NextRequest) {
 		return NextResponse.json({ message: 'Site introuvable.' }, { status: 404 });
 	}
 
-	const page = await payload
-		.findByID({ collection: 'pages', id: pageId as number | string, draft: true, overrideAccess: true, depth: 0 })
+	const doc = await payload
+		.findByID({ collection, id: docId as number | string, draft: true, overrideAccess: true, depth: 0 })
 		.catch(() => null);
-	if (!page) {
+	if (!doc) {
 		return NextResponse.json({ message: 'Page introuvable.' }, { status: 404 });
 	}
 
-	const pageTenantId = typeof page.tenant === 'object' && page.tenant !== null ? (page.tenant as { id?: unknown }).id : page.tenant;
+	const docTenant = (doc as { tenant?: unknown }).tenant;
+	const pageTenantId = typeof docTenant === 'object' && docTenant !== null ? (docTenant as { id?: unknown }).id : docTenant;
 	if (String(pageTenantId) !== String(tenant.id)) {
 		return NextResponse.json({ message: 'Page introuvable pour ce site.' }, { status: 404 });
 	}

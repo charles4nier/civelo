@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Link, useAuth, useConfig } from '@payloadcms/ui';
 import {
 	FileText,
@@ -20,8 +20,11 @@ import {
 	PanelTop,
 	PanelBottom,
 	Images,
-	LayoutTemplate
+	LayoutTemplate,
+	Newspaper,
+	Library
 } from 'lucide-react';
+import { PARAM_PAGE_LISTE, listeFichesHref } from '../lib/fiches';
 import './style.scss';
 import './global-overrides.scss';
 
@@ -42,6 +45,10 @@ type NavLinkItem = {
 	// flag, le préfixe `${href}/` matcherait TOUTE page admin (tout
 	// commence par `/admin/`), le laissant actif partout.
 	exact?: boolean;
+	// Décision 98 — entrées « Publier une fiche » : toutes pointent vers la
+	// même liste (`/collections/fiches`), filtrée par page. Active seulement
+	// quand le filtre de l'URL désigne CETTE page.
+	pageListeId?: string;
 };
 
 // Décision 67 — "Mes pages" / "En-tête & pied de page" / "Lieux & sentiers"
@@ -75,8 +82,11 @@ function NavLink({
 	base: string;
 	pathname: string;
 }) {
+	const searchParams = useSearchParams();
 	const href = `${base}${item.href}`;
-	const active = pathname === href || (!item.exact && pathname.startsWith(`${href}/`));
+	const active = item.pageListeId
+		? pathname === `${base}/collections/fiches` && searchParams.get(PARAM_PAGE_LISTE) === item.pageListeId
+		: pathname === href || (!item.exact && pathname.startsWith(`${href}/`));
 	const Icon = item.icon;
 
 	return (
@@ -149,7 +159,12 @@ function NavGroup({ section, base, pathname }: { section: NavSection; base: stri
 	);
 }
 
-type Props = { pages: NavPage[]; siteName: string; hideTenantSelector: boolean; tenantId: string | null };
+type NavPageFiches = { id: string; title: string; layoutType: string };
+
+// Icône d'une entrée « Publier une fiche », selon le type de la page.
+const ICONES_FICHES: Record<string, React.ElementType> = { actualites: Newspaper };
+
+type Props = { pages: NavPage[]; pagesFiches: NavPageFiches[]; siteName: string; hideTenantSelector: boolean; tenantId: string | null };
 
 // Décision — sigle affiché dans le badge de marque (ex. "Saint-Hilaire-
 // Bonneval" → "SB") : 2 premières initiales des mots du nom, ou les 2
@@ -160,7 +175,7 @@ function brandMark(name: string): string {
 	return name.slice(0, 2).toUpperCase();
 }
 
-export default function AdminNavClient({ pages, siteName, hideTenantSelector, tenantId }: Props) {
+export default function AdminNavClient({ pages, pagesFiches, siteName, hideTenantSelector, tenantId }: Props) {
 	const pathname = usePathname();
 	const base = useAdminBase();
 	const router = useRouter();
@@ -179,6 +194,22 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector, te
 	// par défaut) — objet {url} si renseignée, sinon absente/non peuplée.
 	const photo = (user as { photo?: { url?: string } | string } | undefined)?.photo;
 	const photoUrl = typeof photo === 'object' ? photo?.url : undefined;
+
+	// Décision 98 — « Publier une fiche » : le seul chemin pour publier une
+	// actualité (et, à terme, un événement, un commerce…). Une entrée par
+	// page Liste passée en fiches, avec le nom de la page (voir `index.tsx`).
+	const publierFiche: NavSection = {
+		label: 'Publier une fiche',
+		items: pagesFiches.map(
+			(p): NavLinkItem => ({
+				kind: 'link',
+				label: p.title,
+				href: listeFichesHref(p.id),
+				icon: ICONES_FICHES[p.layoutType] ?? FileText,
+				pageListeId: p.id
+			})
+		)
+	};
 
 	const monSite: NavSection = {
 		label: 'Mon site',
@@ -286,6 +317,12 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector, te
 		label: 'Paramètres',
 		items: [
 			...(typeDeSite ? [typeDeSite] : []),
+			// Décision 98 — la liste brute de toutes les fiches, tous types
+			// mélangés : utile au super-admin pour retrouver n'importe quelle
+			// fiche, masquée aux éditeurs (ce serait un second chemin).
+			...(isSuperAdmin && !isSuperAdminConsole
+				? [{ kind: 'link' as const, label: 'Toutes les fiches', href: '/collections/fiches', icon: Library, exact: true }]
+				: []),
 			{ kind: 'link', label: 'Catégories', href: '/collections/categories', icon: Tags },
 			{ kind: 'link', label: 'Icônes', href: '/collections/icones', icon: Shapes },
 			{ kind: 'link', label: 'Médias', href: '/collections/media', icon: Images },
@@ -323,6 +360,11 @@ export default function AdminNavClient({ pages, siteName, hideTenantSelector, te
 					// pas de sens sur la console super-admin, qui ne gère aucun
 					// contenu en propre — seulement sur le domaine verrouillé d'une
 					// vraie commune.
+					!isSuperAdminConsole && publierFiche.items.length > 0 && (
+						<NavGroup section={publierFiche} base={base} pathname={pathname} />
+					)
+				}
+				{
 					!isSuperAdminConsole && <NavGroup section={monSite} base={base} pathname={pathname} />
 				}
 				<NavGroup section={parametres} base={base} pathname={pathname} />

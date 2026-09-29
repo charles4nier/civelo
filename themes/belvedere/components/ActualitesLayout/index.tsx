@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { Calendar, Newspaper, ArrowRight } from 'lucide-react';
 import PageHeader from '@themes/belvedere/components/PageHeader';
 import FilterBar from '@themes/belvedere/components/FilterBar';
@@ -14,6 +15,9 @@ export type ActualiteItemData = {
 	category: string;
 	date: string; // ISO
 	excerpt: string;
+	// Décision 98 — adresse de la fiche : la carte entière y mène (avant,
+	// « Lire la suite » n'était qu'un texte). Absente des données de repli.
+	href?: string;
 	documentHref?: string;
 };
 
@@ -89,22 +93,33 @@ export default function ActualitesLayout({ filters, items }: Props) {
 
 				<div className={`${B}__body container`}>
 					<div className={`${B}__grid`}>
-						{filtered.map((article) => (
-							<article key={article.key} className={`${B}__card`}>
-								<div className={`${B}__card-top`}>
-									<span className={`${B}__card-badge`}>{article.category}</span>
-									<span className={`${B}__card-date`}>
-										<Calendar size={12} />
-										{formatDate(article.date)}
-									</span>
-								</div>
-								<h2 className={`${B}__card-title`}>{article.title}</h2>
-								<p className={`${B}__card-excerpt`}>{article.excerpt}</p>
-								<div className={`${B}__card-link`}>
-									Lire la suite <ArrowRight size={14} />
-								</div>
-							</article>
-						))}
+						{filtered.map((article) => {
+							const contenu = (
+								<>
+									<div className={`${B}__card-top`}>
+										<span className={`${B}__card-badge`}>{article.category}</span>
+										<span className={`${B}__card-date`}>
+											<Calendar size={12} aria-hidden="true" />
+											{formatDate(article.date)}
+										</span>
+									</div>
+									<h2 className={`${B}__card-title`}>{article.title}</h2>
+									<p className={`${B}__card-excerpt`}>{article.excerpt}</p>
+								</>
+							);
+							return article.href ? (
+								<Link key={article.key} href={article.href} className={`${B}__card`}>
+									{contenu}
+									<div className={`${B}__card-link`}>
+										Lire la suite <ArrowRight size={14} aria-hidden="true" />
+									</div>
+								</Link>
+							) : (
+								<article key={article.key} className={`${B}__card`}>
+									{contenu}
+								</article>
+							);
+						})}
 					</div>
 				</div>
 			</section>

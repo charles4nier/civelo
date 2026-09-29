@@ -1,0 +1,55 @@
+@import '@themes/atelier/styles/variables';
+
+// Seul bouton de création sur cette liste : « Nouvelle fiche » (voir
+// `index.tsx`). Les boutons natifs ouvriraient une fiche sans page.
+.collection-list--fiches .list-create-new-doc__create-new-button,
+.collection-list--fiches .list-header__create-new-button,
+.collection-list--fiches .no-results .btn {
+	display: none;
+}
+
+.fiches-list-header {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 24px;
+	flex-wrap: wrap;
+	margin: 4px 0 8px;
+}
+
+.fiches-list-header__eyebrow {
+	margin: 0 0 2px;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: $terracotta;
+}
+
+.fiches-list-header__title {
+	margin: 0 0 6px;
+	font-size: 26px;
+	font-weight: 800;
+}
+
+.fiches-list-header__hint {
+	margin: 0;
+	color: var(--theme-elevation-600);
+}
+
+.fiches-list-header__create {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 18px;
+	border-radius: 999px;
+	background: $terracotta;
+	color: #fff;
+	font-weight: 700;
+	text-decoration: none;
+
+	&:hover,
+	&:focus-visible {
+		filter: brightness(0.92);
+	}
+}

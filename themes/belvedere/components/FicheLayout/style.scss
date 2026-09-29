@@ -1,0 +1,8 @@
+@import '@themes/belvedere/styles/variables';
+@import '@shared/styles/fiche-body';
+
+// Décision 98 — corps de la fiche aux couleurs du thème ; l'en-tête est le
+// `PageHeader` habituel, déjà stylé.
+.theme-belvedere {
+@include fiche-body($foreground-80, $secondary, 16px);
+}

@@ -28,8 +28,12 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { default as default_c26bcf4e41c73c231d2950907c8bdd87 } from '../../../admin/PanneauFiches'
 import { default as default_e6a1a61ca0daf50f523890e1cc142871 } from '../../../admin/HiddenLabel'
 import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
+import { default as default_b319c05b0e7276731e6dbc5ed1d94716 } from '../../../admin/FichePageField'
+import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { default as default_cd4252ad72a8a7d8fec85ac6134b9035 } from '../../../admin/FichesListHeader'
 import { default as default_06806397ca6828cb04eecde6af176023 } from '../../../admin/IconCell'
 import { default as default_77d0f5ea9b1204c83f51dfe969e62d9a } from '../../../admin/IconPreviewField'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
@@ -77,8 +81,12 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/admin/PanneauFiches#default": default_c26bcf4e41c73c231d2950907c8bdd87,
   "/admin/HiddenLabel#default": default_e6a1a61ca0daf50f523890e1cc142871,
   "@payloadcms/plugin-multi-tenant/client#AssignTenantFieldTrigger": AssignTenantFieldTrigger_1d0591e3cf4f332c83a86da13a0de59a,
+  "/admin/FichePageField#default": default_b319c05b0e7276731e6dbc5ed1d94716,
+  "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "/admin/FichesListHeader#default": default_cd4252ad72a8a7d8fec85ac6134b9035,
   "/admin/IconCell#default": default_06806397ca6828cb04eecde6af176023,
   "/admin/IconPreviewField#default": default_77d0f5ea9b1204c83f51dfe969e62d9a,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,

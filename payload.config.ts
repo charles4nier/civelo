@@ -8,6 +8,7 @@ import { en } from '@payloadcms/translations/languages/en';
 import { fr } from '@payloadcms/translations/languages/fr';
 import { Users } from './collections/Users';
 import { Pages } from './collections/Pages';
+import { Fiches } from './collections/Fiches';
 import { Categories } from './collections/Categories';
 import { Icones } from './collections/Icones';
 import { Media } from './collections/Media';
@@ -77,6 +78,8 @@ export default buildConfig({
 	collections: [
 		Users,
 		Pages,
+		// Décision 98 — éléments de liste devenus fiches (pilote : Actualités).
+		Fiches,
 		Categories,
 		Icones,
 		Media,
@@ -158,6 +161,7 @@ export default buildConfig({
 		multiTenantPlugin({
 			collections: {
 				pages: tenantScopedCollection(),
+				fiches: tenantScopedCollection(),
 				categories: tenantScopedCollection(),
 				media: tenantScopedCollection(),
 				documents: tenantScopedCollection(),

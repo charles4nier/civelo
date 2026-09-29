@@ -2,6 +2,7 @@ import type { ServerProps } from 'payload';
 import { Newspaper, CalendarDays, FileStack, Phone, ArrowRight, CircleAlert } from 'lucide-react';
 import { getSelectedTenantId, isTenantLocked } from '../lib/getSelectedTenantId';
 import MesSitesClient from '../MesSites/Client';
+import { nouvelleFicheHref } from '../lib/fiches';
 import './style.scss';
 
 // Décision 69 — "le tableau de bord ne doit pas être des collections, je
@@ -148,7 +149,10 @@ export default async function Dashboard({ payload, user }: ServerProps) {
 
 			<div className="dashboard-home__shortcuts">
 				{actualites && (
-					<a className="dashboard-home__shortcut" href={`/admin/collections/pages/${actualites.id}`}>
+					// Décision 98 — les actualités sont des fiches : ouvre directement
+					// « Nouvelle fiche » de la page Actualités (même écran que le
+					// bouton de « Publier une fiche › Actualités »).
+					<a className="dashboard-home__shortcut" href={`/admin${nouvelleFicheHref(actualites.id)}`}>
 						<span className="dashboard-home__shortcut-icon">
 							<Newspaper size={22} aria-hidden="true" />
 						</span>

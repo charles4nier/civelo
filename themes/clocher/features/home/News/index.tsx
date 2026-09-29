@@ -10,6 +10,8 @@ export type NewsItemData = {
 	category: string;
 	title: string;
 	excerpt: string;
+	// Décision 98 — adresse de la fiche de l'actualité.
+	href?: string;
 	documentHref?: string;
 };
 
@@ -46,8 +48,9 @@ export default function News({ articles }: Props) {
 							</span>
 						</>
 					);
-					return article.documentHref ? (
-						<Link key={article.key} href={article.documentHref} className={`${CLASS_NAME}__card`}>
+					const cible = article.href ?? article.documentHref;
+					return cible ? (
+						<Link key={article.key} href={cible} className={`${CLASS_NAME}__card`}>
 							{inner}
 						</Link>
 					) : (
