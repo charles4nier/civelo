@@ -462,7 +462,8 @@ export default async function DemarchesPage() {
 				summary: it.summary,
 				// Vide tant que le contenu n'a pas été rédigé dans l'admin
 				// (décision 32 — conversion JSX→Lexical hors scope du seed).
-				content: it.contenu ? <RichText data={it.contenu as never} /> : null
+				content: it.contenu ? <RichText data={it.contenu as never} /> : null,
+				ficheHref: it.ficheHref
 			}))
 		: fallbackItems;
 

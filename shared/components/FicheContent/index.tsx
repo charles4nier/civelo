@@ -3,8 +3,8 @@ import { RichText } from '@payloadcms/richtext-lexical/react';
 import { ArrowLeft, ArrowRight, Download } from 'lucide-react';
 import type { FicheData } from '@lib/payload';
 
-// Décision 98 — corps d'une fiche (image, texte, pièces jointes, pied), le
-// même dans les 4 thèmes. Pas de style ici : chaque thème habille les
+// Décision 98 — corps d'une fiche (image, infos pratiques, texte, pièces
+// jointes, pied), le même dans les 4 thèmes. Pas de style ici : chaque thème habille les
 // classes `fiche__*` dans son `FicheLayout/style.scss`, via le mixin commun
 // `shared/styles/_fiche-body.scss` et ses propres variables. Seul l'en-tête
 // (le « hero » propre à chaque thème) diffère d'un `FicheLayout` à l'autre.
@@ -22,6 +22,22 @@ export default function FicheContent({ fiche, retourClassName }: { fiche: FicheD
 						className="fiche__image"
 					/>
 				</figure>
+			)}
+
+			{fiche.infos.length > 0 && (
+				<section className="fiche__infos" aria-labelledby="fiche-infos">
+					<h2 id="fiche-infos" className="fiche__infos-title">
+						Infos pratiques
+					</h2>
+					<dl className="fiche__infos-list">
+						{fiche.infos.map((info) => (
+							<div key={info.libelle} className="fiche__info">
+								<dt>{info.libelle}</dt>
+								<dd>{info.href ? <a href={info.href}>{info.valeur}</a> : info.valeur}</dd>
+							</div>
+						))}
+					</dl>
+				</section>
 			)}
 
 			{Boolean(fiche.contenu) && (

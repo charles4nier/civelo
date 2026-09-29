@@ -11,6 +11,7 @@ import * as migration_20260917_075040_renomme_themes_clocher_belvedere_preau_ate
 import * as migration_20260921_082014_ajoute_image_items_annuaire from './20260921_082014_ajoute_image_items_annuaire';
 import * as migration_20260924_090000_ajoute_afficher_titre_identite from './20260924_090000_ajoute_afficher_titre_identite';
 import * as migration_20260929_094633_fiches_actualites from './20260929_094633_fiches_actualites';
+import * as migration_20260929_135445_fiches_autres_types from './20260929_135445_fiches_autres_types';
 
 export const migrations = [
   {
@@ -76,6 +77,11 @@ export const migrations = [
   {
     up: migration_20260929_094633_fiches_actualites.up,
     down: migration_20260929_094633_fiches_actualites.down,
-    name: '20260929_094633_fiches_actualites'
+    name: '20260929_094633_fiches_actualites',
+  },
+  {
+    up: migration_20260929_135445_fiches_autres_types.up,
+    down: migration_20260929_135445_fiches_autres_types.down,
+    name: '20260929_135445_fiches_autres_types'
   },
 ];

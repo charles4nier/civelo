@@ -193,4 +193,16 @@
 		}
 	}
 }
+
+/* Décision 98 — titre cliquable vers la fiche de l'événement. */
+.agenda-highlight__item-link {
+	color: inherit;
+	text-decoration: none;
+
+	&:hover,
+	&:focus-visible {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+}
 }

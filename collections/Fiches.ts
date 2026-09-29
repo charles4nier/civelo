@@ -14,8 +14,8 @@ import {
 	FixedToolbarFeature,
 	InlineToolbarFeature
 } from '@payloadcms/richtext-lexical';
-import { isLoggedIn } from './access';
-import { withInfo } from './Pages';
+import { isLoggedIn, isSuperAdminField } from './access';
+import { withInfo, contactFields } from './Pages';
 import { buildPreviewURL } from './preview';
 import { slugify } from '../shared/lib/slug';
 import { LAYOUTS_EN_FICHES } from './fichesTypes';
@@ -31,8 +31,14 @@ export { LAYOUTS_EN_FICHES };
 // (le `liste.layoutType` de la page, recopié dans `type`).
 
 // Types dont l'URL porte la date (`2026-09-29-titre`) : un même titre revient
-// d'une année sur l'autre (« Repas des aînés »). Décidé le 2026-09-29.
-const TYPES_DATES = ['actualites', 'document'];
+// d'une année sur l'autre (« Repas des aînés », « Budget primitif »). Décidé
+// le 2026-09-29 pour actualités et publications, étendu à l'agenda.
+const TYPES_DATES = ['actualites', 'document', 'agenda'];
+// Types qui ont une date (dans l'URL ou non).
+const TYPES_AVEC_DATE = [...TYPES_DATES, 'budget-projet'];
+// Types dont la catégorie est obligatoire (décision 10 : catégories
+// verrouillées par page). Budget/Projet n'a pas de catégorie (décision 24).
+const TYPES_AVEC_CATEGORIE = ['actualites', 'agenda', 'demarches', 'annuaire', 'document'];
 
 // Reprise de données (migration des anciennes actualités, import d'une
 // archive) : les données d'origine n'avaient pas toutes ces obligations
@@ -137,6 +143,10 @@ export const Fiches: CollectionConfig = {
 	slug: 'fiches',
 	labels: { singular: 'Fiche', plural: 'Fiches' },
 	indexes: [{ fields: ['tenant', 'page', 'slug'], unique: true }],
+	// Annuaire et démarches étaient rangés à la main (glisser-déposer dans le
+	// tableau de leur page) : même possibilité ici, champ interne `_order`.
+	// Les types datés restent triés par date (voir `lib/payload.ts`).
+	orderable: true,
 	versions: { drafts: { autosave: false }, maxPerDoc: 20 },
 	defaultSort: '-date',
 	admin: {
@@ -209,13 +219,13 @@ export const Fiches: CollectionConfig = {
 				name: 'date',
 				type: 'date',
 				admin: {
-					condition: estType(...TYPES_DATES),
+					condition: estType(...TYPES_AVEC_DATE),
 					date: { pickerAppearance: 'dayOnly', displayFormat: 'dd/MM/yyyy' }
 				},
 				validate: (value: unknown, { siblingData, req }: { siblingData: Record<string, unknown>; req: PayloadRequest }) =>
-					estType(...TYPES_DATES)(siblingData) && !value && !estReprise(req) ? 'La date est obligatoire.' : true
+					estType(...TYPES_AVEC_DATE)(siblingData) && !value && !estReprise(req) ? 'La date est obligatoire.' : true
 			} as Field,
-			'La date de publication, affichée sur la fiche et dans la liste.'
+			"La date de la fiche : publication d'une actualité ou d'un document, jour d'un événement."
 		),
 		withInfo(
 			{
@@ -228,8 +238,9 @@ export const Fiches: CollectionConfig = {
 				filterOptions: ({ siblingData }) => ({
 					page: { equals: idOf((siblingData as { page?: unknown })?.page) ?? 0 }
 				}),
+				admin: { condition: estType(...TYPES_AVEC_CATEGORIE) },
 				validate: (value: unknown, { siblingData, req }: { siblingData: Record<string, unknown>; req: PayloadRequest }) =>
-					estType('actualites')(siblingData) && !value && !estReprise(req) ? 'La catégorie est obligatoire.' : true
+					estType(...TYPES_AVEC_CATEGORIE)(siblingData) && !value && !estReprise(req) ? 'La catégorie est obligatoire.' : true
 			} as Field,
 			'La catégorie de la fiche, utilisée par les filtres de la liste.'
 		),
@@ -244,6 +255,72 @@ export const Fiches: CollectionConfig = {
 					"L'actualité passe en premier sur la page d'accueil. Si plusieurs sont épinglées, la plus récente l'emporte."
 			}
 		},
+		// --- Agenda ---
+		withInfo(
+			{ name: 'horaire', type: 'text', admin: { condition: estType('agenda') } },
+			'Texte libre, ex. « 19 h » ou « de 9 h à 13 h ».'
+		),
+		withInfo(
+			{
+				name: 'lieu',
+				type: 'text',
+				admin: { condition: estType('agenda') },
+				validate: (value: unknown, { siblingData, req }: { siblingData: Record<string, unknown>; req: PayloadRequest }) =>
+					estType('agenda')(siblingData) && !value && !estReprise(req) ? 'Le lieu est obligatoire.' : true
+			} as Field,
+			"Où se déroule l'événement."
+		),
+		// --- Annuaire ---
+		withInfo(
+			{ name: 'badge', type: 'text', admin: { condition: estType('annuaire') } },
+			"Petit texte affiché à côté du nom (ex. un sigle d'association)."
+		),
+		...contactFields.map(
+			(f) =>
+				({
+					...f,
+					admin: { ...((f as { admin?: Record<string, unknown> }).admin ?? {}), condition: estType('annuaire') }
+				}) as Field
+		),
+		// --- Démarches : icône verrouillée par démarche (décision 10 amendée) ---
+		{
+			name: 'icone',
+			type: 'relationship',
+			relationTo: 'icones',
+			label: 'Icône',
+			access: { update: isSuperAdminField },
+			admin: { condition: estType('demarches'), components: { Field: '/admin/IconPickerField' } }
+		},
+		// --- Budget / Projet ---
+		withInfo(
+			{
+				name: 'nature',
+				type: 'select',
+				options: [
+					{ label: 'Budget', value: 'budget' },
+					{ label: 'Projet', value: 'projet' }
+				],
+				admin: { condition: estType('budget-projet') },
+				validate: (value: unknown, { siblingData, req }: { siblingData: Record<string, unknown>; req: PayloadRequest }) =>
+					estType('budget-projet')(siblingData) && !value && !estReprise(req) ? 'Choisissez budget ou projet.' : true
+			} as Field,
+			'Un budget voté (avec son PDF en pièce jointe) ou un projet de la commune.'
+		),
+		withInfo(
+			{
+				name: 'statut',
+				type: 'select',
+				options: [
+					{ label: 'À venir', value: 'a-venir' },
+					{ label: 'En cours', value: 'en-cours' },
+					{ label: 'Terminé', value: 'termine' }
+				],
+				admin: {
+					condition: (data: Record<string, unknown>) => estType('budget-projet')(data) && data?.nature === 'projet'
+				}
+			} as Field,
+			'Où en est ce projet.'
+		),
 		withInfo(
 			{ name: 'image', type: 'upload', relationTo: 'media', label: 'Image principale' },
 			'Affichée en haut de la fiche et sur sa carte dans la liste (facultatif).'

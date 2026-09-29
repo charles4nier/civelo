@@ -1,8 +1,18 @@
-import { Newspaper } from 'lucide-react';
+import { CalendarDays, ClipboardList, FileText, Landmark, MapPin, Newspaper, type LucideIcon } from 'lucide-react';
 import PageHeader from '@themes/belvedere/components/PageHeader';
 import FicheContent from '@shared/components/FicheContent';
 import type { FicheData } from '@lib/payload';
 import './style.scss';
+
+// Icône du surtitre selon le type de la fiche.
+const ICONES: Record<string, LucideIcon> = {
+	actualites: Newspaper,
+	agenda: CalendarDays,
+	demarches: ClipboardList,
+	annuaire: MapPin,
+	document: FileText,
+	'budget-projet': Landmark
+};
 
 function formatDate(iso: string) {
 	return new Date(iso).toLocaleDateString('fr-FR', {
@@ -24,7 +34,7 @@ export default function FicheLayout({ fiche }: { fiche: FicheData }) {
 			<PageHeader
 				breadcrumb={fiche.titre}
 				parent={{ label: fiche.page.titre, href: fiche.page.href }}
-				eyebrowIcon={Newspaper}
+				eyebrowIcon={ICONES[fiche.type] ?? FileText}
 				eyebrow={surtitre || fiche.page.titre}
 				title={fiche.titre}
 				subtitle={fiche.chapo}

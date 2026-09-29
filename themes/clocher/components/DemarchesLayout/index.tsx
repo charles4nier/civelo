@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef, type ReactNode } from 'react';
 import Link from 'next/link';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { ChevronRight, ChevronDown, ArrowRight } from 'lucide-react';
 import FilterBar from '@themes/clocher/components/FilterBar';
 import { LucideIconByName } from '@shared/lib/icons';
 import './style.scss';
@@ -19,6 +19,8 @@ export type DemarcheItemData = {
 	// Rendu déjà résolu par l'appelant (RichText Payload côté Payload, JSX
 	// statique côté repli) — voir features/demarches/index.tsx.
 	content: ReactNode;
+	// Décision 98 — adresse de la fiche de la démarche.
+	ficheHref?: string;
 };
 
 type Props = {
@@ -51,7 +53,15 @@ function AccordionItem({ item }: { item: DemarcheItemData }) {
 				/>
 			</button>
 			<div className={`${CLASS_NAME}__item-body${open ? ` ${CLASS_NAME}__item-body--open` : ''}`}>
-				<div className={`${CLASS_NAME}__item-body-inner`}>{item.content}</div>
+				<div className={`${CLASS_NAME}__item-body-inner`}>
+					{item.content}
+					{item.ficheHref && (
+						<Link href={item.ficheHref} className={`${CLASS_NAME}__item-link`}>
+							Voir la fiche « {item.title} »
+							<ArrowRight size={14} aria-hidden="true" />
+						</Link>
+					)}
+				</div>
 			</div>
 		</div>
 	);

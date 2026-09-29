@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ChevronRight, FileText, Download, BookOpen } from 'lucide-react';
+import { ChevronRight, FileText, Download, BookOpen, ArrowRight } from 'lucide-react';
 import FilterBar from '@themes/clocher/components/FilterBar';
 import type { IconVariant } from '@themes/clocher/components/ContactCard';
 import './style.scss';
@@ -16,6 +16,9 @@ export type DocumentItemData = {
 	typeVariant: IconVariant;
 	date: string; // ISO
 	href?: string;
+	// Décision 98 — adresse de la fiche (texte accessible + PDF en pièce
+	// jointe). Quand elle existe, la carte y mène plutôt qu'au PDF brut.
+	ficheHref?: string;
 };
 
 type Props = {
@@ -138,9 +141,9 @@ export default function DocumentLayout({ filters, items }: Props) {
 								.map((doc) => (
 									<a
 										key={doc.key}
-										href={doc.href ?? '#'}
-										download={Boolean(doc.href)}
-										target={doc.href ? '_blank' : undefined}
+										href={doc.ficheHref ?? doc.href ?? '#'}
+										download={!doc.ficheHref && Boolean(doc.href)}
+										target={!doc.ficheHref && doc.href ? '_blank' : undefined}
 										rel="noopener noreferrer"
 										className={`${CLASS_NAME}__card`}
 									>
@@ -153,7 +156,7 @@ export default function DocumentLayout({ filters, items }: Props) {
 											<span className={`${CLASS_NAME}__card-date`}>{formatDate(doc.date)}</span>
 										</div>
 										<div className={`${CLASS_NAME}__card-download`}>
-											<Download size={14} aria-hidden="true" />
+											{doc.ficheHref ? <ArrowRight size={14} aria-hidden="true" /> : <Download size={14} aria-hidden="true" />}
 										</div>
 									</a>
 								))}

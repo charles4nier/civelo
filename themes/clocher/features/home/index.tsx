@@ -130,7 +130,7 @@ export default async function HomePage() {
 
 	const today = new Date(new Date().toDateString());
 	const events: AgendaEventData[] = agendaItems?.length
-		? agendaItems.map((e) => ({ key: e.key, title: e.title, date: e.date, time: e.time, location: e.location }))
+		? agendaItems.map((e) => ({ key: e.key, title: e.title, date: e.date, time: e.time, location: e.location, href: e.href }))
 		: fallbackAgenda;
 	const upcomingEvents = events
 		.filter((e) => new Date(e.date) >= today)

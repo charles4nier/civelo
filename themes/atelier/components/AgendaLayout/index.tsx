@@ -18,6 +18,8 @@ export type AgendaEventData = {
 	time?: string;
 	location: string;
 	desc?: string;
+	// Décision 98 — adresse de la fiche de l'événement.
+	href?: string;
 };
 
 type Props = {
@@ -158,7 +160,15 @@ export default function AgendaLayout({ filters, events }: Props) {
 													<span className={`${CLASS_NAME}__event-past-tag`}>Passé</span>
 												)}
 											</div>
-											<h3 className={`${CLASS_NAME}__event-title`}>{e.title}</h3>
+											<h3 className={`${CLASS_NAME}__event-title`}>
+												{e.href ? (
+													<Link href={e.href} className={`${CLASS_NAME}__event-link`}>
+														{e.title}
+													</Link>
+												) : (
+													e.title
+												)}
+											</h3>
 											{e.desc && <p className={`${CLASS_NAME}__event-desc`}>{e.desc}</p>}
 											<div className={`${CLASS_NAME}__event-meta`}>
 												<span>

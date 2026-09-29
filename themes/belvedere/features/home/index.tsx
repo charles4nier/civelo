@@ -54,7 +54,7 @@ export default async function HomePage() {
 		: undefined;
 
 	const agenda: NewsAgendaData[] | undefined = agendaItems?.length
-		? agendaItems.slice(0, 3).map((e) => ({ key: e.key, date: e.date, title: e.title, location: e.location }))
+		? agendaItems.slice(0, 3).map((e) => ({ key: e.key, date: e.date, title: e.title, location: e.location, href: e.href }))
 		: undefined;
 
 	const cta: CTAData | null = accueil?.cta ?? null;

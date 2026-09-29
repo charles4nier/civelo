@@ -23,6 +23,8 @@ export type AnnuaireCardData = {
 	badge?: string;
 	description?: string;
 	contacts?: ContactItem[];
+	// Décision 98 — adresse de la fiche (absente des données de repli).
+	ficheHref?: string;
 };
 
 type CtaProps = {
@@ -140,6 +142,7 @@ export default function AnnuaireLayout({
 								badge={card.badge}
 								description={card.description}
 								contacts={card.contacts}
+								href={card.ficheHref}
 							/>
 						))}
 					</div>

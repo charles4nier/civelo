@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { FileText, Download, Filter, BookOpen } from 'lucide-react';
+import { FileText, Download, Filter, BookOpen, ArrowRight } from 'lucide-react';
 import PageHeader from '@themes/belvedere/components/PageHeader';
 import './style.scss';
 
@@ -13,6 +13,9 @@ export type DocumentItemData = {
 	type: string;
 	date: string; // ISO
 	href?: string;
+	// Décision 98 — adresse de la fiche (texte accessible + PDF en pièce
+	// jointe). Quand elle existe, la carte y mène plutôt qu'au PDF brut.
+	ficheHref?: string;
 };
 
 type Props = {
@@ -125,7 +128,7 @@ export default function DocumentsLayout({ types, items }: Props) {
 					{filtered.length > 0 ? (
 						<div className={`${B}__grid`}>
 							{filtered.map((doc) => (
-								<a key={doc.key} href={doc.href ?? '#'} className={`${B}__card`}>
+								<a key={doc.key} href={doc.ficheHref ?? doc.href ?? '#'} className={`${B}__card`}>
 									<div className={`${B}__card-top`}>
 										<span className={`${B}__card-badge`}>{doc.type}</span>
 										<span className={`${B}__card-icon`}>
@@ -135,10 +138,17 @@ export default function DocumentsLayout({ types, items }: Props) {
 									<h3 className={`${B}__card-title`}>{doc.title}</h3>
 									<div className={`${B}__card-foot`}>
 										<span className={`${B}__card-date`}>{formatDate(doc.date)}</span>
-										<span className={`${B}__card-dl`}>
-											<Download size={14} />
-											PDF
-										</span>
+										{doc.ficheHref ? (
+											<span className={`${B}__card-dl`}>
+												Voir la fiche
+												<ArrowRight size={14} aria-hidden="true" />
+											</span>
+										) : (
+											<span className={`${B}__card-dl`}>
+												<Download size={14} aria-hidden="true" />
+												PDF
+											</span>
+										)}
 									</div>
 								</a>
 							))}

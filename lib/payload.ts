@@ -241,37 +241,29 @@ function mapContactGroup(group: PayloadContactGroup | undefined): ContactItem[] 
 }
 
 // Item 11 — utilisé par les 4 pages Annuaire (Commerces, Vie associative,
-// Enfance & jeunesse, Sports & loisirs). Retourne `null` si Payload est
-// injoignable OU si la page n'existe pas encore côté base : dans les deux
-// cas, l'appelant retombe sur ses données statiques (voir chaque page).
+// Enfance & jeunesse, Sports & loisirs). Décision 98 : lit les fiches de la
+// page (plus le tableau `liste.itemsAnnuaire`), dans l'ordre choisi à la main
+// (`_order`). Même forme de sortie qu'avant, plus `ficheHref`. `null` si
+// Payload est injoignable, si la page n'existe pas ou n'a aucune fiche
+// publiée : l'appelant retombe alors sur ses données statiques.
 export async function getAnnuaireItems(slug: string): Promise<AnnuaireCardData[] | null> {
 	try {
-		const payload = await getPayloadClient();
-		const tenant = await requireTenant(payload);
-		const { docs } = await payload.find({
-			collection: 'pages',
-			draft: await isPreviewing(),
-			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
-			depth: 2,
-			limit: 1
-		});
-		const page = docs[0] as unknown as { liste?: { itemsAnnuaire?: PayloadAnnuaireItem[] } } | undefined;
-		const items = page?.liste?.itemsAnnuaire;
-		if (!items || items.length === 0) return null;
-
-		return items.map((item) => {
-			const cat = typeof item.categorie === 'object' ? item.categorie : undefined;
-			const img = typeof item.image === 'object' ? item.image : undefined;
+		const res = await findFichesDePage(slug, '_order');
+		if (!res) return null;
+		return res.fiches.map((fiche) => {
+			const cat = categorieDe(fiche);
+			const img = imageDe(fiche);
 			return {
-				key: item.nom,
+				key: String(fiche.id),
 				icon: resolveIconName(cat?.icone, 'HelpCircle'),
 				iconVariant: toIconVariant(cat?.couleur),
 				category: cat?.nom ?? '',
-				name: item.nom,
-				image: img?.url ? { url: img.url, alt: img.alt ?? item.nom } : undefined,
-				badge: item.badge,
-				description: item.description,
-				contacts: mapContactGroup(item)
+				name: fiche.titre,
+				image: img?.url ? { url: img.url, alt: img.alt ?? fiche.titre } : undefined,
+				badge: fiche.badge,
+				description: fiche.chapo,
+				contacts: mapContactGroup(fiche),
+				ficheHref: `/${res.page.slug}/${fiche.slug}`
 			};
 		});
 	} catch (err) {
@@ -280,44 +272,24 @@ export async function getAnnuaireItems(slug: string): Promise<AnnuaireCardData[]
 	}
 }
 
-type PayloadAgendaItem = {
-	titre: string;
-	categorie: PayloadCategory | string;
-	date: string;
-	horaire?: string;
-	lieu: string;
-	description?: string;
-};
-
-// Item 13 — même pattern que getAnnuaireItems, pour la carte "agenda" du
-// gabarit Liste. `categorie.couleur` (décision 24) fournit directement la
-// variante visuelle, plus besoin d'un mapping en dur par catégorie.
+// Item 13 — carte "agenda" du gabarit Liste. Décision 98 : lit les fiches de
+// la page. `categorie.couleur` (décision 24) fournit la variante visuelle.
 export async function getAgendaItems(slug: string) {
 	try {
-		const payload = await getPayloadClient();
-		const tenant = await requireTenant(payload);
-		const { docs } = await payload.find({
-			collection: 'pages',
-			draft: await isPreviewing(),
-			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
-			depth: 2,
-			limit: 1
-		});
-		const page = docs[0] as unknown as { liste?: { itemsAgenda?: PayloadAgendaItem[] } } | undefined;
-		const items = page?.liste?.itemsAgenda;
-		if (!items || items.length === 0) return null;
-
-		return items.map((item, i) => {
-			const cat = typeof item.categorie === 'object' ? item.categorie : undefined;
+		const res = await findFichesDePage(slug, '-date');
+		if (!res) return null;
+		return res.fiches.map((fiche) => {
+			const cat = categorieDe(fiche);
 			return {
-				key: String(i),
-				title: item.titre,
+				key: String(fiche.id),
+				title: fiche.titre,
 				category: cat?.nom ?? '',
 				categoryVariant: toIconVariant(cat?.couleur),
-				date: item.date,
-				time: item.horaire,
-				location: item.lieu,
-				desc: item.description
+				date: fiche.date ?? '',
+				time: fiche.horaire,
+				location: fiche.lieu ?? '',
+				desc: fiche.chapo,
+				href: `/${res.page.slug}/${fiche.slug}`
 			};
 		});
 	} catch (err) {
@@ -344,7 +316,47 @@ type PayloadFiche = {
 	seo?: { titre?: string; description?: string };
 	updatedAt?: string;
 	_status?: 'draft' | 'published';
+	// Agenda
+	horaire?: string;
+	lieu?: string;
+	// Annuaire
+	badge?: string;
+	adresse?: string;
+	telephone?: string;
+	email?: string;
+	siteWeb?: string;
+	// Démarches
+	icone?: PayloadIconRelation | null;
+	// Budget / projet
+	nature?: 'budget' | 'projet';
+	statut?: string;
 };
+
+const categorieDe = (fiche: PayloadFiche) =>
+	typeof fiche.categorie === 'object' && fiche.categorie ? fiche.categorie : undefined;
+const imageDe = (fiche: PayloadFiche) => (typeof fiche.image === 'object' && fiche.image ? fiche.image : undefined);
+
+// Décision 98 — les fiches publiées (ou en aperçu, les brouillons) d'une page
+// Liste de la commune courante. `null` si la page n'existe pas ou n'a aucune
+// fiche : comme avant avec un tableau vide, l'appelant retombe alors sur ses
+// données statiques de repli.
+async function findFichesDePage(slug: string, sort: string) {
+	const payload = await getPayloadClient();
+	const tenant = await requireTenant(payload);
+	const page = await findPageListe(payload, tenant.id, slug);
+	if (!page) return null;
+	const { docs } = await payload.find({
+		collection: 'fiches',
+		draft: await isPreviewing(),
+		where: { and: [{ page: { equals: page.id } }, { tenant: { equals: tenant.id } }, ...(await ficheStatusWhere())] },
+		sort,
+		depth: 1,
+		limit: 0,
+		pagination: false
+	});
+	const fiches = docs as unknown as PayloadFiche[];
+	return fiches.length > 0 ? { page, fiches } : null;
+}
 
 // Hors aperçu, un visiteur ne voit que les fiches publiées. Filtre explicite :
 // une fiche créée en brouillon et jamais publiée vit quand même dans la
@@ -379,28 +391,11 @@ async function findPageListe(
 // statiques, comme avant.
 export async function getActualitesItems(slug: string) {
 	try {
-		const payload = await getPayloadClient();
-		const tenant = await requireTenant(payload);
-		const page = await findPageListe(payload, tenant.id, slug);
-		if (!page) return null;
-
-		const { docs } = await payload.find({
-			collection: 'fiches',
-			draft: await isPreviewing(),
-			where: {
-				and: [{ page: { equals: page.id } }, { tenant: { equals: tenant.id } }, ...(await ficheStatusWhere())]
-			},
-			sort: '-date',
-			depth: 1,
-			limit: 0,
-			pagination: false
-		});
-		const fiches = docs as unknown as PayloadFiche[];
-		if (fiches.length === 0) return null;
-
-		return fiches.map((fiche) => {
-			const cat = typeof fiche.categorie === 'object' && fiche.categorie ? fiche.categorie : undefined;
-			const image = typeof fiche.image === 'object' && fiche.image ? fiche.image : undefined;
+		const res = await findFichesDePage(slug, '-date');
+		if (!res) return null;
+		return res.fiches.map((fiche) => {
+			const cat = categorieDe(fiche);
+			const image = imageDe(fiche);
 			return {
 				key: String(fiche.id),
 				title: fiche.titre,
@@ -409,7 +404,7 @@ export async function getActualitesItems(slug: string) {
 				date: fiche.date ?? '',
 				excerpt: fiche.chapo,
 				epinglee: fiche.epinglee ?? false,
-				href: `/${page.slug}/${fiche.slug}`,
+				href: `/${res.page.slug}/${fiche.slug}`,
 				image: image?.url ? { url: image.url, alt: image.alt ?? '' } : undefined,
 				documentHref: resolvePageHref(fiche.pageLiee ?? undefined)
 			};
@@ -436,7 +431,35 @@ export type FicheData = {
 	seo: { titre: string; description: string };
 	page: { titre: string; href: string };
 	updatedAt?: string;
+	// Encart « Infos pratiques » propre au type : horaire et lieu d'un
+	// événement, coordonnées d'une fiche annuaire, statut d'un projet.
+	infos: InfoPratique[];
+	badge?: string;
 };
+
+export type InfoPratique = { libelle: string; valeur: string; href?: string };
+
+function infosPratiques(fiche: PayloadFiche): InfoPratique[] {
+	const infos: InfoPratique[] = [];
+	if (fiche.type === 'agenda') {
+		if (fiche.horaire) infos.push({ libelle: 'Horaire', valeur: fiche.horaire });
+		if (fiche.lieu) infos.push({ libelle: 'Lieu', valeur: fiche.lieu });
+	}
+	if (fiche.type === 'annuaire') {
+		if (fiche.adresse) infos.push({ libelle: 'Adresse', valeur: fiche.adresse });
+		if (fiche.telephone)
+			infos.push({ libelle: 'Téléphone', valeur: fiche.telephone, href: `tel:${fiche.telephone.replace(/[^\d+]/g, '')}` });
+		if (fiche.email) infos.push({ libelle: 'E-mail', valeur: fiche.email, href: `mailto:${fiche.email}` });
+		if (fiche.siteWeb) {
+			const url = /^https?:\/\//.test(fiche.siteWeb) ? fiche.siteWeb : `https://${fiche.siteWeb}`;
+			infos.push({ libelle: 'Site web', valeur: fiche.siteWeb.replace(/^https?:\/\//, ''), href: url });
+		}
+	}
+	if (fiche.type === 'budget-projet' && fiche.nature === 'projet') {
+		infos.push({ libelle: 'Statut', valeur: STATUT_LABELS[(fiche.statut as StatutProjet | undefined) ?? 'a-venir'] });
+	}
+	return infos;
+}
 
 function formatPoids(octets?: number): string | undefined {
 	if (!octets) return undefined;
@@ -505,7 +528,9 @@ export async function getFiche(pageSlug: string, ficheSlug: string): Promise<Fic
 				description: fiche.seo?.description || fiche.chapo
 			},
 			page: { titre: page.title, href: `/${page.slug}` },
-			updatedAt: fiche.updatedAt
+			updatedAt: fiche.updatedAt,
+			infos: infosPratiques({ ...fiche, type: fiche.type ?? page.liste?.layoutType }),
+			badge: fiche.badge
 		};
 	} catch (err) {
 		console.warn(`[payload] getFiche("${pageSlug}", "${ficheSlug}") : base injoignable.`, err);
@@ -514,40 +539,32 @@ export async function getFiche(pageSlug: string, ficheSlug: string): Promise<Fic
 }
 
 type PayloadDocumentUpload = { url?: string } | string;
-type PayloadDocumentItem = {
-	titre: string;
-	type: PayloadCategory | string;
-	date: string;
-	fichier?: PayloadDocumentUpload;
-};
 
-// Item 13 — carte "document" du gabarit Liste. `fichier` est un champ
-// `upload` (décision 25) : peuplé, c'est un objet avec `url`.
+// Premier PDF des pièces jointes d'une fiche (documents, budgets) : c'est
+// lui que la liste propose en téléchargement direct, comme l'ancien champ
+// `fichier`.
+function premierFichier(fiche: PayloadFiche): string | undefined {
+	const pj = (fiche.piecesJointes ?? []).find((d) => typeof d === 'object' && d?.url);
+	return typeof pj === 'object' ? pj?.url : undefined;
+}
+
+// Item 13 — carte "document" du gabarit Liste. Décision 98 : lit les fiches
+// de la page. `href` reste le PDF (téléchargement direct depuis la liste),
+// `ficheHref` la page de la fiche (texte = version accessible du PDF).
 export async function getDocumentItems(slug: string) {
 	try {
-		const payload = await getPayloadClient();
-		const tenant = await requireTenant(payload);
-		const { docs } = await payload.find({
-			collection: 'pages',
-			draft: await isPreviewing(),
-			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
-			depth: 2,
-			limit: 1
-		});
-		const page = docs[0] as unknown as { liste?: { itemsDocument?: PayloadDocumentItem[] } } | undefined;
-		const items = page?.liste?.itemsDocument;
-		if (!items || items.length === 0) return null;
-
-		return items.map((item, i) => {
-			const type = typeof item.type === 'object' ? item.type : undefined;
-			const fichier = typeof item.fichier === 'object' ? item.fichier : undefined;
+		const res = await findFichesDePage(slug, '-date');
+		if (!res) return null;
+		return res.fiches.map((fiche) => {
+			const type = categorieDe(fiche);
 			return {
-				key: String(i),
-				title: item.titre,
+				key: String(fiche.id),
+				title: fiche.titre,
 				type: type?.nom ?? '',
 				typeVariant: toIconVariant(type?.couleur),
-				date: item.date,
-				href: fichier?.url
+				date: fiche.date ?? '',
+				href: premierFichier(fiche),
+				ficheHref: `/${res.page.slug}/${fiche.slug}`
 			};
 		});
 	} catch (err) {
@@ -556,50 +573,41 @@ export async function getDocumentItems(slug: string) {
 	}
 }
 
-type PayloadBudgetProjetItem = {
-	nature: 'budget' | 'projet';
-	titre: string;
-	date: string;
-	fichier?: PayloadDocumentUpload;
-	statut?: 'a-venir' | 'en-cours' | 'termine';
-	description?: string;
-};
+type StatutProjet = 'a-venir' | 'en-cours' | 'termine';
 
-const STATUT_LABELS: Record<NonNullable<PayloadBudgetProjetItem['statut']>, 'À venir' | 'En cours' | 'Terminé'> = {
+const STATUT_LABELS: Record<StatutProjet, 'À venir' | 'En cours' | 'Terminé'> = {
 	'a-venir': 'À venir',
 	'en-cours': 'En cours',
 	termine: 'Terminé'
 };
 
 // Item 13 — carte "budget-projet" du gabarit Liste. Pas de catégorie
-// (décision 24) — `nature` est le seul discriminant.
+// (décision 24) — `nature` est le seul discriminant. Décision 98 : lit les
+// fiches de la page ; `href` reste le PDF d'un budget, `ficheHref` la fiche.
 export async function getBudgetProjetItems(slug: string) {
 	try {
-		const payload = await getPayloadClient();
-		const tenant = await requireTenant(payload);
-		const { docs } = await payload.find({
-			collection: 'pages',
-			draft: await isPreviewing(),
-			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
-			depth: 2,
-			limit: 1
-		});
-		const page = docs[0] as unknown as { liste?: { itemsBudgetProjet?: PayloadBudgetProjetItem[] } } | undefined;
-		const items = page?.liste?.itemsBudgetProjet;
-		if (!items || items.length === 0) return null;
-
-		return items.map((item, i) => {
-			if (item.nature === 'budget') {
-				const fichier = typeof item.fichier === 'object' ? item.fichier : undefined;
-				return { key: String(i), kind: 'budget' as const, title: item.titre, date: item.date, href: fichier?.url };
+		const res = await findFichesDePage(slug, '-date');
+		if (!res) return null;
+		return res.fiches.map((fiche) => {
+			const ficheHref = `/${res.page.slug}/${fiche.slug}`;
+			if (fiche.nature === 'budget') {
+				return {
+					key: String(fiche.id),
+					kind: 'budget' as const,
+					title: fiche.titre,
+					date: fiche.date ?? '',
+					href: premierFichier(fiche),
+					ficheHref
+				};
 			}
 			return {
-				key: String(i),
+				key: String(fiche.id),
 				kind: 'projet' as const,
-				title: item.titre,
-				date: item.date,
-				status: STATUT_LABELS[item.statut ?? 'a-venir'],
-				desc: item.description
+				title: fiche.titre,
+				date: fiche.date ?? '',
+				status: STATUT_LABELS[(fiche.statut as StatutProjet | undefined) ?? 'a-venir'],
+				desc: fiche.chapo,
+				ficheHref
 			};
 		});
 	} catch (err) {
@@ -608,46 +616,23 @@ export async function getBudgetProjetItems(slug: string) {
 	}
 }
 
-type PayloadDemarcheItem = {
-	titre: string;
-	categorie: PayloadCategory | string;
-	icone?: PayloadIconRelation;
-	resume: string;
-	// JSON Lexical brut (SerializedEditorState) — pas typé finement ici,
-	// laissé à l'appelant de le passer à <RichText> (voir
-	// features/demarches/index.tsx). Reste `undefined` tant que le contenu
-	// n'a pas été rédigé dans l'admin (décision 32, JSX→Lexical hors scope).
-	contenu?: unknown;
-};
-
-// Item 13 — carte "demarches" du gabarit Liste. Contrairement aux autres
-// cartes, `contenu` est un champ richText (Lexical), pas du texte simple —
-// cette fonction reste une couche de données pures (comme les autres),
-// le rendu <RichText> se fait côté appelant.
+// Item 13 — carte "demarches" du gabarit Liste. `contenu` est un champ
+// richText (Lexical), rendu en <RichText> côté appelant. Décision 98 : lit
+// les fiches de la page, dans l'ordre choisi à la main (`_order`).
 export async function getDemarchesItems(slug: string) {
 	try {
-		const payload = await getPayloadClient();
-		const tenant = await requireTenant(payload);
-		const { docs } = await payload.find({
-			collection: 'pages',
-			draft: await isPreviewing(),
-			where: { and: [{ slug: { equals: slug } }, { tenant: { equals: tenant.id } }] },
-			depth: 2,
-			limit: 1
-		});
-		const page = docs[0] as unknown as { liste?: { itemsDemarches?: PayloadDemarcheItem[] } } | undefined;
-		const items = page?.liste?.itemsDemarches;
-		if (!items || items.length === 0) return null;
-
-		return items.map((item, i) => {
-			const cat = typeof item.categorie === 'object' ? item.categorie : undefined;
+		const res = await findFichesDePage(slug, '_order');
+		if (!res) return null;
+		return res.fiches.map((fiche) => {
+			const cat = categorieDe(fiche);
 			return {
-				key: String(i),
+				key: String(fiche.id),
 				category: cat?.nom ?? '',
-				icon: resolveIconName(item.icone, 'HelpCircle'),
-				title: item.titre,
-				summary: item.resume,
-				contenu: item.contenu
+				icon: resolveIconName(fiche.icone ?? undefined, 'HelpCircle'),
+				title: fiche.titre,
+				summary: fiche.chapo,
+				contenu: fiche.contenu,
+				ficheHref: `/${res.page.slug}/${fiche.slug}`
 			};
 		});
 	} catch (err) {

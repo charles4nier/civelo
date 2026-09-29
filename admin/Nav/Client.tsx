@@ -22,7 +22,11 @@ import {
 	Images,
 	LayoutTemplate,
 	Newspaper,
-	Library
+	Library,
+	CalendarDays,
+	ClipboardList,
+	Store,
+	Landmark
 } from 'lucide-react';
 import { PARAM_PAGE_LISTE, listeFichesHref } from '../lib/fiches';
 import './style.scss';
@@ -162,7 +166,14 @@ function NavGroup({ section, base, pathname }: { section: NavSection; base: stri
 type NavPageFiches = { id: string; title: string; layoutType: string };
 
 // Icône d'une entrée « Publier une fiche », selon le type de la page.
-const ICONES_FICHES: Record<string, React.ElementType> = { actualites: Newspaper };
+const ICONES_FICHES: Record<string, React.ElementType> = {
+	actualites: Newspaper,
+	agenda: CalendarDays,
+	demarches: ClipboardList,
+	annuaire: Store,
+	document: FileStack,
+	'budget-projet': Landmark
+};
 
 type Props = { pages: NavPage[]; pagesFiches: NavPageFiches[]; siteName: string; hideTenantSelector: boolean; tenantId: string | null };
 

@@ -274,5 +274,17 @@ $b: 'agenda';
 	color: $muted-foreground;
 	font-size: $small-size-desktop;
 }
-}
 
+/* Décision 98 — titre cliquable vers la fiche de l'événement. */
+.agenda__event-link {
+	color: inherit;
+	text-decoration: none;
+
+	&:hover,
+	&:focus-visible {
+		color: $primary;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+}
+}

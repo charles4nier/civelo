@@ -35,7 +35,15 @@ function EventBlock({ event, mod, main = false }: { event: NextEventData; mod: s
 				<span className={`${CLASS_NAME}__item-date-day`}>{eventDate.getDate()}</span>
 				<span className={`${CLASS_NAME}__item-date-month`}>{monthShort[eventDate.getMonth()]}</span>
 			</div>
-			<p className={`${CLASS_NAME}__item-title`}>{event.title}</p>
+			<p className={`${CLASS_NAME}__item-title`}>
+				{event.href ? (
+					<Link href={event.href} className={`${CLASS_NAME}__item-link`}>
+						{event.title}
+					</Link>
+				) : (
+					event.title
+				)}
+			</p>
 			{main && event.desc && <p className={`${CLASS_NAME}__item-desc`}>{event.desc}</p>}
 		</div>
 	);

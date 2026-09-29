@@ -114,4 +114,17 @@ $b: 'agenda-layout';
 	text-align: center;
 	padding: $spacing-4xl 0;
 }
+
+/* Décision 98 — titre cliquable vers la fiche de l'événement. */
+.agenda__card-link {
+	color: inherit;
+	text-decoration: none;
+
+	&:hover,
+	&:focus-visible {
+		color: $primary;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+}
 }

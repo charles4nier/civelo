@@ -32,6 +32,8 @@ export type NextEventData = {
 	category?: string;
 	time?: string;
 	desc?: string;
+	// Décision 98 — adresse de la fiche de l'événement.
+	href?: string;
 };
 
 type Props = { items: QuickAccessItemData[] };

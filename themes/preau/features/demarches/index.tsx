@@ -63,7 +63,8 @@ export default async function DemarchesPage() {
 			icon: it.icon,
 			title: it.title,
 			summary: it.summary,
-			content: it.contenu ? <RichText data={it.contenu as never} /> : null
+			content: it.contenu ? <RichText data={it.contenu as never} /> : null,
+			ficheHref: it.ficheHref
 		})) ?? fallbackItems;
 
 	return <DemarchesLayout filters={filters} items={items} />;

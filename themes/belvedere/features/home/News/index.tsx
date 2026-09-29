@@ -5,7 +5,7 @@ const CLASS_NAME = 'news';
 
 // `href` (décision 98) : adresse de la fiche de l'actualité.
 export type NewsActuData = { key: string; date: string; category?: string; title: string; excerpt: string; href?: string; documentHref?: string };
-export type NewsAgendaData = { key: string; date: string; title: string; location: string };
+export type NewsAgendaData = { key: string; date: string; title: string; location: string; href?: string };
 
 const ACTU_MODS = ['coral', 'sky'] as const;
 const AGENDA_MODS = ['sun', 'sky', 'coral'] as const;
@@ -93,7 +93,15 @@ export default function News({ actus = fallbackActus, agenda = fallbackAgenda }:
 											<span>{capitalize(MONTH_FORMAT.format(d))}</span>
 										</div>
 										<div className={`${CLASS_NAME}__agenda-info`}>
-											<div className={`${CLASS_NAME}__agenda-item-title`}>{e.title}</div>
+											<div className={`${CLASS_NAME}__agenda-item-title`}>
+												{e.href ? (
+													<a href={e.href} className={`${CLASS_NAME}__agenda-item-link`}>
+														{e.title}
+													</a>
+												) : (
+													e.title
+												)}
+											</div>
 											<div className={`${CLASS_NAME}__agenda-place`}>{e.location}</div>
 										</div>
 									</li>

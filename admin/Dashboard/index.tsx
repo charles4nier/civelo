@@ -164,7 +164,7 @@ export default async function Dashboard({ payload, user }: ServerProps) {
 					</a>
 				)}
 				{agenda && (
-					<a className="dashboard-home__shortcut" href={`/admin/collections/pages/${agenda.id}`}>
+					<a className="dashboard-home__shortcut" href={`/admin${nouvelleFicheHref(agenda.id)}`}>
 						<span className="dashboard-home__shortcut-icon">
 							<CalendarDays size={22} aria-hidden="true" />
 						</span>
@@ -176,7 +176,7 @@ export default async function Dashboard({ payload, user }: ServerProps) {
 					</a>
 				)}
 				{publications && (
-					<a className="dashboard-home__shortcut" href={`/admin/collections/pages/${publications.id}`}>
+					<a className="dashboard-home__shortcut" href={`/admin${nouvelleFicheHref(publications.id)}`}>
 						<span className="dashboard-home__shortcut-icon">
 							<FileStack size={22} aria-hidden="true" />
 						</span>

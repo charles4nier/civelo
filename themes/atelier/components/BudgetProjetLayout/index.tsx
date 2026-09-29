@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ChevronRight, FileText, Download, Landmark, Hammer } from 'lucide-react';
+import { ChevronRight, FileText, Download, Landmark, Hammer, ArrowRight } from 'lucide-react';
 import FilterBar from '@themes/atelier/components/FilterBar';
 
 import './style.scss';
@@ -15,6 +15,8 @@ export type BudgetItemData = {
 	title: string;
 	date: string; // ISO
 	href?: string;
+	// Décision 98 — adresse de la fiche ; la carte y mène quand elle existe.
+	ficheHref?: string;
 };
 
 export type ProjetItemData = {
@@ -24,6 +26,7 @@ export type ProjetItemData = {
 	date: string; // ISO
 	status: 'À venir' | 'En cours' | 'Terminé';
 	desc?: string;
+	ficheHref?: string;
 };
 
 export type BudgetProjetItemData = BudgetItemData | ProjetItemData;
@@ -165,9 +168,9 @@ export default function BudgetProjetLayout({ items }: Props) {
 									entry.kind === 'budget' ? (
 										<a
 											key={entry.key}
-											href={entry.href ?? '#'}
-											download={Boolean(entry.href)}
-											target={entry.href ? '_blank' : undefined}
+											href={entry.ficheHref ?? entry.href ?? '#'}
+											download={!entry.ficheHref && Boolean(entry.href)}
+											target={!entry.ficheHref && entry.href ? '_blank' : undefined}
 											rel="noopener noreferrer"
 											className={`${CLASS_NAME}__card`}
 										>
@@ -180,10 +183,25 @@ export default function BudgetProjetLayout({ items }: Props) {
 												<span className={`${CLASS_NAME}__card-date`}>{formatDate(entry.date)}</span>
 											</div>
 											<div className={`${CLASS_NAME}__card-download`}>
-												<Download size={14} aria-hidden="true" />
+												{entry.ficheHref ? <ArrowRight size={14} aria-hidden="true" /> : <Download size={14} aria-hidden="true" />}
 											</div>
 										</a>
 									) : (
+										entry.ficheHref ? (
+											<Link key={entry.key} href={entry.ficheHref} className={`${CLASS_NAME}__card ${CLASS_NAME}__card--projet`}>
+											<div className={`${CLASS_NAME}__card-icon ${CLASS_NAME}__card-icon--coral`}>
+												<Hammer size={18} strokeWidth={1.75} aria-hidden="true" />
+											</div>
+											<div className={`${CLASS_NAME}__card-body`}>
+												<span className={`${CLASS_NAME}__status ${CLASS_NAME}__status--${statusVariant[entry.status]}`}>
+													{entry.status}
+												</span>
+												<p className={`${CLASS_NAME}__card-title`}>{entry.title}</p>
+												{entry.desc && <p className={`${CLASS_NAME}__card-desc`}>{entry.desc}</p>}
+												<span className={`${CLASS_NAME}__card-date`}>{formatDate(entry.date)}</span>
+											</div>
+										</Link>
+										) : (
 										<article key={entry.key} className={`${CLASS_NAME}__card ${CLASS_NAME}__card--projet`}>
 											<div className={`${CLASS_NAME}__card-icon ${CLASS_NAME}__card-icon--coral`}>
 												<Hammer size={18} strokeWidth={1.75} aria-hidden="true" />
@@ -197,6 +215,7 @@ export default function BudgetProjetLayout({ items }: Props) {
 												<span className={`${CLASS_NAME}__card-date`}>{formatDate(entry.date)}</span>
 											</div>
 										</article>
+										)
 									)
 								)}
 						</div>

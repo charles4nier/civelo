@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef, type ReactNode } from 'react';
-import { ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 import FilterBar from '@themes/belvedere/components/FilterBar';
 import PageHeader from '@themes/belvedere/components/PageHeader';
 import CtaBanner from '@themes/belvedere/components/CtaBanner';
@@ -17,6 +18,8 @@ export type DemarcheItemData = {
 	title: string;
 	summary: string;
 	content: ReactNode;
+	// Décision 98 — adresse de la fiche de la démarche.
+	ficheHref?: string;
 };
 
 type Props = {
@@ -40,7 +43,15 @@ function AccordionItem({ item }: { item: DemarcheItemData }) {
 				<ChevronDown size={18} className={`${CLASS_NAME}__item-chevron${open ? ` ${CLASS_NAME}__item-chevron--open` : ''}`} />
 			</button>
 			<div className={`${CLASS_NAME}__item-body${open ? ` ${CLASS_NAME}__item-body--open` : ''}`}>
-				<div className={`${CLASS_NAME}__item-body-inner`}>{item.content}</div>
+				<div className={`${CLASS_NAME}__item-body-inner`}>
+					{item.content}
+					{item.ficheHref && (
+						<Link href={item.ficheHref} className={`${CLASS_NAME}__item-link`}>
+							Voir la fiche « {item.title} »
+							<ArrowRight size={14} aria-hidden="true" />
+						</Link>
+					)}
+				</div>
 			</div>
 		</div>
 	);

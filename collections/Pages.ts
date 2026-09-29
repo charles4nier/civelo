@@ -70,21 +70,6 @@ export const contactFields: Field[] = [
 	withInfo({ name: 'siteWeb', type: 'text', label: 'Site web' }, "L'adresse du site web (optionnel).")
 ];
 
-// Décision 10 — catégorie toujours verrouillée par page : relation vers
-// `categories`, filtrée pour ne montrer que les catégories de la page en
-// cours d'édition (jamais la liste complète du site).
-const categoryField = (name = 'categorie', info = 'La catégorie à laquelle cette fiche appartient.'): Field =>
-	withInfo(
-		{
-			name,
-			type: 'relationship',
-			relationTo: 'categories',
-			required: true,
-			filterOptions: ({ id }) => ({ page: { equals: id } })
-		},
-		info
-	);
-
 // Décision 55/56 — relation vers `icones`, avec `admin/IconPickerField` pour
 // afficher le glyphe dans la liste de choix (pas juste le nom, comme le
 // menu déroulant natif d'un `relationship`). `access` optionnel : la
@@ -323,70 +308,11 @@ export const Pages: CollectionConfig = {
 					]
 				},
 
-				// layoutType "annuaire"
-				withAddRowTop({
-					name: 'itemsAnnuaire',
-					type: 'array',
-					labels: { singular: 'Fiche', plural: 'Fiches' },
-					admin: {
-						condition: (_, siblingData) => siblingData?.layoutType === 'annuaire',
-						components: { Label: '/admin/DynamicArrayLabel',
-						RowLabel: {
-							path: '/admin/RowLabel',
-							clientProps: { prefix: 'Fiche', titleField: 'nom' }
-						} }
-					},
-					fields: [
-						withInfo(
-							{ name: 'nom', type: 'text', required: true },
-							'Le nom de la fiche (ex. nom du commerce, du médecin, de l\'association).'
-						),
-						withInfo(
-							{ name: 'image', type: 'upload', relationTo: 'media' },
-							"Une photo pour cette fiche (optionnel). Affichée en haut de la carte."
-						),
-						categoryField(),
-						withInfo({ name: 'badge', type: 'text' }, "Petit texte affiché à côté du nom (ex. un sigle d'association)."),
-						withInfo({ name: 'description', type: 'textarea' }, 'Quelques lignes qui présentent cette fiche.'),
-						...contactFields
-					]
-				}),
-
-				// layoutType "demarches" — icône verrouillée PAR ITEM, pas par catégorie
-				// (décision 10 amendée : perte de distinction sinon, cf. Naissance
-				// vs Décès dans "État civil").
-				withAddRowTop({
-					name: 'itemsDemarches',
-					type: 'array',
-					labels: { singular: 'Démarche', plural: 'Démarches' },
-					admin: {
-						condition: (_, siblingData) => siblingData?.layoutType === 'demarches',
-						components: { Label: '/admin/DynamicArrayLabel',
-						RowLabel: {
-							path: '/admin/RowLabel',
-							clientProps: { prefix: 'Démarche', titleField: 'titre' }
-						} }
-					},
-					fields: [
-						withInfo({ name: 'titre', type: 'text', required: true }, 'Le nom de la démarche (ex. "Carte d\'identité").'),
-						categoryField(),
-						// Verrouillé par démarche (pas par catégorie).
-						iconField({ update: isSuperAdminField }),
-						withInfo(
-							{ name: 'resume', type: 'text', required: true },
-							'Une phrase qui résume la démarche, affichée avant de la déplier.'
-						),
-						withInfo(
-							{ name: 'contenu', type: 'richText' },
-							'Le détail de la démarche : ce qu\'il faut faire, les documents à fournir, les liens utiles.'
-						)
-					]
-				}),
-
-				// layoutType "actualites" — décision 98 : les actualités ne vivent
-				// plus dans la page (ancien tableau `itemsActualites`, décision 36)
-				// mais dans la collection `fiches`, rattachées à cette page. Ici,
-				// seulement un panneau qui renvoie vers « Publier une fiche ».
+				// Décision 98 — les éléments d'une liste (actualités, événements,
+				// démarches, fiches annuaire, documents, budgets/projets) ne vivent
+				// plus dans la page (anciens tableaux `liste.itemsXxx`) mais dans la
+				// collection `fiches`, rattachées à cette page. Ici, seulement un
+				// panneau qui renvoie vers « Publier une fiche ».
 				{
 					name: 'panneauFiches',
 					type: 'ui',
@@ -395,129 +321,7 @@ export const Pages: CollectionConfig = {
 							(LAYOUTS_EN_FICHES as readonly string[]).includes(String(siblingData?.layoutType ?? '')),
 						components: { Field: '/admin/PanneauFiches' }
 					}
-				},
-
-				// layoutType "document"
-				withAddRowTop({
-					name: 'itemsDocument',
-					type: 'array',
-					labels: { singular: 'Document', plural: 'Documents' },
-					admin: {
-						condition: (_, siblingData) => siblingData?.layoutType === 'document',
-						components: { Label: '/admin/DynamicArrayLabel',
-						RowLabel: {
-							path: '/admin/RowLabel',
-							clientProps: { prefix: 'Document', titleField: 'titre' }
-						} }
-					},
-					fields: [
-						withInfo({ name: 'titre', type: 'text', required: true }, 'Le nom du document, affiché dans la liste.'),
-						categoryField('type', 'La catégorie de ce document.'),
-						withInfo({ name: 'date', type: 'date', required: true }, 'La date du document.'),
-						withInfo(
-							{
-								// Pas `required` — décision 32 : le seed laisse ce champ
-								// vide (aucun vrai fichier disponible), à compléter
-								// manuellement dans l'admin ensuite. `required: true`
-								// bloquait littéralement le seed (erreur de validation
-								// réelle, découverte en l'exécutant).
-								name: 'fichier',
-								type: 'upload',
-								relationTo: 'documents'
-							},
-							'Le fichier PDF à mettre à disposition en téléchargement.'
-						)
-					]
-				}),
-
-				// layoutType "budget-projet" — pas de catégorie (décision 24), `nature` est
-				// un discriminant structurel comme celui du gabarit lui-même.
-				withAddRowTop({
-					name: 'itemsBudgetProjet',
-					type: 'array',
-					labels: { singular: 'Entrée budget/projet', plural: 'Entrées budget/projet' },
-					admin: {
-						condition: (_, siblingData) => siblingData?.layoutType === 'budget-projet',
-						components: { Label: '/admin/DynamicArrayLabel',
-						RowLabel: {
-							path: '/admin/RowLabel',
-							clientProps: { prefix: 'Entrée', titleField: 'titre' }
-						} }
-					},
-					fields: [
-						withInfo(
-							{
-								name: 'nature',
-								type: 'select',
-								required: true,
-								options: [
-									{ label: 'Budget', value: 'budget' },
-									{ label: 'Projet', value: 'projet' }
-								]
-							},
-							'Choisissez si cette entrée est un budget voté ou un projet en cours.'
-						),
-						withInfo({ name: 'titre', type: 'text', required: true }, 'Le nom du budget ou du projet.'),
-						withInfo({ name: 'date', type: 'date', required: true }, 'La date associée à cette entrée.'),
-						withInfo(
-							{
-								name: 'fichier',
-								type: 'upload',
-								relationTo: 'documents',
-								admin: { condition: (_, siblingData) => siblingData?.nature === 'budget' }
-							},
-							'Le document PDF du budget, à mettre à disposition en téléchargement.'
-						),
-						withInfo(
-							{
-								name: 'statut',
-								type: 'select',
-								admin: { condition: (_, siblingData) => siblingData?.nature === 'projet' },
-								options: [
-									{ label: 'À venir', value: 'a-venir' },
-									{ label: 'En cours', value: 'en-cours' },
-									{ label: 'Terminé', value: 'termine' }
-								]
-							},
-							'Où en est ce projet.'
-						),
-						withInfo(
-							{
-								name: 'description',
-								type: 'textarea',
-								admin: { condition: (_, siblingData) => siblingData?.nature === 'projet' }
-							},
-							'Quelques lignes qui présentent ce projet.'
-						)
-					]
-				}),
-
-				// layoutType "agenda"
-				withAddRowTop({
-					name: 'itemsAgenda',
-					type: 'array',
-					labels: { singular: 'Événement', plural: 'Événements' },
-					admin: {
-						condition: (_, siblingData) => siblingData?.layoutType === 'agenda',
-						components: { Label: '/admin/DynamicArrayLabel',
-						RowLabel: {
-							path: '/admin/RowLabel',
-							clientProps: { prefix: 'Événement', titleField: 'titre' }
-						} }
-					},
-					fields: [
-						withInfo({ name: 'titre', type: 'text', required: true }, "Le nom de l'événement."),
-						categoryField(),
-						withInfo({ name: 'date', type: 'date', required: true }, "La date de l'événement."),
-						{
-							name: 'horaire',
-							type: 'text',
-							admin: { description: 'Texte libre — ex. "19h00" ou "9h–13h"' }
-						},
-						withInfo({ name: 'lieu', type: 'text', required: true }, "Où se déroule l'événement."),
-						withInfo({ name: 'description', type: 'textarea' }, "Quelques lignes qui présentent l'événement.")
-					]
-				})
+				}
 			]
 		},
 
@@ -1186,33 +990,6 @@ export const Pages: CollectionConfig = {
 					throw new Error(
 						`Le gabarit "${gabarit}" est un singleton — une page de ce type existe déjà pour cette commune.`
 					);
-				}
-
-				return data;
-			}
-		],
-		// Décision 79 — les listes chronologiques (Actualités, Agenda, Documents,
-		// Budget/Projet) gardaient l'ordre de saisie/glisser-déposer, pas l'ordre
-		// des dates : un ajout récent pouvait finir n'importe où, dans l'admin
-		// comme sur le site public (qui affiche `liste.itemsXxx` tel quel, sans
-		// re-trier — vérifié dans `lib/payload.ts`). Triées ici par date
-		// décroissante à chaque enregistrement, une bonne fois pour toutes.
-		beforeChange: [
-			({ data }) => {
-				const liste = (data as { liste?: Record<string, unknown> })?.liste;
-				if (!liste) return data;
-
-				const byDateDesc = (a: unknown, b: unknown) => {
-					const dateA = (a as { date?: string })?.date;
-					const dateB = (b as { date?: string })?.date;
-					return new Date(dateB ?? 0).getTime() - new Date(dateA ?? 0).getTime();
-				};
-
-				for (const key of ['itemsAgenda', 'itemsDocument', 'itemsBudgetProjet']) {
-					const items = liste[key];
-					if (Array.isArray(items)) {
-						liste[key] = [...items].sort(byDateDesc);
-					}
 				}
 
 				return data;

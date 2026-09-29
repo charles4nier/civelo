@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Phone, Mail, MapPin, Clock, Globe } from 'lucide-react';
 import { LucideIconByName } from '@shared/lib/icons';
 import './style.scss';
@@ -33,6 +34,8 @@ type Props = {
 	badge?: string;
 	description?: string;
 	contacts?: ContactItem[];
+	// Décision 98 — adresse de la fiche (annuaire) : le nom devient un lien.
+	href?: string;
 };
 
 export default function ContactCard({
@@ -43,7 +46,8 @@ export default function ContactCard({
 	name,
 	badge,
 	description,
-	contacts
+	contacts,
+	href
 }: Props) {
 	return (
 		<article className={B}>
@@ -65,7 +69,13 @@ export default function ContactCard({
 				<p className={`${B}__category`}>{category}</p>
 				<h3 className={`${B}__name`}>
 					{badge && <span className={`${B}__badge`}>{badge} — </span>}
-					{name}
+					{href ? (
+						<Link href={href} className={`${B}__name-link`}>
+							{name}
+						</Link>
+					) : (
+						name
+					)}
 				</h3>
 				{description && <p className={`${B}__desc`}>{description}</p>}
 				{contacts && contacts.length > 0 && (

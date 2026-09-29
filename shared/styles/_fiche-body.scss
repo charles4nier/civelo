@@ -26,6 +26,49 @@
 		box-shadow: $shadow-soft;
 	}
 
+	.fiche__infos {
+		margin: 0 0 $spacing-3xl;
+		padding: $spacing-xl $spacing-2xl;
+		border-radius: $rayon-image;
+		border: 1px solid $border;
+	}
+
+	.fiche__infos-title {
+		font-family: $font-display;
+		font-size: $h3-size-sm;
+		font-weight: $font-weight-semibold;
+		color: $foreground;
+		margin-bottom: $spacing-md;
+	}
+
+	.fiche__infos-list {
+		display: grid;
+		gap: $spacing-sm;
+		margin: 0;
+	}
+
+	.fiche__info {
+		display: grid;
+		grid-template-columns: minmax(96px, 30%) 1fr;
+		gap: $spacing-md;
+
+		dt {
+			font-weight: $font-weight-semibold;
+			color: $foreground;
+		}
+
+		dd {
+			margin: 0;
+			color: $texte;
+		}
+
+		a {
+			color: $primary;
+			text-decoration: underline;
+			text-underline-offset: 3px;
+		}
+	}
+
 	.fiche__content {
 		color: $texte;
 		font-size: $body-size-desktop;

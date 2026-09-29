@@ -370,5 +370,20 @@ $b: 'demarches';
 		align-self: center;
 	}
 }
-}
 
+/* Décision 98 — lien vers la fiche complète, dans la partie dépliée. */
+.demarches__item-link {
+	display: inline-flex;
+	align-items: center;
+	gap: $spacing-xs;
+	margin-top: $spacing-md;
+	font-weight: $font-weight-semibold;
+	color: $primary;
+
+	&:hover,
+	&:focus-visible {
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+}
+}

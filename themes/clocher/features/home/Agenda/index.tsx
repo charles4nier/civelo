@@ -10,6 +10,8 @@ export type AgendaEventData = {
 	date: string; // ISO
 	time?: string;
 	location: string;
+	// Décision 98 — adresse de la fiche de l'événement.
+	href?: string;
 };
 
 type Props = { events: AgendaEventData[] };
@@ -47,7 +49,15 @@ export default function Agenda({ events }: Props) {
 									<span className={`${CLASS_NAME}__date-month`}>{monthShort[d.getMonth()]}</span>
 								</div>
 								<div className={`${CLASS_NAME}__body`}>
-									<p className={`${CLASS_NAME}__item-title`}>{event.title}</p>
+									<p className={`${CLASS_NAME}__item-title`}>
+										{event.href ? (
+											<Link href={event.href} className={`${CLASS_NAME}__item-link`}>
+												{event.title}
+											</Link>
+										) : (
+											event.title
+										)}
+									</p>
 									{event.time && (
 										<p className={`${CLASS_NAME}__meta`}>
 											<Clock size={13} aria-hidden="true" />

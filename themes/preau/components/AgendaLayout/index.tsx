@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { Clock, MapPin, CalendarDays } from 'lucide-react';
 import PageHeader from '@themes/preau/components/PageHeader';
 import FilterBar from '@themes/preau/components/FilterBar';
@@ -16,6 +17,8 @@ export type AgendaEventData = {
 	time?: string;
 	location: string;
 	desc?: string;
+	// Décision 98 — adresse de la fiche de l'événement.
+	href?: string;
 };
 
 type Props = {
@@ -95,7 +98,15 @@ export default function AgendaLayout({ filters, events }: Props) {
 										</div>
 										<div className={`${B}__body-content`}>
 											{e.category && <span className={`${B}__card-badge`}>{e.category}</span>}
-											<h3 className={`${B}__card-title`}>{e.title}</h3>
+											<h3 className={`${B}__card-title`}>
+												{e.href ? (
+													<Link href={e.href} className={`${B}__card-link`}>
+														{e.title}
+													</Link>
+												) : (
+													e.title
+												)}
+											</h3>
 											{e.desc && <p className={`${B}__card-desc`}>{e.desc}</p>}
 											<div className={`${B}__card-meta`}>
 												{e.time && (

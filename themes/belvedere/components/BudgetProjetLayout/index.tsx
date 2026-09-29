@@ -1,13 +1,15 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { FileText, Download, Landmark } from 'lucide-react';
+import Link from 'next/link';
+import { FileText, Download, Landmark, ArrowRight } from 'lucide-react';
 import PageHeader from '@themes/belvedere/components/PageHeader';
 import './style.scss';
 
 const B = 'budget-projet-layout';
 
-export type BudgetItemData = { key: string; kind: 'budget'; title: string; date: string; href?: string };
+// `ficheHref` (décision 98) : adresse de la fiche ; la carte y mène quand elle existe.
+export type BudgetItemData = { key: string; kind: 'budget'; title: string; date: string; href?: string; ficheHref?: string };
 export type ProjetItemData = {
 	key: string;
 	kind: 'projet';
@@ -15,6 +17,7 @@ export type ProjetItemData = {
 	date: string;
 	status: 'À venir' | 'En cours' | 'Terminé';
 	desc?: string;
+	ficheHref?: string;
 };
 export type BudgetProjetItemData = BudgetItemData | ProjetItemData;
 
@@ -71,7 +74,7 @@ export default function BudgetProjetLayout({ items }: Props) {
 					<div className={`${B}__list`}>
 						{filtered.map((item) =>
 							item.kind === 'budget' ? (
-								<a key={item.key} href={item.href ?? '#'} className={`${B}__card`}>
+								<a key={item.key} href={item.ficheHref ?? item.href ?? '#'} className={`${B}__card`}>
 									<div className={`${B}__card-icon`}>
 										<FileText size={18} />
 									</div>
@@ -80,14 +83,35 @@ export default function BudgetProjetLayout({ items }: Props) {
 										<h3 className={`${B}__card-title`}>{item.title}</h3>
 										<span className={`${B}__card-date`}>{formatDate(item.date)}</span>
 									</div>
-									{item.href && (
+									{item.ficheHref ? (
 										<span className={`${B}__card-dl`}>
-											<Download size={14} />
-											PDF
+											Voir la fiche
+											<ArrowRight size={14} aria-hidden="true" />
 										</span>
+									) : (
+										item.href && (
+											<span className={`${B}__card-dl`}>
+												<Download size={14} aria-hidden="true" />
+												PDF
+											</span>
+										)
 									)}
 								</a>
 							) : (
+								item.ficheHref ? (
+									<Link key={item.key} href={item.ficheHref} className={`${B}__card`}>
+									<div className={`${B}__card-icon ${B}__card-icon--alt`}>
+										<Landmark size={18} />
+									</div>
+									<div className={`${B}__card-body`}>
+										<span className={`${B}__card-tag`}>Projet</span>
+										<h3 className={`${B}__card-title`}>{item.title}</h3>
+										{item.desc && <p className={`${B}__card-desc`}>{item.desc}</p>}
+										<span className={`${B}__card-date`}>{formatDate(item.date)}</span>
+									</div>
+									<span className={`${B}__status ${B}__status--${STATUS_CLASS[item.status]}`}>{item.status}</span>
+								</Link>
+								) : (
 								<div key={item.key} className={`${B}__card`}>
 									<div className={`${B}__card-icon ${B}__card-icon--alt`}>
 										<Landmark size={18} />
@@ -100,6 +124,7 @@ export default function BudgetProjetLayout({ items }: Props) {
 									</div>
 									<span className={`${B}__status ${B}__status--${STATUS_CLASS[item.status]}`}>{item.status}</span>
 								</div>
+								)
 							)
 						)}
 					</div>
