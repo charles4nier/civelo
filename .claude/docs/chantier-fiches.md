@@ -175,6 +175,8 @@ Codé et vérifié en local sur une base jetable (anciennes migrations appliqué
 
 **Vérifié en local** (base montée jusqu'à l'état de prod) : les 5 listes et 5 fiches en 200 dans les 4 thèmes ; redirections (saisie, renommage, fiches d'une page renommée, 308/404) ; recherche (accents, casse, texte des fiches, page `/recherche`) ; newsletter (inscription, refus sans consentement ou adresse invalide, robot, doublon, désinscription, réinscription, export CSV admin / refusé à l'éditeur et à l'anonyme, API REST fermée) ; popins atelier dans Chrome (clavier, focus, Échap) ; 14/14 tests d'isolation (+ recherche et redirections).
 
+**Retour client du 2026-09-30** : en créant une fiche depuis une entrée de « Publier une fiche », le menu « Page » (prérempli mais obligatoire) et le champ « Page liée » (facultatif, en bas du formulaire) donnaient l'impression de devoir rattacher la fiche à une page. Désormais, dès que la page est connue, elle s'affiche en simple texte « Publiée dans : <page> » (`admin/FichePageField` ; le super-admin garde le menu pour déplacer une fiche) ; « Page liée » devient « Pour aller plus loin (facultatif) », dans la colonne de droite.
+
 **Restes / limites**
 - Scripts anciens encore écrits pour les tableaux `liste.itemsXxx` : `scripts/seed.ts`, `migrate-mongo-to-postgres.ts`, `full-copy-tenant.ts`, `seed-demo-content-from-edito.ts`, `localize-media-for-tenant.ts` (outils de démo et de bascule, plus à jour). Dans `import-tenant.template.ts`, la réécriture de ces tableaux est devenue sans effet.
 - Newsletter : seulement dans atelier (les 3 autres thèmes n'avaient pas de bouton).

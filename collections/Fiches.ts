@@ -339,10 +339,21 @@ export const Fiches: CollectionConfig = {
 			},
 			'Un ou plusieurs PDF à télécharger, affichés sous le texte avec leur format et leur poids.'
 		),
-		withInfo(
-			{ name: 'pageLiee', type: 'relationship', relationTo: 'pages', label: 'Page liée' },
-			'Une page du site à proposer en fin de fiche (facultatif).'
-		),
+		{
+			// Retour client (2026-09-30) : intitulé « Page liée » en bas du
+			// formulaire, lu comme « à quelle page rattacher la fiche ? » alors
+			// que c'est une simple suggestion facultative. Renommé et rangé dans
+			// la colonne de droite, sous l'adresse.
+			name: 'pageLiee',
+			type: 'relationship',
+			relationTo: 'pages',
+			label: 'Pour aller plus loin (facultatif)',
+			admin: {
+				position: 'sidebar',
+				description:
+					'Une autre page du site à suggérer en bas de la fiche, par exemple « Documents & publications ». Laissez vide si inutile.'
+			}
+		},
 		{
 			name: 'seo',
 			type: 'group',
