@@ -8,7 +8,7 @@ import './style.scss';
 
 const CLASS_NAME = 'floating';
 
-type Modal = 'contact' | 'bot' | 'search' | null;
+type Modal = 'contact' | 'bot' | 'search' | 'newsletter' | null;
 
 type ModalProps = {
 	onClose: () => void;
@@ -178,11 +178,38 @@ function ContactModal({ onClose, closing, titleId, closeButtonRef, modalRef }: M
 	);
 }
 
-// Ex-barre de recherche du Hero (`themes/atelier/features/home/Hero`,
-// `themes/atelier/features/home/QuickAccess`, item "Rechercher" en tête de
-// liste) — même repli honnête : UI seule, pas encore branchée à une vraie
-// recherche.
+type ResultatPopin = { titre: string; extrait?: string; href: string; rubrique?: string };
+
+// Popin « Rechercher » (item en tête de `L'essentiel en un clic`, voir
+// `QuickAccess`). Décision 98 — branchée sur la vraie recherche : résultats
+// au fil de la frappe (`/api/recherche`, 8 au plus), Entrée ouvre la page
+// complète `/recherche?q=…` (formulaire GET : fonctionne aussi sans JS).
 function SearchModal({ onClose, closing, titleId, closeButtonRef, modalRef }: ModalProps) {
+	const [q, setQ] = useState('');
+	const [resultats, setResultats] = useState<ResultatPopin[] | null>(null);
+	const [chargement, setChargement] = useState(false);
+
+	useEffect(() => {
+		const terme = q.trim();
+		if (terme.length < 2) {
+			setResultats(null);
+			return;
+		}
+		const controleur = new AbortController();
+		const minuterie = setTimeout(() => {
+			setChargement(true);
+			fetch(`/api/recherche?q=${encodeURIComponent(terme)}`, { signal: controleur.signal })
+				.then((r) => (r.ok ? r.json() : { resultats: [] }))
+				.then((data: { resultats: ResultatPopin[] }) => setResultats(data.resultats))
+				.catch(() => {})
+				.finally(() => setChargement(false));
+		}, 250);
+		return () => {
+			clearTimeout(minuterie);
+			controleur.abort();
+		};
+	}, [q]);
+
 	return (
 		<div
 			ref={modalRef}
@@ -212,25 +239,157 @@ function SearchModal({ onClose, closing, titleId, closeButtonRef, modalRef }: Mo
 			</div>
 
 			<div className={`${CLASS_NAME}__modal-body`}>
-				<form className={`${CLASS_NAME}__form`} onSubmit={(e) => e.preventDefault()}>
+				<form role="search" className={`${CLASS_NAME}__form`} action="/recherche" method="get">
 					<div className={`${CLASS_NAME}__field`}>
 						<label htmlFor="floating-search-input" className={`${CLASS_NAME}__label`}>
 							Rechercher sur le site
 						</label>
 						<input
 							id="floating-search-input"
-							name="search"
+							name="q"
 							className={`${CLASS_NAME}__input`}
 							type="search"
 							placeholder="Comment pouvons-nous vous aider ?"
-							autoFocus
+							autoComplete="off"
+							value={q}
+							onChange={(e) => setQ(e.target.value)}
 						/>
 					</div>
 					<button type="submit" className={`${CLASS_NAME}__submit`}>
 						<Search size={14} aria-hidden="true" />
-						Rechercher
+						Voir tous les résultats
 					</button>
 				</form>
+
+				<p className={`${CLASS_NAME}__search-status`} role="status">
+					{chargement
+						? 'Recherche…'
+						: resultats === null
+							? ''
+							: resultats.length === 0
+								? 'Aucun résultat.'
+								: `${resultats.length} résultat${resultats.length > 1 ? 's' : ''}`}
+				</p>
+				{resultats && resultats.length > 0 && (
+					<ul className={`${CLASS_NAME}__search-results`}>
+						{resultats.map((r) => (
+							<li key={r.href}>
+								<Link href={r.href} className={`${CLASS_NAME}__search-result`} onClick={onClose}>
+									<span className={`${CLASS_NAME}__search-result-title`}>{r.titre}</span>
+									{r.rubrique && <span className={`${CLASS_NAME}__search-result-meta`}>{r.rubrique}</span>}
+								</Link>
+							</li>
+						))}
+					</ul>
+				)}
+			</div>
+		</div>
+	);
+}
+
+// Décision 98 (§7, étape 5) — inscription à la lettre d'information
+// (bouton du bloc Agenda de l'accueil). Consentement explicite obligatoire ;
+// champ piège `site` masqué contre les robots ; message de résultat annoncé
+// aux lecteurs d'écran (`role="status"`, ou `alert` en cas d'erreur).
+function NewsletterModal({ onClose, closing, titleId, closeButtonRef, modalRef }: ModalProps) {
+	const [etat, setEtat] = useState<{ ok: boolean; message: string } | null>(null);
+	const [envoi, setEnvoi] = useState(false);
+
+	const envoyer = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const form = new FormData(e.currentTarget);
+		setEnvoi(true);
+		setEtat(null);
+		try {
+			const r = await fetch('/api/newsletter', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					email: form.get('email'),
+					consentement: form.get('consentement') === 'oui',
+					site: form.get('site')
+				})
+			});
+			const data = (await r.json().catch(() => ({}))) as { ok?: boolean; message?: string };
+			setEtat({
+				ok: Boolean(data.ok),
+				message: data.message ?? (data.ok ? 'Merci, votre inscription est bien enregistrée.' : 'Une erreur est survenue, réessayez.')
+			});
+		} catch {
+			setEtat({ ok: false, message: 'Une erreur est survenue, réessayez.' });
+		} finally {
+			setEnvoi(false);
+		}
+	};
+
+	return (
+		<div
+			ref={modalRef}
+			className={`${CLASS_NAME}__modal ${closing ? `${CLASS_NAME}__modal--closing` : ''}`}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby={titleId}
+			aria-hidden={closing || undefined}
+		>
+			<div className={`${CLASS_NAME}__modal-header`}>
+				<button ref={closeButtonRef} className={`${CLASS_NAME}__modal-close`} onClick={onClose} aria-label="Fermer">
+					<X size={18} aria-hidden="true" />
+				</button>
+				<div className={`${CLASS_NAME}__modal-title-group`}>
+					<div className={`${CLASS_NAME}__modal-icon ${CLASS_NAME}__modal-icon--leaf`}>
+						<Mail size={16} aria-hidden="true" />
+					</div>
+					<h2 id={titleId} className={`${CLASS_NAME}__modal-title`}>
+						Lettre d'information
+					</h2>
+				</div>
+			</div>
+
+			<div className={`${CLASS_NAME}__modal-body`}>
+				{etat?.ok ? (
+					<p className={`${CLASS_NAME}__newsletter-message`} role="status">
+						{etat.message}
+					</p>
+				) : (
+					<form className={`${CLASS_NAME}__form`} onSubmit={envoyer}>
+						<p className={`${CLASS_NAME}__form-title`}>Recevez les nouvelles de la commune par e-mail.</p>
+						<div className={`${CLASS_NAME}__field`}>
+							<label htmlFor="floating-newsletter-email" className={`${CLASS_NAME}__label`}>
+								Adresse e-mail (obligatoire)
+							</label>
+							<input
+								id="floating-newsletter-email"
+								name="email"
+								type="email"
+								autoComplete="email"
+								required
+								className={`${CLASS_NAME}__input`}
+								placeholder="votre@email.fr"
+							/>
+						</div>
+						{/* Piège à robots : invisible et hors du parcours clavier. */}
+						<div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', width: 1, height: 1, overflow: 'hidden' }}>
+							<label htmlFor="floating-newsletter-site">Ne pas remplir</label>
+							<input id="floating-newsletter-site" name="site" type="text" tabIndex={-1} autoComplete="off" />
+						</div>
+						<div className={`${CLASS_NAME}__consent`}>
+							<input id="floating-newsletter-consentement" name="consentement" type="checkbox" value="oui" required />
+							<label htmlFor="floating-newsletter-consentement">
+								J'accepte de recevoir la lettre d'information de la commune. Mon adresse ne sert qu'à cet envoi ; je peux
+								me désinscrire à tout moment.
+							</label>
+						</div>
+						{etat && !etat.ok && (
+							<p className={`${CLASS_NAME}__newsletter-erreur`} role="alert">
+								{etat.message}
+							</p>
+						)}
+						<button type="submit" className={`${CLASS_NAME}__submit`} disabled={envoi}>
+							<Send size={14} aria-hidden="true" />
+							{envoi ? 'Inscription…' : "M'inscrire"}
+						</button>
+					</form>
+				)}
 			</div>
 		</div>
 	);
@@ -413,6 +572,9 @@ export default function FloatingButtons() {
 			const detail = (e as CustomEvent<Modal>).detail;
 			if (detail === 'contact') toggle('contact', contactBtnRef);
 			if (detail === 'search') toggle('search', searchBtnRef);
+			// Le bouton qui a ouvert la popin (bloc Agenda) récupère le focus à
+			// la fermeture.
+			if (detail === 'newsletter') toggle('newsletter', { current: document.activeElement as HTMLButtonElement | null });
 		};
 		window.addEventListener('quick-access:open-modal', onOpenModal);
 		return () => window.removeEventListener('quick-access:open-modal', onOpenModal);
@@ -534,6 +696,15 @@ export default function FloatingButtons() {
 					onClose={handleClose}
 					closing={isClosing}
 					titleId="floating-search-title"
+					closeButtonRef={closeBtnRef}
+					modalRef={modalRef}
+				/>
+			)}
+			{activeModal === 'newsletter' && (
+				<NewsletterModal
+					onClose={handleClose}
+					closing={isClosing}
+					titleId="floating-newsletter-title"
 					closeButtonRef={closeBtnRef}
 					modalRef={modalRef}
 				/>

@@ -12,6 +12,7 @@ import * as migration_20260921_082014_ajoute_image_items_annuaire from './202609
 import * as migration_20260924_090000_ajoute_afficher_titre_identite from './20260924_090000_ajoute_afficher_titre_identite';
 import * as migration_20260929_094633_fiches_actualites from './20260929_094633_fiches_actualites';
 import * as migration_20260929_135445_fiches_autres_types from './20260929_135445_fiches_autres_types';
+import * as migration_20260929_140701_redirections_newsletter from './20260929_140701_redirections_newsletter';
 
 export const migrations = [
   {
@@ -82,6 +83,11 @@ export const migrations = [
   {
     up: migration_20260929_135445_fiches_autres_types.up,
     down: migration_20260929_135445_fiches_autres_types.down,
-    name: '20260929_135445_fiches_autres_types'
+    name: '20260929_135445_fiches_autres_types',
+  },
+  {
+    up: migration_20260929_140701_redirections_newsletter.up,
+    down: migration_20260929_140701_redirections_newsletter.down,
+    name: '20260929_140701_redirections_newsletter'
   },
 ];

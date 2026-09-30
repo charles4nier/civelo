@@ -26,7 +26,9 @@ import {
 	CalendarDays,
 	ClipboardList,
 	Store,
-	Landmark
+	Landmark,
+	Signpost,
+	MailCheck
 } from 'lucide-react';
 import { PARAM_PAGE_LISTE, listeFichesHref } from '../lib/fiches';
 import './style.scss';
@@ -336,6 +338,16 @@ export default function AdminNavClient({ pages, pagesFiches, siteName, hideTenan
 				: []),
 			{ kind: 'link', label: 'Catégories', href: '/collections/categories', icon: Tags },
 			{ kind: 'link', label: 'Icônes', href: '/collections/icones', icon: Shapes },
+			// Décision 98 — anciennes adresses → pages/fiches. Acte structurel :
+			// admin de la commune et super-admin, pas les éditeurs.
+			...(user?.role === 'admin' || isSuperAdmin
+				? [
+						{ kind: 'link' as const, label: 'Redirections', href: '/collections/redirections', icon: Signpost },
+						// Inscrits à la lettre d'information : données personnelles,
+						// même restriction que les redirections.
+						{ kind: 'link' as const, label: "Lettre d'information", href: '/collections/abonnes-newsletter', icon: MailCheck }
+					]
+				: []),
 			{ kind: 'link', label: 'Médias', href: '/collections/media', icon: Images },
 			{ kind: 'link', label: 'Documents', href: '/collections/documents', icon: FileStack },
 			{ kind: 'link', label: 'Utilisateurs', href: '/collections/users', icon: Users }

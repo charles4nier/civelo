@@ -1,0 +1,6 @@
+@import '@themes/preau/styles/variables';
+@import '@shared/styles/recherche';
+
+.theme-preau {
+@include recherche($foreground-80, 16px);
+}

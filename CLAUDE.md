@@ -14,7 +14,7 @@ Une seule application Next.js + Payload CMS, une seule base Postgres, qui sert j
 
 - Repo GitHub : `github.com/charles4nier/civelo` (remote `origin`)
 - App Scalingo : `civelo` / région `osc-fr1` (remote `scalingo`)
-- Client de référence en ligne : Saint-Hilaire-Bonneval → `edito.civelo.fr`
+- Sites en ligne (vérifié le 2026-09-30, `scalingo domains`) : `atelier`, `clocher`, `preau`, `belvedere`, `demo` et `admin.civelo.fr`. L'ancien `edito.civelo.fr` (Saint-Hilaire-Bonneval) n'existe plus (NXDOMAIN) ; les autres docs le citent encore.
 
 ---
 
@@ -36,7 +36,7 @@ Une seule application Next.js + Payload CMS, une seule base Postgres, qui sert j
 | Stack, modèle multi-tenant, 3 rôles, console super-admin, carte du repo, variables d'env | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
 | Modèle de contenu Payload : gabarits, menu, collections, ce que l'éditeur peut / ne peut pas | [`.claude/docs/content-model.md`](.claude/docs/content-model.md) |
 | Dev local + pièges, déploiement, migrations, infra, sauvegardes, monitoring, export | [`.claude/docs/operations.md`](.claude/docs/operations.md) |
-| Chantier « fiches » en cours : éléments de liste → fiches avec URL, menu « Publier une fiche », puis recherche et newsletter | [`.claude/docs/chantier-fiches.md`](.claude/docs/chantier-fiches.md) |
+| Chantier « fiches » : éléments de liste → fiches avec URL, menu « Publier une fiche », redirections, recherche, inscriptions newsletter | [`.claude/docs/chantier-fiches.md`](.claude/docs/chantier-fiches.md) |
 | Feuille de route + historique daté de ce qui a été fait | [`.claude/docs/roadmap.md`](.claude/docs/roadmap.md) |
 | Journal chronologique des décisions produit (98 entrées, archive verbatim) | [`.claude/docs/decisions-log.md`](.claude/docs/decisions-log.md) |
 

@@ -1,0 +1,6 @@
+@import '@themes/clocher/styles/variables';
+@import '@shared/styles/recherche';
+
+.theme-clocher {
+@include recherche($foreground-85, 16px);
+}

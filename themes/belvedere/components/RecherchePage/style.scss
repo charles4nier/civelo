@@ -1,0 +1,6 @@
+@import '@themes/belvedere/styles/variables';
+@import '@shared/styles/recherche';
+
+.theme-belvedere {
+@include recherche($foreground-80, 16px);
+}

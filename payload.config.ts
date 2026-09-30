@@ -9,6 +9,8 @@ import { fr } from '@payloadcms/translations/languages/fr';
 import { Users } from './collections/Users';
 import { Pages } from './collections/Pages';
 import { Fiches } from './collections/Fiches';
+import { Redirections } from './collections/Redirections';
+import { AbonnesNewsletter } from './collections/AbonnesNewsletter';
 import { Categories } from './collections/Categories';
 import { Icones } from './collections/Icones';
 import { Media } from './collections/Media';
@@ -80,6 +82,10 @@ export default buildConfig({
 		Pages,
 		// Décision 98 — éléments de liste devenus fiches (pilote : Actualités).
 		Fiches,
+		// Décision 98 — anciennes adresses → pages/fiches (301).
+		Redirections,
+		// Décision 98 — inscrits à la lettre d'information (inscriptions seules).
+		AbonnesNewsletter,
 		Categories,
 		Icones,
 		Media,
@@ -162,6 +168,8 @@ export default buildConfig({
 			collections: {
 				pages: tenantScopedCollection(),
 				fiches: tenantScopedCollection(),
+				redirections: tenantScopedCollection(),
+				'abonnes-newsletter': tenantScopedCollection(),
 				categories: tenantScopedCollection(),
 				media: tenantScopedCollection(),
 				documents: tenantScopedCollection(),

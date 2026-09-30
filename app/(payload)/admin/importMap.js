@@ -34,6 +34,7 @@ import { AssignTenantFieldTrigger as AssignTenantFieldTrigger_1d0591e3cf4f332c83
 import { default as default_b319c05b0e7276731e6dbc5ed1d94716 } from '../../../admin/FichePageField'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_cd4252ad72a8a7d8fec85ac6134b9035 } from '../../../admin/FichesListHeader'
+import { default as default_b6b5450367528330b2cb7318e4f20e47 } from '../../../admin/AbonnesListHeader'
 import { default as default_06806397ca6828cb04eecde6af176023 } from '../../../admin/IconCell'
 import { default as default_77d0f5ea9b1204c83f51dfe969e62d9a } from '../../../admin/IconPreviewField'
 import { WatchTenantCollection as WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a } from '@payloadcms/plugin-multi-tenant/client'
@@ -87,6 +88,7 @@ export const importMap = {
   "/admin/FichePageField#default": default_b319c05b0e7276731e6dbc5ed1d94716,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/admin/FichesListHeader#default": default_cd4252ad72a8a7d8fec85ac6134b9035,
+  "/admin/AbonnesListHeader#default": default_b6b5450367528330b2cb7318e4f20e47,
   "/admin/IconCell#default": default_06806397ca6828cb04eecde6af176023,
   "/admin/IconPreviewField#default": default_77d0f5ea9b1204c83f51dfe969e62d9a,
   "@payloadcms/plugin-multi-tenant/client#WatchTenantCollection": WatchTenantCollection_1d0591e3cf4f332c83a86da13a0de59a,

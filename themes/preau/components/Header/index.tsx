@@ -101,9 +101,10 @@ export default function Header({ navLinks, identite, bouton }: Props) {
 					{/* Gauche : MegaMenu + Search */}
 					<div className={`${CLASS_NAME}__left`}>
 						<MegaMenu navLinks={navLinks} />
-						<button className={`${CLASS_NAME}__icon-btn`} aria-label="Rechercher">
-							<Search size={16} />
-						</button>
+						{/* Décision 98 — mène à la page de recherche (avant : bouton sans effet). */}
+						<Link href="/recherche" className={`${CLASS_NAME}__icon-btn`} aria-label="Rechercher sur le site">
+							<Search size={16} aria-hidden="true" />
+						</Link>
 						<button className={`${CLASS_NAME}__lang-btn`} aria-label="Langue">
 							<Globe size={14} /> FR
 						</button>

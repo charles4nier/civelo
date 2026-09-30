@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { CalendarDays } from 'lucide-react';
 import type { NextEventData } from '../QuickAccess';
+import BoutonNewsletter from './BoutonNewsletter';
 import './style.scss';
 
 const CLASS_NAME = 'agenda-highlight';
@@ -66,16 +67,14 @@ export default function Agenda({ events }: Props) {
 					<h2 className={`${CLASS_NAME}__heading`}>Agenda</h2>
 					{/* Alignés ensemble, même style que "Toutes les actualités" (News) —
 					    couleur commune ($foreground, `.btn-outline`), pas de vedette
-					    l'un sur l'autre. La newsletter n'est pas encore fonctionnelle —
-					    UI seule, même logique que la recherche du Hero. */}
+					    l'un sur l'autre. La newsletter ouvre sa popin d'inscription
+					    (décision 98, `BoutonNewsletter`). */}
 					<div className={`${CLASS_NAME}__header-actions`}>
 						<Link href="/agenda" className="btn-outline">
 							<CalendarDays size={16} aria-hidden="true" />
 							Voir l&rsquo;agenda
 						</Link>
-						<button type="button" className="btn-outline">
-							S'inscrire à la newsletter
-						</button>
+						<BoutonNewsletter />
 					</div>
 				</div>
 

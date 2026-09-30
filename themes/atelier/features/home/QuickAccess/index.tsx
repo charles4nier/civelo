@@ -19,7 +19,7 @@ export type QuickAccessItemData = {
 	href: string;
 	// Quand renseigné, l'item ouvre cette modale (voir `OPEN_MODAL_EVENT`) au
 	// lieu de naviguer vers `href`.
-	opensModal?: 'contact' | 'search';
+	opensModal?: 'contact' | 'search' | 'newsletter';
 };
 
 // Conservé ici (plutôt que dans `Agenda`) pour ne pas casser l'import de
@@ -41,8 +41,7 @@ type Props = { items: QuickAccessItemData[] };
 // Ex-barre de recherche du Hero (`Hero/index.tsx`) — ne rendait pas bien
 // posée là-bas, déplacée ici en tête de liste. Ouvre sa propre popin, sur le
 // même mécanisme que Contact (voir `OPEN_MODAL_EVENT`, gérée par
-// `FloatingButtons`) — pas encore branchée à une vraie recherche (même repli
-// honnête que l'ancienne barre).
+// `FloatingButtons`), branchée sur la recherche du site (décision 98).
 const SEARCH_ITEM: QuickAccessItemData = {
 	key: 'search',
 	icon: 'Search',

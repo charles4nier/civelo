@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { FileText } from 'lucide-react';
 import { RichText } from '@payloadcms/richtext-lexical/react';
 import AnnuaireLayout from '@themes/atelier/components/AnnuaireLayout';
@@ -33,7 +33,8 @@ import {
 	getNumerosUtilesData,
 	getEditorialData,
 	getFiche,
-	getPayloadClient
+	getPayloadClient,
+	getRedirection
 } from '../../../lib/payload';
 
 // Item 14 (phase 5) — route générique : sert les pages créées depuis l'admin
@@ -62,12 +63,23 @@ function withTous(values: (string | undefined)[]): string[] {
 	return ['Tous', ...unique];
 }
 
-type Props = { params: Promise<{ slug: string[] }> };
+type Props = {
+	params: Promise<{ slug: string[] }>;
+	searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 // Décision 98 — `/<page liste>/<fiche>` : quand le chemin complet n'est pas
 // une page, on tente « page liste parente + fiche ». Les routes statiques
 // (`app/(frontend)/mairie/actualites/page.tsx`…) ne captent que leur propre
 // chemin, jamais `/mairie/actualites/<fiche>`, qui arrive donc ici.
+function decoderSansErreur(segment: string): string {
+	try {
+		return decodeURIComponent(segment);
+	} catch {
+		return segment;
+	}
+}
+
 async function resolveFiche(slugParts: string[]) {
 	if (slugParts.length < 2) return null;
 	return getFiche(slugParts.slice(0, -1).join('/'), slugParts[slugParts.length - 1]);
@@ -108,7 +120,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	};
 }
 
-export default async function DynamicPage({ params }: Props) {
+export default async function DynamicPage({ params, searchParams }: Props) {
 	const { slug: slugParts } = await params;
 	const slug = slugParts.join('/');
 	const page = await getPageBySlug(slug);
@@ -118,6 +130,14 @@ export default async function DynamicPage({ params }: Props) {
 			const FicheLayout = await ficheLayoutDuTheme();
 			return <FicheLayout fiche={fiche} />;
 		}
+		// Décision 98 (§5) — ancienne adresse (reprise d'un site, page
+		// renommée) : redirection définitive plutôt que 404. `slug` arrive
+		// décodé ; la requête des vieux sites (`?id=12`) compte aussi.
+		const requete = new URLSearchParams(
+			Object.entries(await searchParams).flatMap(([k, v]) => (Array.isArray(v) ? v.map((x) => [k, x]) : v === undefined ? [] : [[k, v]]))
+		).toString();
+		const cible = await getRedirection(slugParts.map(decoderSansErreur).join('/'), requete || undefined);
+		if (cible) permanentRedirect(cible);
 		notFound();
 	}
 

@@ -5,6 +5,7 @@ import type { AnnuaireCardData } from '@themes/atelier/components/AnnuaireLayout
 import type { ContactItem, IconVariant } from '@themes/atelier/components/ContactCard';
 import type { EditorialSection } from '@themes/atelier/components/EditorialLayout/Sections';
 import { getCurrentTenant } from '@shared/lib/tenant';
+import { richTextToParagraphs } from '@shared/lib/richText';
 
 // Item 11/12 de la feuille de route — couche de récupération de données
 // Payload, utilisée par les Server Components (app/**/page.tsx,
@@ -1341,5 +1342,142 @@ export async function getFooterData(): Promise<FooterData> {
 	} catch (err) {
 		console.warn('[payload] getFooterData() : base injoignable, repli sur les données statiques.', err);
 		return FOOTER_FALLBACK;
+	}
+}
+
+// Décision 98 (§5) — redirections 301 (collection `redirections`) : adresse
+// actuelle de la page ou de la fiche visée par une ancienne adresse, ou
+// `null`. D'abord la correspondance exacte (avec la requête des vieux sites,
+// `?id=12`, puis sans) ; sinon le plus long préfixe redirigé vers une PAGE,
+// en recollant la fin du chemin — c'est ce qui garde valides les fiches
+// d'une page renommée (`/ancienne-page/ma-fiche` → `/nouvelle-page/ma-fiche`).
+type CibleRedirection =
+	| { relationTo: 'pages'; value: { slug?: string; gabarit?: string } | number | string }
+	| { relationTo: 'fiches'; value: { slug?: string; page?: { slug?: string } | number | string } | number | string };
+
+function hrefDeCible(cible: CibleRedirection | undefined): string | null {
+	if (!cible || typeof cible.value !== 'object' || !cible.value) return null;
+	if (cible.relationTo === 'pages') {
+		const page = cible.value as { slug?: string; gabarit?: string };
+		if (page.gabarit === 'accueil') return '/';
+		return page.slug ? `/${page.slug}` : null;
+	}
+	const fiche = cible.value as { slug?: string; page?: { slug?: string } | number | string };
+	const pageSlug = typeof fiche.page === 'object' && fiche.page ? fiche.page.slug : undefined;
+	return fiche.slug && pageSlug ? `/${pageSlug}/${fiche.slug}` : null;
+}
+
+export async function getRedirection(chemin: string, requete?: string): Promise<string | null> {
+	try {
+		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
+		const path = `/${chemin.replace(/^\/+|\/+$/g, '')}`;
+		const segments = path.split('/').filter(Boolean);
+		const prefixes = segments.slice(0, -1).map((_, i) => `/${segments.slice(0, segments.length - 1 - i).join('/')}`);
+		const exacts = requete ? [`${path}?${requete}`, path] : [path];
+		const { docs } = await payload.find({
+			collection: 'redirections',
+			where: { and: [{ tenant: { equals: tenant.id } }, { de: { in: [...exacts, ...prefixes] } }] },
+			depth: 2,
+			limit: 0,
+			pagination: false,
+			overrideAccess: true
+		});
+		const parDe = new Map(docs.map((d) => [String(d.de), d as unknown as { cible?: CibleRedirection }]));
+		for (const de of exacts) {
+			const href = hrefDeCible(parDe.get(de)?.cible);
+			if (href) return href;
+		}
+		for (const prefixe of prefixes) {
+			const cible = parDe.get(prefixe)?.cible;
+			if (cible?.relationTo !== 'pages') continue;
+			const href = hrefDeCible(cible);
+			if (href) return `${href === '/' ? '' : href}${path.slice(prefixe.length)}`;
+		}
+		return null;
+	} catch (err) {
+		console.warn(`[payload] getRedirection("${chemin}") : base injoignable.`, err);
+		return null;
+	}
+}
+
+// Décision 98 (§7, étape 4) — recherche sur le site de la commune : pages et
+// fiches PUBLIÉES, sur le titre, le chapô et le texte des fiches. Sans
+// accents ni casse (« eglise » trouve « Église ») ; tous les mots cherchés
+// doivent être présents. À l'échelle d'une mairie (quelques centaines de
+// fiches), tout est chargé puis filtré en mémoire : pas d'index plein texte
+// Postgres (ni l'extension `unaccent`) à maintenir.
+export type ResultatRecherche = { titre: string; extrait?: string; href: string; rubrique?: string; date?: string };
+
+const sansAccents = (v: string) =>
+	v
+		.normalize('NFD')
+		.replace(/[̀-ͯ]/g, '')
+		.toLowerCase();
+
+export async function rechercher(q: string, limite = 30): Promise<ResultatRecherche[]> {
+	const mots = sansAccents(q)
+		.split(/[^a-z0-9]+/)
+		.filter((m) => m.length >= 2);
+	if (mots.length === 0) return [];
+	try {
+		const payload = await getPayloadClient();
+		const tenant = await requireTenant(payload);
+		const [{ docs: pages }, { docs: fiches }] = await Promise.all([
+			payload.find({
+				collection: 'pages',
+				where: { tenant: { equals: tenant.id } },
+				select: { title: true, slug: true, gabarit: true, editorial: true },
+				depth: 0,
+				limit: 0,
+				pagination: false
+			}),
+			payload.find({
+				collection: 'fiches',
+				where: { and: [{ tenant: { equals: tenant.id } }, { _status: { equals: 'published' } }] },
+				select: { titre: true, chapo: true, slug: true, page: true, date: true, contenu: true },
+				depth: 0,
+				limit: 0,
+				pagination: false
+			})
+		]);
+		const pageParId = new Map(pages.map((p) => [String(p.id), p as unknown as { title: string; slug: string; gabarit?: string }]));
+
+		const candidats: (ResultatRecherche & { score: number })[] = [];
+		const noter = (titre: string, reste: string) => {
+			const t = sansAccents(titre);
+			const tout = `${t} ${sansAccents(reste)}`;
+			if (!mots.every((m) => tout.includes(m))) return 0;
+			return mots.reduce((s, m) => s + (t.includes(m) ? 3 : 1), 0);
+		};
+
+		for (const p of pages as unknown as { title: string; slug: string; gabarit?: string; editorial?: { sousTitre?: string } }[]) {
+			const score = noter(p.title, p.editorial?.sousTitre ?? '');
+			if (score > 0) {
+				candidats.push({
+					titre: p.title,
+					extrait: p.editorial?.sousTitre,
+					href: p.gabarit === 'accueil' ? '/' : `/${p.slug}`,
+					rubrique: 'Page',
+					score: score + 1
+				});
+			}
+		}
+		for (const f of fiches as unknown as { titre: string; chapo: string; slug: string; page: number | string; date?: string; contenu?: unknown }[]) {
+			const page = pageParId.get(String(f.page));
+			if (!page) continue;
+			const texte = richTextToParagraphs(f.contenu as never).join(' ');
+			const score = noter(f.titre, `${f.chapo} ${texte}`);
+			if (score > 0) {
+				candidats.push({ titre: f.titre, extrait: f.chapo, href: `/${page.slug}/${f.slug}`, rubrique: page.title, date: f.date, score });
+			}
+		}
+		return candidats
+			.sort((a, b) => b.score - a.score || String(b.date ?? '').localeCompare(String(a.date ?? '')))
+			.slice(0, limite)
+			.map(({ score: _score, ...r }) => r);
+	} catch (err) {
+		console.warn(`[payload] rechercher("${q}") : base injoignable.`, err);
+		return [];
 	}
 }

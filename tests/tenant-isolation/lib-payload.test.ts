@@ -85,4 +85,19 @@ describe('isolation — lib/payload.ts (tenant A résolu)', () => {
 		const slug = String((s.brouillonA as { slug?: string }).slug);
 		expect(await getFiche('mairie/actualites', slug)).toBeNull();
 	});
+
+	// Décision 98 — recherche et redirections, résolues par commune.
+	it('rechercher ne renvoie jamais une fiche de B', async () => {
+		const { rechercher } = await import('../../lib/payload');
+		const resultats = await rechercher('repas aines');
+		const extraits = resultats.map((r) => r.extrait);
+		expect(extraits).toContain('Actualité de A');
+		expect(extraits).not.toContain('Actualité de B');
+		expect(extraits).not.toContain('Brouillon de A');
+	});
+
+	it("getRedirection n'applique jamais une redirection de B chez A", async () => {
+		const { getRedirection } = await import('../../lib/payload');
+		expect(await getRedirection('ancienne-adresse-b')).toBeNull();
+	});
 });

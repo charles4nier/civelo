@@ -1,4 +1,4 @@
-import type { CollectionConfig, Field } from 'payload';
+import { APIError, type CollectionConfig, type Field } from 'payload';
 import { buildPreviewURL } from './preview';
 import { LAYOUTS_EN_FICHES } from './fichesTypes';
 import { isSuperAdmin, isLoggedIn, isSuperAdminField } from './access';
@@ -956,6 +956,108 @@ export const Pages: CollectionConfig = {
 		}
 	],
 	hooks: {
+		// Décision 98 (§3, garde-fous) — changement d'adresse d'une page publiée :
+		// l'ancienne adresse (et celle de ses fiches, voir la résolution par
+		// préfixe dans `app/(frontend)/[...slug]`) redirige vers la nouvelle.
+		// `originalDoc` est la version en ligne (un brouillon n'écrit jamais la
+		// table principale) : on compare donc à la dernière adresse en ligne.
+		// Pas de condition sur `originalDoc._status` : les pages semées à la
+		// création d'une commune restent `draft` en base tout en étant servies
+		// (constaté en test réel) — seule une sauvegarde de BROUILLON est
+		// ignorée, puisqu'elle ne change pas l'adresse en ligne.
+		beforeChange: [
+			({ data, originalDoc, req }) => {
+				if (data?._status !== 'draft' && originalDoc?.slug && data?.slug && data.slug !== originalDoc.slug) {
+					req.context = { ...req.context, ancienSlugPage: originalDoc.slug };
+				}
+				return data;
+			}
+		],
+		afterChange: [
+			async ({ doc, req }) => {
+				const ancien = req.context?.ancienSlugPage as string | undefined;
+				if (!ancien || !doc?.slug) return doc;
+				delete req.context.ancienSlugPage;
+				const tenantId = typeof doc.tenant === 'object' && doc.tenant !== null ? (doc.tenant as { id?: unknown }).id : doc.tenant;
+				if (!tenantId) return doc;
+				const de = `/${ancien}`;
+				const { docs } = await req.payload.find({
+					collection: 'redirections',
+					where: { and: [{ de: { equals: de } }, { tenant: { equals: tenantId } }] },
+					limit: 1,
+					overrideAccess: true,
+					req
+				});
+				const data = { de, cible: { relationTo: 'pages', value: doc.id }, origine: 'renommage', tenant: tenantId };
+				if (docs[0]) {
+					await req.payload.update({ collection: 'redirections', id: docs[0].id, data: data as never, overrideAccess: true, req });
+				} else {
+					await req.payload.create({ collection: 'redirections', data: data as never, overrideAccess: true, req });
+				}
+				// Une page vit désormais à la nouvelle adresse : une ancienne
+				// redirection qui partait de là ne doit plus l'intercepter.
+				await req.payload.delete({
+					collection: 'redirections',
+					where: { and: [{ de: { equals: `/${doc.slug}` } }, { tenant: { equals: tenantId } }] },
+					overrideAccess: true,
+					req
+				});
+				return doc;
+			}
+		],
+		// Décision 98 (§3, garde-fous) — suppression bloquée tant que la page a
+		// des fiches ou qu'un lien de l'accueil (ou le bouton d'en-tête) pointe
+		// vers elle : le message dit pourquoi et quoi faire.
+		beforeDelete: [
+			async ({ id, req }) => {
+				const { totalDocs: fiches } = await req.payload.count({
+					collection: 'fiches',
+					where: { page: { equals: id } },
+					overrideAccess: true,
+					req
+				});
+				if (fiches > 0) {
+					throw new APIError(
+						`Cette page a encore ${fiches} fiche(s) : supprimez-les ou rattachez-les à une autre page avant de la supprimer.`,
+						400,
+						undefined,
+						true
+					);
+				}
+				const { totalDocs: liensAccueil } = await req.payload.count({
+					collection: 'pages',
+					where: {
+						and: [
+							{ gabarit: { equals: 'accueil' } },
+							{
+								or: [
+									{ 'accueil.quickAccessItems.lien': { equals: id } },
+									{ 'accueil.slideshow.lien': { equals: id } },
+									{ 'accueil.hero.boutonPrincipalLien': { equals: id } },
+									{ 'accueil.hero.boutonSecondaireLien': { equals: id } }
+								]
+							}
+						]
+					},
+					overrideAccess: true,
+					req
+				});
+				const { totalDocs: liensBouton } = await req.payload.count({
+					collection: 'bouton-entete',
+					where: { boutonLien: { equals: id } },
+					overrideAccess: true,
+					req
+				});
+				if (liensAccueil + liensBouton > 0) {
+					throw new APIError(
+						"Un lien de la page d'accueil ou le bouton d'en-tête mène à cette page : changez ce lien avant de la supprimer.",
+						400,
+						undefined,
+						true
+					);
+				}
+			}
+		],
 		beforeValidate: [
 			async ({ data, req, originalDoc }) => {
 				// Décision 9 — un gabarit singleton ne peut exister qu'une fois.

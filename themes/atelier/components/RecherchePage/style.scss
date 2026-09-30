@@ -1,0 +1,6 @@
+@import '@themes/atelier/styles/variables';
+@import '@shared/styles/recherche';
+
+.theme-atelier {
+@include recherche($foreground-85, 16px);
+}

@@ -1,0 +1,109 @@
+// Décision 98 (§7, étape 4) — habillage de la page `/recherche`
+// (`shared/components/ResultatsRecherche`), commun aux 4 thèmes. À inclure
+// DANS le bloc `.theme-x { … }` du `RecherchePage/style.scss` de chaque
+// thème, après l'import de ses variables.
+@mixin recherche($texte, $rayon: 16px) {
+	.recherche {
+		max-width: 800px;
+		padding-top: $section-padding-y-mobile;
+		padding-bottom: $section-padding-y-desktop;
+
+		@media (min-width: $breakpoint-md) {
+			padding-top: $section-padding-y-tablet;
+		}
+	}
+
+	.recherche__label {
+		display: block;
+		font-weight: $font-weight-semibold;
+		color: $foreground;
+		margin-bottom: $spacing-sm;
+	}
+
+	.recherche__champ {
+		display: flex;
+		gap: $spacing-sm;
+		flex-wrap: wrap;
+	}
+
+	.recherche__input {
+		flex: 1 1 260px;
+		min-height: 48px;
+		padding: 0 $spacing-lg;
+		border: 1px solid $border;
+		border-radius: $rayon;
+		background: $background;
+		color: $foreground;
+		font-size: $body-size-desktop;
+
+		&:focus-visible {
+			outline: 3px solid $primary;
+			outline-offset: 2px;
+		}
+	}
+
+	.recherche__bouton {
+		min-height: 48px;
+		padding: 0 $spacing-xl;
+		border: 0;
+		border-radius: $rayon;
+		background: $primary;
+		color: #ffffff;
+		font-weight: $font-weight-semibold;
+		cursor: pointer;
+
+		&:focus-visible {
+			outline: 3px solid $foreground;
+			outline-offset: 2px;
+		}
+	}
+
+	.recherche__compte {
+		margin-top: $spacing-2xl;
+		color: $texte;
+	}
+
+	.recherche__liste {
+		list-style: none;
+		padding: 0;
+		margin: $spacing-xl 0 0;
+		display: flex;
+		flex-direction: column;
+		gap: $spacing-lg;
+	}
+
+	.recherche__resultat {
+		padding-bottom: $spacing-lg;
+		border-bottom: 1px solid $border;
+	}
+
+	.recherche__rubrique {
+		font-size: $small-size-desktop;
+		color: $muted-foreground;
+	}
+
+	.recherche__titre {
+		margin-top: $spacing-xs;
+		font-family: $font-display;
+		font-size: $h3-size-sm;
+		font-weight: $font-weight-semibold;
+		line-height: $line-height-snug;
+
+		a {
+			color: $foreground;
+			text-decoration: underline;
+			text-underline-offset: 3px;
+
+			&:hover,
+			&:focus-visible {
+				color: $primary;
+			}
+		}
+	}
+
+	.recherche__extrait {
+		margin-top: $spacing-xs;
+		color: $texte;
+		line-height: $line-height-relaxed;
+	}
+}

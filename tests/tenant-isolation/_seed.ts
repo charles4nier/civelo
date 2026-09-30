@@ -128,5 +128,19 @@ export async function seedTenants() {
 	const ficheB = await upsertFiche(payload, tenantB.id, 'Actualité de B', 'published');
 	const brouillonA = await upsertFiche(payload, tenantA.id, 'Brouillon de A', 'draft', 'Brouillon secret');
 
+	// Une redirection chez B seulement : elle ne doit jamais s'appliquer chez A.
+	const { totalDocs: redirB } = await payload.count({
+		collection: 'redirections',
+		where: { and: [{ de: { equals: '/ancienne-adresse-b' } }, { tenant: { equals: tenantB.id } }] },
+		overrideAccess: true
+	});
+	if (redirB === 0) {
+		await payload.create({
+			collection: 'redirections',
+			data: { de: '/ancienne-adresse-b', cible: { relationTo: 'pages', value: pageB.id }, tenant: tenantB.id } as never,
+			overrideAccess: true
+		});
+	}
+
 	return { payload, tenantA, tenantB, pageA, pageB, userA, userB, ficheA, ficheB, brouillonA };
 }

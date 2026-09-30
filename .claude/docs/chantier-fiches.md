@@ -148,5 +148,35 @@ Codé et vérifié en local sur une base jetable (anciennes migrations appliqué
 - Pas encore de sitemap (il n'en existe pas du tout aujourd'hui).
 - Constaté pendant les tests, **préexistant sur `main`** : une frappe robot ultra-rapide (tous les caractères dans la même milliseconde) dans n'importe quel formulaire de l'admin, en `next dev`, provoque « Maximum update depth exceeded ». Rien à la frappe humaine.
 
-**Avant la mise en prod** : répéter la migration sur une copie de la base de prod (dump via `scalingo db-tunnel`, par l'utilisateur), vérifier le nombre d'actualités copiées par commune, puis déployer (les deux remotes).
+**Déploiement** : 32 actualités copiées en fiches en prod (4 sites de démo × 8), sauvegarde manuelle `6abb95dd` juste avant.
+
+## 9. Suite du chantier (2026-09-29 → 30)
+
+Étapes 2 à 5 du §7 (« fais tout, on corrigera »).
+
+**2. Les 5 autres types en fiches** — migration `20260929_135445_fiches_autres_types`.
+- `LAYOUTS_EN_FICHES` = les 6 types. Champs ajoutés à `fiches` (affichés selon le type) : `horaire`, `lieu` (agenda) ; `badge`, `adresse`, `telephone`, `email`, `siteWeb` (annuaire) ; `icone`, verrouillée au super-admin (démarches) ; `nature`, `statut` (budget/projet). Catégorie obligatoire sauf budget/projet ; date dans l'URL aussi pour l'agenda.
+- **Budget/Projet n'est finalement pas séparé** (écart au plan §2) : une fiche budget/projet garde `nature` (budget | projet), la page « Budget & projets » ne change pas. Séparer supposait de restructurer les pages ; à reprendre si utile.
+- `fiches` devient `orderable` : l'ordre manuel de l'annuaire et des démarches est conservé (clés `_order` posées dans l'ordre des anciens tableaux ; les fiches déjà en base en reçoivent une).
+- Lecture : les 6 `get*Items` passent par `findFichesDePage` ; même forme de sortie qu'avant + adresse de la fiche (`href` pour actualités et agenda, `ficheHref` ailleurs ; documents et budgets gardent `href` = le PDF). Encart « Infos pratiques » sur la fiche (horaire/lieu, coordonnées cliquables, statut d'un projet).
+- 4 thèmes : nom d'un commerce et titre d'un événement cliquables, « Voir la fiche » dans une démarche dépliée, cartes documents / budgets / projets vers la fiche (plutôt que le PDF brut), agenda de l'accueil cliquable.
+- Migration testée sur une base montée jusqu'à l'état de prod puis remplie avec le code de prod (10 éléments, cas limites : catégorie supprimée, texte vide), montée et descente.
+
+**3. Redirections** — collection `redirections` (migration `20260929_140701_redirections_newsletter`).
+- Ancienne adresse (collée telle quelle : domaine retiré, décodée, sans barre finale, requête `?id=…` conservée) → page ou fiche. Gérées par l'admin de la commune et le super-admin (menu « Paramètres › Redirections »).
+- Résolution dans `app/(frontend)/[...slug]` avant la 404 (`getRedirection`, 308 via `permanentRedirect`) : correspondance exacte, puis plus long préfixe redirigé vers une page (les fiches d'une page renommée suivent).
+- Page dont l'adresse change (tout enregistrement sauf un brouillon) : redirection créée automatiquement (`origine: renommage`, hook `Pages`), et une redirection qui partait de la nouvelle adresse est supprimée. Pas de condition sur le statut de l'ancienne version : les pages semées à la création d'une commune restent `draft` en base tout en étant servies (constaté en test).
+- Suppression d'une page bloquée si elle a des fiches, ou si l'accueil (accès rapides, diaporama, boutons du hero) ou le bouton d'en-tête pointe vers elle.
+- Limite : les pages servies par une route statique (`app/(frontend)/commerces/page.tsx`…) lisent leur page par un slug écrit en dur ; si on les renomme, la nouvelle adresse (servie par `[...slug]`) marche, mais l'ancienne route statique retombe sur ses données de repli au lieu de rediriger.
+
+**4. Recherche** — `rechercher()` dans `lib/payload.ts` : pages et fiches publiées de la commune, titre + chapô + texte des fiches, sans accents ni casse, tous les mots requis, filtrage en mémoire (pas d'index plein texte). Route `/api/recherche` (popin atelier, résultats au fil de la frappe) et page `/recherche?q=` dans les 4 thèmes (formulaire GET, sans JS ; non indexée). La loupe de l'en-tête préau mène à `/recherche`.
+
+**5. Newsletter, inscriptions seules** — collection `abonnes-newsletter` (données personnelles : admin et super-admin, menu « Paramètres › Lettre d'information », export CSV `/api/newsletter/export`). Inscription `POST /api/newsletter` (consentement obligatoire, champ piège, réinscription sans doublon), désinscription `/api/newsletter/desinscription?jeton=…` prête pour les futurs envois. Popin d'inscription dans atelier (bouton du bloc Agenda). **Aucun e-mail envoyé** : ni confirmation (pas de double opt-in), ni envoi de lettre, tant qu'aucun fournisseur n'est choisi.
+
+**Vérifié en local** (base montée jusqu'à l'état de prod) : les 5 listes et 5 fiches en 200 dans les 4 thèmes ; redirections (saisie, renommage, fiches d'une page renommée, 308/404) ; recherche (accents, casse, texte des fiches, page `/recherche`) ; newsletter (inscription, refus sans consentement ou adresse invalide, robot, doublon, désinscription, réinscription, export CSV admin / refusé à l'éditeur et à l'anonyme, API REST fermée) ; popins atelier dans Chrome (clavier, focus, Échap) ; 14/14 tests d'isolation (+ recherche et redirections).
+
+**Restes / limites**
+- Scripts anciens encore écrits pour les tableaux `liste.itemsXxx` : `scripts/seed.ts`, `migrate-mongo-to-postgres.ts`, `full-copy-tenant.ts`, `seed-demo-content-from-edito.ts`, `localize-media-for-tenant.ts` (outils de démo et de bascule, plus à jour). Dans `import-tenant.template.ts`, la réécriture de ces tableaux est devenue sans effet.
+- Newsletter : seulement dans atelier (les 3 autres thèmes n'avaient pas de bouton).
+- Recherche : pas de popin dans clocher et belvédère (pas de bouton existant) ; la page `/recherche` existe partout mais n'est liée que depuis atelier et préau.
 
